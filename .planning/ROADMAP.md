@@ -76,9 +76,15 @@ Plans:
 **UI hint**: yes
 
 Plans:
+
+**Wave 1** *(no dependencies — run in parallel)*
 - [ ] 03-01-PLAN.md — Create i18n/navigation.ts (createNavigation module) + add Devanagari font fallback to globals.css
 - [ ] 03-02-PLAN.md — Write complete messages/hi.json (all 177 strings translated to Hindi)
+
+**Wave 2** *(blocked on Wave 1 completion)*
 - [ ] 03-03-PLAN.md — Create LanguageToggle component + migrate Header.tsx and MobileNav.tsx to locale-aware navigation
+
+**Wave 3** *(blocked on Wave 2 completion)*
 - [ ] 03-04-PLAN.md — Pre-build verification + human browser test (5 I18N requirement checks)
 
 ### Phase 4: Auth + Roles

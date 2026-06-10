@@ -483,17 +483,19 @@ When `router.push(pathname, { locale: 'en' })` is called, `syncLocaleCookie` run
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **NEXT_LOCALE cookie persistence across browser restarts**
    - What we know: Default config sets no `maxAge` → session cookie cleared on browser close
    - What's unclear: Client expectation — should toggle persist after full browser restart?
    - Recommendation: Test during Phase 3 execution. If persistence across restarts is required, add `localeCookie: { maxAge: 60 * 60 * 24 * 365 }` to `defineRouting` in `routing.ts`. This is a one-liner change.
+   - **RESOLVED:** Session cookie behavior is acceptable per D-03; tested in Plan 04 BONUS step. No `maxAge` needed for Phase 3.
 
 2. **`useTranslations` in Header (Server Component)**
    - What we know: `Header.tsx` is currently a Server Component; nav labels are hardcoded English strings
    - What's unclear: Whether nav labels should use `useTranslations` (dynamic) or be left as translation keys passed via props
    - Recommendation: Make `Header.tsx` use `getTranslations` (async) for nav labels as part of Phase 3. This requires converting nav labels to use `t('nav.home')` etc. — straightforward given `en.json` already has the `nav` namespace.
+   - **RESOLVED:** Header uses `getTranslations` (async) per Plan 03 Task 2 action.
 
 ---
 
