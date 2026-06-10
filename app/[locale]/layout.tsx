@@ -1,14 +1,9 @@
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Geist } from 'next/font/google';
+import { GeistSans } from 'geist/font/sans';
 import { routing } from '@/i18n/routing';
 import { Toaster } from '@/components/ui/sonner';
-
-const geist = Geist({
-  subsets: ['latin'],
-  variable: '--font-geist-sans',
-});
 
 export default async function LocaleLayout({
   children,
@@ -26,7 +21,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={geist.variable}>
+    <html lang={locale} className={GeistSans.variable}>
       <body>
         <NextIntlClientProvider messages={messages}>
           {children}
