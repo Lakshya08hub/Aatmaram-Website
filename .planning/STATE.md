@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-06-10)
 Phase: 3 of 11 (Bilingual System)
 Plan: 0 of TBD in current phase
 Status: Phase 2 complete — ready to discuss/plan Phase 3
-Last activity: 2026-06-11 — Phase 3 context gathered (discuss-phase complete)
+Last activity: 2026-06-11 — Phase 3 UI-SPEC approved (ui-phase complete)
 
 Progress: [██░░░░░░░░] 18%
 
@@ -69,4 +69,4 @@ None yet.
 
 Last session: 2026-06-10
 Stopped at: Phase 3 context gathered. Ready to plan Phase 3 (Bilingual System).
-Resume file: .planning/phases/03-bilingual-system/03-CONTEXT.md
+Resume file: .planning/phases/03-bilingual-system/03-UI-SPEC.md
