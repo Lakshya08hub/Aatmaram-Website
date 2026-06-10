@@ -1,10 +1,11 @@
 ---
 phase: 2
 slug: public-website
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-06-10
+reviewed_at: 2026-06-10
 ---
 
 # Phase 2 — UI Design Contract: Public Website
@@ -73,13 +74,13 @@ Font: Geist Sans via CSS variable `--font-geist-sans`. Applied at `body` level i
 | Role | Size | Tailwind | Weight | Tailwind | Line Height | Usage |
 |------|------|----------|--------|----------|-------------|-------|
 | Body | 16px | `text-base` | 400 Regular | `font-normal` | 1.5 | Paragraph text, card descriptions, form labels |
-| Label / Small | 14px | `text-sm` | 500 Medium | `font-medium` | 1.4 | Form labels, badge text, nav links, captions |
-| Heading | 20px | `text-xl` | 600 Semibold | `font-semibold` | 1.3 | Card headings, section sub-titles, department names |
+| Label / Small | 14px | `text-sm` | 600 Semibold | `font-semibold` | 1.4 | Form labels, badge text, nav links, captions |
+| Heading | 20px | `text-xl` | 600 Semibold | `font-semibold` | 1.3 | Card headings, section titles, page-level section headings, department names |
 | Display | 36px mobile / 48px desktop | `text-4xl` / `text-5xl` | 700 Bold | `font-bold` | 1.2 | Hero headline only |
-| Sub-Display | 24px | `text-2xl` | 600 Semibold | `font-semibold` | 1.25 | Page titles (About, Departments, etc.) |
 
 Rules:
-- Maximum 2 font weights in any single component: Regular (400) + Semibold (600), or Semibold (600) + Bold (700) for hero only.
+- Exactly 2 declared global weights: Regular (400) `font-normal` for body text and captions; Semibold (600) `font-semibold` for labels, headings, CTAs, and nav items.
+- Bold (700) `font-bold` is a hero-only exception — used exclusively on the hero headline (`text-4xl`/`text-5xl`). It is NOT a separate type scale entry.
 - Hindi text in Phase 3 will use the same scale; Geist Sans supports Devanagari via system fallback — acceptable for v1.
 - No italic, no underline on non-link text.
 
@@ -184,10 +185,10 @@ No third-party registries. No vetting gate required.
 - Height: 64px (`h-16`)
 - Background: `#1E3A5F` (`bg-blue-900` or custom CSS variable)
 - Logo area: Left — hospital name as text ("Atmaram Child Care") in white, `text-lg font-semibold`. Logo image placeholder slot for Phase 5.
-- Nav links: Center/right — `text-sm font-medium text-white/80 hover:text-white` — horizontal on `md+`, hidden on mobile
-- CTA button: "Book Appointment" — shadcn `Button` variant `default` with `bg-green-600 hover:bg-green-700 text-white text-sm font-medium`
+- Nav links: Center/right — `text-sm font-semibold text-white/80 hover:text-white` — horizontal on `md+`, hidden on mobile
+- CTA button: "Book Appointment" — shadcn `Button` variant `default` with `bg-green-600 hover:bg-green-700 text-white text-sm font-semibold`
 - Language toggle: Placeholder slot — `text-sm text-white/60 cursor-not-allowed` with "(EN/HI)" text. Disabled in Phase 2; functional in Phase 3.
-- Mobile: shadcn `Sheet` — hamburger icon (lucide `Menu`) triggers slide-in drawer from right. Sheet contains full nav links stacked vertically + CTA button. Sheet background white.
+- Mobile: shadcn `Sheet` — hamburger icon (lucide `Menu`) triggers slide-in drawer from right. Hamburger trigger: shadcn `Button variant="ghost"` with `text-white` and `aria-label="Open navigation menu"`. Sheet contains full nav links stacked vertically + CTA button. Sheet background white.
 - Sticky: `sticky top-0 z-50`
 - Shadow: `shadow-sm`
 
@@ -230,6 +231,8 @@ No third-party registries. No vetting gate required.
 - Secondary link: "Learn about our services →" — `text-blue-800 underline text-sm mt-4`
 - No background image, no gradient, no decorative shapes
 
+Note: Stats row uses `text-2xl font-bold` as a data-display one-off (numeric emphasis), not a type scale role. The hero headline `font-bold` is the documented hero-only exception.
+
 ### Department Card
 
 - Component: shadcn `Card` — `CardHeader` + `CardContent`
@@ -238,7 +241,7 @@ No third-party registries. No vetting gate required.
 - Border radius: `rounded-xl`
 - Shadow: `shadow-sm hover:shadow-md transition-shadow`
 - Icon area: `48px` circle, `bg-blue-50`, department icon (lucide icon) in `text-blue-800 w-6 h-6`, centered
-- Department name: `text-lg font-semibold text-slate-900 mt-4`
+- Department name: `text-xl font-semibold text-slate-900 mt-4`
 - Description: `text-sm text-slate-500 mt-2 leading-relaxed` — 1-2 sentence placeholder
 - No CTA inside card in Phase 2 (Phase 5 adds "View Details")
 - Grid: `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`
@@ -260,8 +263,8 @@ Department icons (lucide):
 - Border: `border border-slate-200`
 - Border radius: `rounded-xl`
 - Shadow: `shadow-sm`
-- Avatar: `80px` circle — solid color `bg-blue-100` with initials (e.g., "DR") in `text-blue-800 font-bold text-xl`. No external image service.
-- Doctor name: `text-lg font-semibold text-slate-900 mt-4`
+- Avatar: `80px` circle — solid color `bg-blue-100` with initials (e.g., "DR") in `text-blue-800 font-semibold text-xl`. No external image service.
+- Doctor name: `text-xl font-semibold text-slate-900 mt-4`
 - Specialty: `text-sm text-slate-500`
 - Separator: `border-t border-slate-100 mt-4`
 - CTA inside card: "Book Appointment" — shadcn `Button` `variant="outline"` `size="sm"` — links to `/[locale]/appointment`
@@ -285,16 +288,17 @@ Seeded doctor data (6 cards):
   2. "25+ Doctors" — lucide `Users` icon
   3. "8 Specialties" — lucide `Stethoscope` icon
   4. "24x7 Emergency" — lucide `Clock` icon
-- Each item: icon `24px` + `text-xl font-bold` number + `text-sm text-white/70` label, stacked, centered
+- Each item: icon `24px` + `text-xl font-semibold` number + `text-sm text-white/70` label, stacked, centered
 
 ### Section Headings (reusable pattern)
 
 ```
-<h2 class="text-2xl font-semibold text-slate-900">{Section Title}</h2>
+<h2 class="text-xl font-semibold text-slate-900">{Section Title}</h2>
 <p class="text-slate-500 mt-2 text-base">{Section subtitle or description}</p>
 <div class="mt-2 w-12 h-1 bg-blue-800 rounded-full"></div>
 ```
 
+- Uses Heading role (`text-xl font-semibold`) — the Heading type role is used for all page-level section titles.
 - Used on: Departments section preview (Home), full Departments page, Doctors page, About stats, Services page
 - Underline accent: 48px wide, 4px tall, `bg-blue-800`, `rounded-full` — minimal decorative element (not a gradient)
 
@@ -304,7 +308,7 @@ All buttons use shadcn `Button` component.
 
 | Variant | Usage | Classes |
 |---------|-------|---------|
-| Primary Accent | "Book Appointment" CTA | `bg-green-600 hover:bg-green-700 text-white font-medium` |
+| Primary Accent | "Book Appointment" CTA | `bg-green-600 hover:bg-green-700 text-white font-semibold` |
 | Primary Blue | Secondary primary actions | shadcn `default` — customize to `bg-blue-800 hover:bg-blue-900 text-white` |
 | Outline | Card CTAs, secondary actions | shadcn `outline` — `border-blue-800 text-blue-800 hover:bg-blue-50` |
 | Ghost | Nav links on mobile sheet | shadcn `ghost` |
@@ -318,7 +322,7 @@ Minimum touch target: all buttons `min-h-[44px]`.
 All fields use shadcn components: `Input`, `Label`, `Textarea`, `Select`.
 
 - Field wrapper: `div` with `flex flex-col gap-2` — label above input
-- Label: shadcn `Label` — `text-sm font-medium text-slate-700`
+- Label: shadcn `Label` — `text-sm font-semibold text-slate-700`
 - Input: shadcn `Input` — `border-slate-200 focus:border-blue-800 focus:ring-blue-800`
 - Error state: Red border `border-red-500`, error message `text-xs text-red-600 mt-1`
 - Required marker: `*` in `text-red-500` after label text
@@ -372,7 +376,7 @@ Sections (top to bottom):
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12 bg-white`, page title "About Us", breadcrumb `Home > About Us`
+2. Page header — `py-12 bg-white`, page title "About Us" (`text-xl font-semibold`), breadcrumb `Home > About Us`
 3. Hospital Story — `py-12`, two-column `md:grid-cols-2` — text left (founding story placeholder, mission), stat cards right (90 beds, 25+ doctors, 8 specialties, years in service)
 4. Mission & Values — `py-12 bg-slate-50`, 3 cards with lucide icons (HeartPulse, Shield, Users)
 5. `<Footer />`
@@ -381,7 +385,7 @@ Sections:
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12`, title "Our Departments", subtitle
+2. Page header — `py-12`, title "Our Departments" (`text-xl font-semibold`), subtitle
 3. Departments Grid — `py-12`, `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`, all 8 department cards
 4. `<Footer />`
 
@@ -389,7 +393,7 @@ Sections:
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12`, title "Our Doctors", subtitle "Our team of specialists is here to help."
+2. Page header — `py-12`, title "Our Doctors" (`text-xl font-semibold`), subtitle "Our team of specialists is here to help."
 3. Doctors Grid — `py-12`, `grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6`, 6 doctor cards
 4. CTA row — centered "Have questions? Contact us →" link
 5. `<Footer />`
@@ -398,7 +402,7 @@ Sections:
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12`, title "Services & Facilities"
+2. Page header — `py-12`, title "Services & Facilities" (`text-xl font-semibold`)
 3. Services List — `py-12`, two columns `md:grid-cols-2` — services aligned with 8 departments, each as a list item with lucide `CheckCircle2` icon in `text-green-600`
 4. Ayushman Bharat Section — `py-12 bg-blue-50`, prominent PM-JAY badge (large), description of empanelment, "What is PM-JAY?" short paragraph
 5. Facilities — `py-12`, `grid grid-cols-2 md:grid-cols-3 gap-4` — facility cards (ICU, NICU, OT, Emergency, Laboratory, Pharmacy placeholder)
@@ -408,7 +412,7 @@ Sections:
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12`, title "Contact Us"
+2. Page header — `py-12`, title "Contact Us" (`text-xl font-semibold`)
 3. Contact Details + Map — `py-12`, two-column `md:grid-cols-2` gap-12:
    - Left: Address card (shadcn `Card`), Phone card, OPD Timings card, Emergency card
    - Right: Map placeholder `div`
@@ -424,7 +428,7 @@ Contact card details:
 
 Sections:
 1. `<Header />`
-2. Page header — `py-12`, title "Request an Appointment", subtitle "Fill in the form below and our team will call you to confirm."
+2. Page header — `py-12`, title "Request an Appointment" (`text-xl font-semibold`), subtitle "Fill in the form below and our team will call you to confirm."
 3. Form — `py-12`, centered `max-w-lg mx-auto`, shadcn `Card` wrapping form fields
 4. `<Footer />`
 
@@ -445,7 +449,7 @@ Max content width: `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8` — applied to all p
 
 Mobile navigation:
 - Header nav links: `hidden md:flex` on header
-- Hamburger trigger: `md:hidden` — lucide `Menu` icon, `Button variant="ghost"` with `text-white`
+- Hamburger trigger: `md:hidden` — lucide `Menu` icon, `Button variant="ghost"` with `text-white` and `aria-label="Open navigation menu"`
 - Sheet: `SheetContent side="right" className="w-72"` — white background, stacked nav links as `Button variant="ghost"` full-width, CTA at bottom
 
 Mobile card behavior:
@@ -495,6 +499,7 @@ These are explicitly out of scope for Phase 2 — do not implement:
 - Form inputs must have associated `<Label>` via `htmlFor` / `id` pairing
 - Images: doctor avatar divs need `aria-label="Doctor avatar for {name}"`
 - PM-JAY badge: `role="img" aria-label="Ayushman Bharat PM-JAY Empanelled"`
+- Mobile hamburger button: `aria-label="Open navigation menu"`
 - Mobile sheet: shadcn Sheet handles focus trap automatically
 - Color contrast: `#1E40AF` on `#F8FAFC` = 7.2:1 (AAA), `#0F172A` on `#F8FAFC` = 18.9:1 (AAA), `#FFFFFF` on `#1E3A5F` = 9.6:1 (AAA), `#FFFFFF` on `#16A34A` = 4.8:1 (AA)
 
@@ -525,11 +530,11 @@ export const metadata: Metadata = {
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved — 2026-06-10
