@@ -67,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-10
-Stopped at: Roadmap created, STATE.md initialized. Ready to begin Phase 1 planning.
-Resume file: None
+Stopped at: Phase 2 context gathered. Ready to plan Phase 2.
+Resume file: .planning/phases/02-public-website/02-CONTEXT.md
