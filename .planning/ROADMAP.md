@@ -72,8 +72,14 @@ Plans:
   2. Visitor can toggle language in the header and the switch persists across page navigation and new browser sessions
   3. Every heading, body text, label, and call-to-action on every public page has an EN and HI version
   4. Default locale falls back to Hindi when the browser language is ambiguous or unsupported
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 03-01-PLAN.md — Create i18n/navigation.ts (createNavigation module) + add Devanagari font fallback to globals.css
+- [ ] 03-02-PLAN.md — Write complete messages/hi.json (all 177 strings translated to Hindi)
+- [ ] 03-03-PLAN.md — Create LanguageToggle component + migrate Header.tsx and MobileNav.tsx to locale-aware navigation
+- [ ] 03-04-PLAN.md — Pre-build verification + human browser test (5 I18N requirement checks)
 
 ### Phase 4: Auth + Roles
 **Goal**: Staff can securely log in to the portal and are restricted to portal sections appropriate for their role
@@ -179,7 +185,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Project Setup | 2/2 | Complete | 2026-06-10 |
 | 2. Public Website | 0/6 | Planned | - |
-| 3. Bilingual System | 0/TBD | Not started | - |
+| 3. Bilingual System | 0/4 | Planned | - |
 | 4. Auth + Roles | 0/TBD | Not started | - |
 | 5. Content Management | 0/TBD | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
