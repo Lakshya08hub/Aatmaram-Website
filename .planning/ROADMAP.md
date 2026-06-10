@@ -37,7 +37,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Supabase project is created, `.env.local` contains valid keys, and a test query returns without error
   3. Tailwind CSS renders styles correctly on a placeholder page
   4. Folder structure matches the App Router + `[locale]` + `/portal` routing architecture
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold project, install dependencies, create three-zone folder structure and placeholder pages
+- [ ] 01-02-PLAN.md — Create Supabase project (human checkpoint), wire .env.local, verify connection
 
 ### Phase 2: Public Website
 **Goal**: Every public-facing page exists and renders correctly with placeholder/seeded content and a consistent design system
@@ -165,7 +169,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Setup | 0/TBD | Not started | - |
+| 1. Project Setup | 0/2 | Not started | - |
 | 2. Public Website | 0/TBD | Not started | - |
 | 3. Bilingual System | 0/TBD | Not started | - |
 | 4. Auth + Roles | 0/TBD | Not started | - |
