@@ -13,7 +13,7 @@ Eleven sequential phases take this project from a blank Next.js repo to a fully 
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Project Setup** - Next.js + Supabase + Tailwind + folder structure + env config *(completed 2026-06-10)*
-- [ ] **Phase 2: Public Website** - All pages with placeholder/seeded content and design system
+- [x] **Phase 2: Public Website** - All pages with placeholder/seeded content and design system *(completed 2026-06-10)*
 - [ ] **Phase 3: Bilingual System** - next-intl, EN/HI content files, auto-detect, cookie, toggle
 - [ ] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes
 - [ ] **Phase 5: Content Management** - Departments, doctors, facilities editable from portal, fed to public site
@@ -56,12 +56,12 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 02-01-PLAN.md — shadcn/ui init, design tokens, Geist font wire, (public) layout, translation namespaces
-- [ ] 02-02-PLAN.md — Seeded data constants (departments/doctors/services) + all shared components (Header, Footer, DepartmentCard, DoctorCard, PMJAYBadge, SectionHeading)
-- [ ] 02-03-PLAN.md — Home page (replaces smoke test, includes PM-JAY badge) + About page
-- [ ] 02-04-PLAN.md — Departments page + Doctors page
-- [ ] 02-05-PLAN.md — Services page (with Ayushman Bharat section) + Contact page
-- [ ] 02-06-PLAN.md — Appointment form (react-hook-form + Zod + Sonner) + human verification checkpoint
+- [x] 02-01-PLAN.md — shadcn/ui init, design tokens, Geist font wire, (public) layout, translation namespaces
+- [x] 02-02-PLAN.md — Seeded data constants (departments/doctors/services) + all shared components (Header, Footer, DepartmentCard, DoctorCard, PMJAYBadge, SectionHeading)
+- [x] 02-03-PLAN.md — Home page (replaces smoke test, includes PM-JAY badge) + About page
+- [x] 02-04-PLAN.md — Departments page + Doctors page
+- [x] 02-05-PLAN.md — Services page (with Ayushman Bharat section) + Contact page
+- [x] 02-06-PLAN.md — Appointment form (react-hook-form + Zod + Sonner) + human verification checkpoint
 
 ### Phase 3: Bilingual System
 **Goal**: The entire public site is available in both English and Hindi, with automatic language detection and persistent manual override
