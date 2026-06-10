@@ -635,7 +635,7 @@ export default async function SomePage({
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **shadcn baseColor selection during `npx shadcn@latest init`**
    - What we know: init prompts for baseColor (neutral, zinc, stone, etc.). This affects default button/card gray tones.

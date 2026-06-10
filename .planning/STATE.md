@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-06-10)
 ## Current Position
 
 Phase: 2 of 11 (Public Website)
-Plan: 0 of TBD in current phase
-Status: Phase 1 complete — ready to plan Phase 2
-Last activity: 2026-06-10 — Phase 1 executed and verified (2/2 plans complete)
+Plan: 0 of 6 in current phase
+Status: Phase 2 planned — 6 plans verified, ready to execute
+Last activity: 2026-06-10 — Phase 2 planning complete (6 plans, 4 waves, checker PASSED)
 
 Progress: [█░░░░░░░░░] 9%
 
@@ -67,5 +67,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-10
-Stopped at: Phase 2 UI-SPEC approved. Ready to plan Phase 2.
-Resume file: .planning/phases/02-public-website/02-UI-SPEC.md
+Stopped at: Phase 2 planning complete. Ready to execute Phase 2.
+Resume file: .planning/phases/02-public-website/02-01-PLAN.md
