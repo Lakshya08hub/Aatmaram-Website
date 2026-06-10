@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { LanguageToggle } from './LanguageToggle';
 import { Menu } from 'lucide-react';
 import { Button, buttonVariants } from '@/components/ui/button';
 import {
@@ -53,6 +54,9 @@ export function MobileNav() {
             ))}
           </ul>
           <div className="p-4 border-t border-slate-100">
+            <div className="flex justify-center">
+              <LanguageToggle variant="drawer" />
+            </div>
             <SheetClose
               render={
                 <Link

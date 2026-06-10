@@ -1,20 +1,23 @@
-// TODO Phase 3: Replace hrefs with locale-aware Link from next-intl/navigation
-
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
+import { LanguageToggle } from './LanguageToggle';
+import { getTranslations, getLocale } from 'next-intl/server';
 import { buttonVariants } from '@/components/ui/button';
 import { MobileNav } from './MobileNav';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about' },
-  { label: 'Departments', href: '/departments' },
-  { label: 'Our Doctors', href: '/doctors' },
-  { label: 'Services', href: '/services' },
-  { label: 'Contact', href: '/contact' },
-];
+export async function Header() {
+  const locale = await getLocale();
+  const t = await getTranslations({ locale, namespace: 'nav' });
 
-export default function Header() {
+  const navLinks = [
+    { label: t('home'), href: '/' },
+    { label: t('about'), href: '/about' },
+    { label: t('departments'), href: '/departments' },
+    { label: t('doctors'), href: '/doctors' },
+    { label: t('services'), href: '/services' },
+    { label: t('contact'), href: '/contact' },
+  ];
+
   return (
     <nav
       data-testid="header"
@@ -23,7 +26,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         {/* Logo */}
         <Link
-          href="/hi"
+          href="/"
           className="text-lg font-semibold text-white hover:text-white/90 transition-colors flex-shrink-0"
         >
           Atmaram Child Care
@@ -45,13 +48,8 @@ export default function Header() {
 
         {/* Desktop right actions */}
         <div className="hidden md:flex items-center gap-4">
-          {/* Language toggle placeholder — Phase 3 */}
-          <span
-            className="text-sm text-white/60 cursor-not-allowed select-none"
-            title="Language toggle coming soon"
-          >
-            EN/HI
-          </span>
+          {/* Language toggle */}
+          <LanguageToggle />
 
           {/* Book Appointment CTA */}
           <Link
@@ -61,7 +59,7 @@ export default function Header() {
               'bg-green-600 hover:bg-green-700 text-white text-sm font-semibold min-h-[44px]'
             )}
           >
-            Book Appointment
+            {t('cta')}
           </Link>
         </div>
 
