@@ -4,175 +4,175 @@
     "tagline": "कानपुर में करुणामय स्वास्थ्य सेवा"
   },
   "nav": {
-    "home": "Home",
-    "about": "About Us",
-    "departments": "Departments",
-    "doctors": "Our Doctors",
-    "services": "Services",
-    "contact": "Contact",
-    "cta": "Book Appointment"
+    "home": "होम",
+    "about": "हमारे बारे में",
+    "departments": "विभाग",
+    "doctors": "हमारे डॉक्टर",
+    "services": "सेवाएं",
+    "contact": "संपर्क",
+    "cta": "अपॉइंटमेंट बुक करें"
   },
   "common": {
-    "bookAppointment": "Book Appointment",
-    "requestAppointment": "Request an Appointment",
+    "bookAppointment": "अपॉइंटमेंट बुक करें",
+    "requestAppointment": "अपॉइंटमेंट अनुरोध करें",
     "ayushmanBadge": "Ayushman Bharat PM-JAY Empanelled",
-    "learnMoreServices": "Learn about our services",
-    "contactUs": "Contact us",
-    "meetAllDoctors": "Meet All Doctors"
+    "learnMoreServices": "हमारी सेवाओं के बारे में जानें",
+    "contactUs": "संपर्क करें",
+    "meetAllDoctors": "सभी डॉक्टर देखें"
   },
   "home": {
     "hero": {
-      "headline": "Quality Care for Every Child and Family",
-      "tagline": "Kanpur's trusted super-specialty hospital",
-      "cta": "Request an Appointment",
-      "secondaryLink": "Learn about our services →"
+      "headline": "हर बच्चे और परिवार के लिए गुणवत्तापूर्ण देखभाल",
+      "tagline": "कानपुर का विश्वसनीय सुपर-स्पेशलिटी अस्पताल",
+      "cta": "अपॉइंटमेंट अनुरोध करें",
+      "secondaryLink": "हमारी सेवाओं के बारे में जानें →"
     },
     "stats": {
-      "beds": "90 Beds",
-      "bedsLabel": "Beds",
+      "beds": "90 बेड",
+      "bedsLabel": "बेड",
       "doctors": "25+",
-      "doctorsLabel": "Doctors",
+      "doctorsLabel": "डॉक्टर",
       "specialties": "8",
-      "specialtiesLabel": "Specialties",
+      "specialtiesLabel": "विशेषताएं",
       "emergency": "24x7",
-      "emergencyLabel": "Emergency"
+      "emergencyLabel": "आपातकाल"
     },
     "sections": {
-      "departments": "Our Departments",
-      "doctors": "Our Doctors",
-      "appointmentCta": "Ready to visit us?",
-      "appointmentCtaDesc": "Our team is here to help. Request an appointment today."
+      "departments": "हमारे विभाग",
+      "doctors": "हमारे डॉक्टर",
+      "appointmentCta": "हमसे मिलने के लिए तैयार हैं?",
+      "appointmentCtaDesc": "हमारी टीम आपकी मदद के लिए यहाँ है। आज ही अपॉइंटमेंट अनुरोध करें।"
     }
   },
   "about": {
-    "pageTitle": "About Us",
+    "pageTitle": "हमारे बारे में",
     "intro": {
-      "heading": "Caring for Kanpur Since Day One",
-      "body": "Atmaram Child Care and Critical Care is a 90-bed super-specialty hospital in Kanpur, Uttar Pradesh. Empanelled under Ayushman Bharat PM-JAY, we provide accessible, high-quality care to every patient who walks through our doors."
+      "heading": "शुरू से कानपुर की सेवा में",
+      "body": "Atmaram Child Care and Critical Care, Kanpur, Uttar Pradesh में 90-बेड का सुपर-स्पेशलिटी अस्पताल है। Ayushman Bharat PM-JAY के अंतर्गत सूचीबद्ध, हम अपने दरवाजे से आने वाले हर रोगी को सुलभ, उच्च-गुणवत्ता वाली देखभाल प्रदान करते हैं।"
     },
     "stats": {
       "beds": "90",
-      "bedsLabel": "Beds",
+      "bedsLabel": "बेड",
       "doctors": "25+",
-      "doctorsLabel": "Doctors",
+      "doctorsLabel": "डॉक्टर",
       "specialties": "8",
-      "specialtiesLabel": "Specialties",
+      "specialtiesLabel": "विशेषताएं",
       "years": "10+",
-      "yearsLabel": "Years of Service"
+      "yearsLabel": "सेवा के वर्ष"
     },
     "mission": {
-      "heading": "Our Mission",
-      "body": "To provide compassionate, evidence-based medical care to children and families in Kanpur and the surrounding region, with a special commitment to serving patients covered under Ayushman Bharat PM-JAY."
+      "heading": "हमारा मिशन",
+      "body": "Kanpur और आस-पास के क्षेत्र में बच्चों और परिवारों को करुणामय, साक्ष्य-आधारित चिकित्सा देखभाल प्रदान करना, Ayushman Bharat PM-JAY के अंतर्गत कवर रोगियों की सेवा के प्रति विशेष प्रतिबद्धता के साथ।"
     },
     "values": {
-      "care": "Patient-First Care",
-      "careDesc": "Every decision centers on patient outcomes and family wellbeing.",
-      "safety": "Clinical Safety",
-      "safetyDesc": "Rigorous protocols and trained staff at every level of care.",
-      "community": "Community Trust",
-      "communityDesc": "Serving Kanpur families with transparency and compassion."
+      "care": "रोगी-प्रथम देखभाल",
+      "careDesc": "हर निर्णय रोगी के परिणाम और परिवार की भलाई पर केंद्रित है।",
+      "safety": "नैदानिक सुरक्षा",
+      "safetyDesc": "देखभाल के हर स्तर पर कड़े प्रोटोकॉल और प्रशिक्षित कर्मचारी।",
+      "community": "सामुदायिक विश्वास",
+      "communityDesc": "पारदर्शिता और करुणा के साथ Kanpur के परिवारों की सेवा में।"
     }
   },
   "departments": {
-    "pageTitle": "Our Departments",
-    "pageSubtitle": "Expert care across 8 medical specialties",
+    "pageTitle": "हमारे विभाग",
+    "pageSubtitle": "8 चिकित्सा विशेषताओं में विशेषज्ञ देखभाल",
     "paediatrics": {
-      "name": "Paediatrics & Neonatology",
-      "description": "Comprehensive care for newborns, infants, and children up to 18 years."
+      "name": "बाल रोग एवं नवजात विज्ञान",
+      "description": "नवजात शिशुओं, बच्चों और 18 वर्ष तक के किशोरों के लिए व्यापक देखभाल।"
     },
     "paediatricSurgery": {
-      "name": "Paediatric Surgery",
-      "description": "Surgical care for children with congenital and acquired conditions."
+      "name": "बाल शल्य चिकित्सा",
+      "description": "जन्मजात और अर्जित स्थितियों वाले बच्चों के लिए शल्य चिकित्सा देखभाल।"
     },
     "criticalCare": {
-      "name": "Critical Care & ICU",
-      "description": "24x7 intensive care for critically ill patients with advanced life support."
+      "name": "गहन चिकित्सा एवं ICU",
+      "description": "गंभीर रूप से बीमार रोगियों के लिए 24x7 गहन देखभाल और उन्नत जीवन समर्थन।"
     },
     "generalSurgery": {
-      "name": "General Surgery",
-      "description": "Full-spectrum surgical services including laparoscopic and open procedures."
+      "name": "सामान्य शल्य चिकित्सा",
+      "description": "लेप्रोस्कोपिक और ओपन प्रक्रियाओं सहित पूर्ण शल्य चिकित्सा सेवाएं।"
     },
     "orthopaedics": {
-      "name": "Orthopaedics",
-      "description": "Treatment of bone, joint, and musculoskeletal conditions and injuries."
+      "name": "हड्डी रोग",
+      "description": "हड्डी, जोड़ और मस्कुलोस्केलेटल स्थितियों और चोटों का उपचार।"
     },
     "obstetrics": {
-      "name": "Obstetrics & Gynaecology",
-      "description": "Maternal and women's health care from prenatal to postnatal and beyond."
+      "name": "प्रसूति एवं स्त्री रोग",
+      "description": "प्रसव पूर्व से प्रसवोत्तर और उससे आगे तक मातृ एवं महिला स्वास्थ्य देखभाल।"
     },
     "generalMedicine": {
-      "name": "General Medicine",
-      "description": "Diagnosis and treatment of common and complex adult medical conditions."
+      "name": "सामान्य चिकित्सा",
+      "description": "सामान्य और जटिल वयस्क चिकित्सा स्थितियों का निदान और उपचार।"
     },
     "emergency": {
-      "name": "Emergency & Trauma",
-      "description": "Round-the-clock emergency care and trauma management for all ages."
+      "name": "आपातकाल एवं आघात",
+      "description": "सभी आयु के लोगों के लिए चौबीसों घंटे आपातकालीन देखभाल और आघात प्रबंधन।"
     }
   },
   "doctors": {
-    "pageTitle": "Our Doctors",
-    "pageSubtitle": "Our team of specialists is here to help.",
-    "cta": "Have questions? Contact us →",
-    "bookAppointment": "Book Appointment",
-    "comingSoon": "Doctor profiles coming soon."
+    "pageTitle": "हमारे डॉक्टर",
+    "pageSubtitle": "हमारी विशेषज्ञ टीम आपकी मदद के लिए यहाँ है।",
+    "cta": "प्रश्न हैं? संपर्क करें →",
+    "bookAppointment": "अपॉइंटमेंट बुक करें",
+    "comingSoon": "डॉक्टर की जानकारी जल्द आ रही है।"
   },
   "services": {
-    "pageTitle": "Services & Facilities",
-    "pageSubtitle": "Comprehensive care for every patient",
+    "pageTitle": "सेवाएं एवं सुविधाएं",
+    "pageSubtitle": "हर रोगी के लिए व्यापक देखभाल",
     "ayushman": {
       "heading": "Ayushman Bharat PM-JAY",
-      "body": "Atmaram Child Care and Critical Care is empanelled under the Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY) scheme. Eligible patients receive cashless treatment for covered procedures.",
-      "whatIs": "What is PM-JAY?",
-      "whatIsBody": "PM-JAY is India's flagship public health insurance scheme providing coverage of up to ₹5 lakh per family per year for secondary and tertiary hospitalisation."
+      "body": "Atmaram Child Care and Critical Care को Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY) योजना के अंतर्गत सूचीबद्ध किया गया है। पात्र रोगियों को कवर की गई प्रक्रियाओं के लिए कैशलेस उपचार मिलता है।",
+      "whatIs": "PM-JAY क्या है?",
+      "whatIsBody": "PM-JAY भारत की प्रमुख सार्वजनिक स्वास्थ्य बीमा योजना है जो माध्यमिक और तृतीयक अस्पताल में भर्ती के लिए प्रति परिवार प्रति वर्ष ₹5 लाख तक का कवरेज प्रदान करती है।"
     },
     "facilities": {
-      "heading": "Our Facilities"
+      "heading": "हमारी सुविधाएं"
     }
   },
   "contact": {
-    "pageTitle": "Contact Us",
+    "pageTitle": "संपर्क करें",
     "address": {
-      "heading": "Address",
+      "heading": "पता",
       "value": "Naubasta / Kidwai Nagar, Kanpur - 208021, Uttar Pradesh"
     },
     "phone": {
-      "heading": "Phone",
+      "heading": "फ़ोन",
       "value": "+91-XXXXXXXXXX (placeholder)"
     },
     "opd": {
-      "heading": "OPD Timings",
-      "value": "Mon–Sat: 9:00 AM – 5:00 PM"
+      "heading": "OPD समय",
+      "value": "सोम–शनि: प्रातः 9:00 – सायं 5:00"
     },
     "emergency": {
-      "heading": "24x7 Emergency",
+      "heading": "24x7 आपातकाल",
       "value": "+91-XXXXXXXXXX"
     },
     "map": {
-      "placeholder": "Map loading..."
+      "placeholder": "मानचित्र लोड हो रहा है..."
     }
   },
   "appointment": {
-    "pageTitle": "Request an Appointment",
-    "pageSubtitle": "Fill in the form below and our team will call you to confirm.",
+    "pageTitle": "अपॉइंटमेंट अनुरोध करें",
+    "pageSubtitle": "नीचे दिया गया फ़ॉर्म भरें और हमारी टीम आपको पुष्टि करने के लिए कॉल करेगी।",
     "fields": {
-      "patientName": "Patient Name",
-      "phone": "Phone Number",
-      "preferredDoctor": "Preferred Doctor",
-      "preferredDoctorPlaceholder": "Select a doctor",
-      "noPreference": "No preference",
-      "preferredDate": "Preferred Date",
-      "reason": "Reason / Chief Complaint",
-      "reasonPlaceholder": "Briefly describe your symptoms or reason for visit"
+      "patientName": "रोगी का नाम",
+      "phone": "फ़ोन नंबर",
+      "preferredDoctor": "पसंदीदा डॉक्टर",
+      "preferredDoctorPlaceholder": "डॉक्टर चुनें",
+      "noPreference": "कोई प्राथमिकता नहीं",
+      "preferredDate": "पसंदीदा तिथि",
+      "reason": "कारण / मुख्य शिकायत",
+      "reasonPlaceholder": "अपने लक्षण या विज़िट का कारण संक्षेप में बताएं"
     },
-    "submit": "Submit Request",
+    "submit": "अनुरोध सबमिट करें",
     "success": {
-      "title": "Request Received",
-      "description": "Your appointment request has been received. Our team will call you shortly."
+      "title": "अनुरोध प्राप्त हुआ",
+      "description": "आपका अपॉइंटमेंट अनुरोध प्राप्त हो गया है। हमारी टीम आपको शीघ्र कॉल करेगी।"
     },
     "errors": {
-      "required": "This field is required.",
-      "phone": "Enter a valid 10-digit Indian mobile number.",
-      "pastDate": "Please select a date from today onwards."
+      "required": "यह फ़ील्ड आवश्यक है।",
+      "phone": "कृपया एक मान्य 10-अंकीय भारतीय मोबाइल नंबर दर्ज करें।",
+      "pastDate": "कृपया आज से आगे की तिथि चुनें।"
     }
   }
 }
