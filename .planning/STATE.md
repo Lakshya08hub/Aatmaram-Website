@@ -5,29 +5,29 @@
 See: .planning/PROJECT.md (updated 2026-06-10)
 
 **Core value:** A credible, professional online presence for Atmaram Child Care and Critical Care that lets patients find information and request appointments, while giving hospital staff a single portal to manage everything.
-**Current focus:** Phase 1 — Project Setup
+**Current focus:** Phase 2 — Public Website
 
 ## Current Position
 
-Phase: 1 of 11 (Project Setup)
-Plan: 0 of 2 in current phase
-Status: Ready to execute
-Last activity: 2026-06-10 — Phase 1 planned via /gsd:plan-phase (2 plans, 2 waves)
+Phase: 2 of 11 (Public Website)
+Plan: 0 of TBD in current phase
+Status: Phase 1 complete — ready to plan Phase 2
+Last activity: 2026-06-10 — Phase 1 executed and verified (2/2 plans complete)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 9%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 2
+- Average duration: ~1 session
+- Total execution time: ~1 hour
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1 — Project Setup | 2/2 | ~1 hr | ~30 min |
 
 **Recent Trend:**
 - Last 5 plans: -

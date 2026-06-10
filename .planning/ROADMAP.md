@@ -12,7 +12,7 @@ Eleven sequential phases take this project from a blank Next.js repo to a fully 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Project Setup** - Next.js + Supabase + Tailwind + folder structure + env config
+- [x] **Phase 1: Project Setup** - Next.js + Supabase + Tailwind + folder structure + env config *(completed 2026-06-10)*
 - [ ] **Phase 2: Public Website** - All pages with placeholder/seeded content and design system
 - [ ] **Phase 3: Bilingual System** - next-intl, EN/HI content files, auto-detect, cookie, toggle
 - [ ] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes
@@ -40,8 +40,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Scaffold project, install dependencies, create three-zone folder structure and placeholder pages
-- [ ] 01-02-PLAN.md — Create Supabase project (human checkpoint), wire .env.local, verify connection
+- [x] 01-01-PLAN.md — Scaffold project, install dependencies, create three-zone folder structure and placeholder pages
+- [x] 01-02-PLAN.md — Create Supabase project (human checkpoint), wire .env.local, verify connection
 
 ### Phase 2: Public Website
 **Goal**: Every public-facing page exists and renders correctly with placeholder/seeded content and a consistent design system
