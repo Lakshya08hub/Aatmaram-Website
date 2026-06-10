@@ -52,8 +52,16 @@ Plans:
   2. Ayushman Bharat PM-JAY badge is visible and prominent on the site
   3. All pages share a consistent header, footer, and design system (typography, colors, spacing)
   4. Appointment request form renders with all required fields and submits without error
-**Plans**: TBD
+**Plans**: 6 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 02-01-PLAN.md — shadcn/ui init, design tokens, Geist font wire, (public) layout, translation namespaces
+- [ ] 02-02-PLAN.md — Seeded data constants (departments/doctors/services) + all shared components (Header, Footer, DepartmentCard, DoctorCard, PMJAYBadge, SectionHeading)
+- [ ] 02-03-PLAN.md — Home page (replaces smoke test, includes PM-JAY badge) + About page
+- [ ] 02-04-PLAN.md — Departments page + Doctors page
+- [ ] 02-05-PLAN.md — Services page (with Ayushman Bharat section) + Contact page
+- [ ] 02-06-PLAN.md — Appointment form (react-hook-form + Zod + Sonner) + human verification checkpoint
 
 ### Phase 3: Bilingual System
 **Goal**: The entire public site is available in both English and Hindi, with automatic language detection and persistent manual override
@@ -169,8 +177,8 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Project Setup | 0/2 | Not started | - |
-| 2. Public Website | 0/TBD | Not started | - |
+| 1. Project Setup | 2/2 | Complete | 2026-06-10 |
+| 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 0/TBD | Not started | - |
 | 4. Auth + Roles | 0/TBD | Not started | - |
 | 5. Content Management | 0/TBD | Not started | - |
