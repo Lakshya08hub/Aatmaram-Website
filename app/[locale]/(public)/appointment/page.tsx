@@ -1,4 +1,4 @@
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
 import AppointmentForm from '@/components/public/AppointmentForm'
@@ -22,6 +22,8 @@ export default async function AppointmentPage({
 }: AppointmentPageProps) {
   const { locale } = await params
   setRequestLocale(locale)
+  const t = await getTranslations('appointment')
+  const tNav = await getTranslations('nav')
 
   return (
     <>
@@ -29,13 +31,13 @@ export default async function AppointmentPage({
       <section className="py-12 bg-white px-4">
         <div className="max-w-7xl mx-auto">
           <p className="text-sm text-slate-500 mb-2">
-            Home &rsaquo; Request an Appointment
+            {tNav('home')} › {t('pageTitle')}
           </p>
           <h1 className="text-xl font-semibold text-slate-900">
-            Request an Appointment
+            {t('pageTitle')}
           </h1>
           <p className="text-base text-slate-500 mt-2">
-            Fill in the form below and our team will call you to confirm.
+            {t('pageSubtitle')}
           </p>
         </div>
       </section>

@@ -119,6 +119,16 @@
   "services": {
     "pageTitle": "Services & Facilities",
     "pageSubtitle": "Comprehensive care for every patient",
+    "list": {
+      "paediatricCare": "Paediatric & Neonatal Care",
+      "paediatricSurgery": "Paediatric Surgery",
+      "criticalCare": "Critical Care & ICU",
+      "generalSurgery": "General Surgery",
+      "orthopaedicCare": "Orthopaedic Care",
+      "maternityCare": "Maternity & Women's Health",
+      "generalMedicine": "General Medicine",
+      "emergencyTrauma": "Emergency & Trauma Care"
+    },
     "ayushman": {
       "heading": "Ayushman Bharat PM-JAY",
       "body": "Atmaram Child Care and Critical Care is empanelled under the Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY) scheme. Eligible patients receive cashless treatment for covered procedures.",
@@ -126,11 +136,20 @@
       "whatIsBody": "PM-JAY is India's flagship public health insurance scheme providing coverage of up to ₹5 lakh per family per year for secondary and tertiary hospitalisation."
     },
     "facilities": {
-      "heading": "Our Facilities"
+      "heading": "Our Facilities",
+      "items": {
+        "icu": "Intensive Care Unit (ICU)",
+        "nicu": "NICU (Neonatal ICU)",
+        "operationTheatre": "Operation Theatre",
+        "emergency": "24x7 Emergency",
+        "laboratory": "Diagnostic Laboratory",
+        "pharmacy": "Pharmacy"
+      }
     }
   },
   "contact": {
     "pageTitle": "Contact Us",
+    "getInTouch": "Get in Touch",
     "address": {
       "heading": "Address",
       "value": "Naubasta / Kidwai Nagar, Kanpur - 208021, Uttar Pradesh"
@@ -148,7 +167,8 @@
       "value": "+91-XXXXXXXXXX"
     },
     "map": {
-      "placeholder": "Map loading..."
+      "placeholder": "Map loading...",
+      "subtext": "Interactive map will be available soon"
     }
   },
   "appointment": {
