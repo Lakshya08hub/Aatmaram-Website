@@ -101,7 +101,16 @@ Plans:
   2. Unauthenticated user attempting to access any portal route is redirected to the login page
   3. New staff account created via sign-up cannot access the portal until an Admin approves it
   4. Each of the four roles (Super Admin, Admin, Doctor, Receptionist) sees only the portal sections they are permitted to access
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+
+**Wave 1** *(no dependencies)*
+- [ ] 04-01-PLAN.md - Auth foundation: branching middleware.ts (replaces proxy.ts), profiles migration + RLS, role config (lib/portal/roles.ts), login/logout Server Actions
+
+**Wave 2** *(blocked on 04-01; parallel - no file overlap)*
+- [ ] 04-02-PLAN.md - Auth-guarded portal layout + role-scoped Sidebar + role-aware dashboard + six section stubs
+- [ ] 04-03-PLAN.md - Login route at app/login/ (outside portal guard) + LoginForm + human verification
 
 ### Phase 5: Content Management
 **Goal**: All public site content (departments, doctors, facilities, hospital info) is driven from Supabase and editable by Admin via the portal with immediate reflection on the public site
@@ -197,7 +206,7 @@ Plans:
 | 1. Project Setup | 2/2 | Complete | 2026-06-10 |
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
-| 4. Auth + Roles | 0/TBD | Not started | - |
+| 4. Auth + Roles | 0/3 | Planned | - |
 | 5. Content Management | 0/TBD | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
