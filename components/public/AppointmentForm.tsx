@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -50,6 +51,7 @@ type AppointmentFormValues = z.infer<typeof appointmentSchema>
 // Component
 // ---------------------------------------------------------------------------
 export default function AppointmentForm() {
+  const t = useTranslations('appointment')
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -64,9 +66,8 @@ export default function AppointmentForm() {
   const onSubmit = (data: AppointmentFormValues) => {
     // TODO Phase 7: Add POST /api/appointments call here
     void data
-    toast.success('Request Received', {
-      description:
-        'Your appointment request has been received. Our team will call you shortly.',
+    toast.success(t('success.title'), {
+      description: t('success.description'),
       duration: 6000,
     })
     form.reset()
@@ -88,7 +89,7 @@ export default function AppointmentForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Patient Name
+                    {t('fields.patientName')}
                     <span className="text-red-500 ml-1">*</span>
                   </FormLabel>
                   <FormControl>
@@ -110,7 +111,7 @@ export default function AppointmentForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Phone Number
+                    {t('fields.phone')}
                     <span className="text-red-500 ml-1">*</span>
                   </FormLabel>
                   <FormControl>
@@ -132,7 +133,7 @@ export default function AppointmentForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Preferred Doctor
+                    {t('fields.preferredDoctor')}
                     <span className="text-red-500 ml-1">*</span>
                   </FormLabel>
                   <FormControl asWrapper>
@@ -141,11 +142,11 @@ export default function AppointmentForm() {
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a doctor" />
+                        <SelectValue placeholder={t('fields.preferredDoctorPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="no-preference">
-                          No preference
+                          {t('fields.noPreference')}
                         </SelectItem>
                         {doctors.map((doc) => (
                           <SelectItem key={doc.id} value={doc.id}>
@@ -167,7 +168,7 @@ export default function AppointmentForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Preferred Date
+                    {t('fields.preferredDate')}
                     <span className="text-red-500 ml-1">*</span>
                   </FormLabel>
                   <FormControl>
@@ -189,12 +190,12 @@ export default function AppointmentForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    Reason / Chief Complaint
+                    {t('fields.reason')}
                     <span className="text-red-500 ml-1">*</span>
                   </FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Briefly describe your symptoms or reason for visit"
+                      placeholder={t('fields.reasonPlaceholder')}
                       rows={4}
                       {...field}
                     />
@@ -210,7 +211,7 @@ export default function AppointmentForm() {
               size="lg"
               className="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold min-h-[44px]"
             >
-              Submit Request
+              {t('submit')}
             </Button>
           </form>
         </Form>
