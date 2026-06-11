@@ -72,20 +72,25 @@ Plans:
   2. Visitor can toggle language in the header and the switch persists across page navigation and new browser sessions
   3. Every heading, body text, label, and call-to-action on every public page has an EN and HI version
   4. Default locale falls back to Hindi when the browser language is ambiguous or unsupported
-**Plans**: 4 plans
+**Plans**: 7 plans
 **UI hint**: yes
 
 Plans:
 
 **Wave 1** *(no dependencies — run in parallel)*
-- [ ] 03-01-PLAN.md — Create i18n/navigation.ts (createNavigation module) + add Devanagari font fallback to globals.css
-- [ ] 03-02-PLAN.md — Write complete messages/hi.json (all 177 strings translated to Hindi)
+- [x] 03-01-PLAN.md — Create i18n/navigation.ts (createNavigation module) + add Devanagari font fallback to globals.css
+- [x] 03-02-PLAN.md — Write complete messages/hi.json (all 177 strings translated to Hindi)
 
 **Wave 2** *(blocked on Wave 1 completion)*
-- [ ] 03-03-PLAN.md — Create LanguageToggle component + migrate Header.tsx and MobileNav.tsx to locale-aware navigation
+- [x] 03-03-PLAN.md — Create LanguageToggle component + migrate Header.tsx and MobileNav.tsx to locale-aware navigation
 
 **Wave 3** *(blocked on Wave 2 completion)*
-- [ ] 03-04-PLAN.md — Pre-build verification + human browser test (5 I18N requirement checks)
+- [x] 03-04-PLAN.md — Pre-build verification + human browser test (5 I18N requirement checks)
+
+**Wave 4** *(gap closure — page bodies were never wired to translations; I18N-05 / Success Criterion 3 incomplete)*
+- [ ] 03-05-PLAN.md — Migrate Home + About page bodies to consume translation keys
+- [ ] 03-06-PLAN.md — Migrate Departments + Doctors pages and their cards (key seeded constants) to translations
+- [ ] 03-07-PLAN.md — Migrate Services + Contact + Appointment-header to translations (add service/facility item keys)
 
 ### Phase 4: Auth + Roles
 **Goal**: Staff can securely log in to the portal and are restricted to portal sections appropriate for their role
@@ -191,7 +196,7 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Project Setup | 2/2 | Complete | 2026-06-10 |
 | 2. Public Website | 0/6 | Planned | - |
-| 3. Bilingual System | 0/4 | Planned | - |
+| 3. Bilingual System | 4/7 | In progress | - |
 | 4. Auth + Roles | 0/TBD | Not started | - |
 | 5. Content Management | 0/TBD | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
