@@ -1,30 +1,32 @@
-import Link from 'next/link';
-import { Doctor } from '@/lib/data/doctors';
+import { Link } from '@/i18n/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 interface DoctorCardProps {
-  doctor: Doctor;
+  name: string;
+  initials: string;
+  specialty: string;
+  bookLabel: string;
 }
 
-export function DoctorCard({ doctor }: DoctorCardProps) {
+export function DoctorCard({ name, initials, specialty, bookLabel }: DoctorCardProps) {
   return (
     <Card className="bg-white border border-slate-200 rounded-xl shadow-sm">
       <CardContent className="p-6 flex flex-col items-center text-center">
         <div
           className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center"
-          aria-label={'Doctor avatar for ' + doctor.name}
+          aria-label={'Doctor avatar for ' + name}
         >
           <span className="text-blue-800 font-semibold text-xl">
-            {doctor.initials}
+            {initials}
           </span>
         </div>
         <h3 className="text-xl font-semibold text-slate-900 mt-4">
-          {doctor.name}
+          {name}
         </h3>
-        <p className="text-sm text-slate-500">{doctor.specialty}</p>
+        <p className="text-sm text-slate-500">{specialty}</p>
         <Separator className="mt-4" />
         <Link
           href="/appointment"
@@ -33,7 +35,7 @@ export function DoctorCard({ doctor }: DoctorCardProps) {
             'mt-4 border-blue-800 text-blue-800 hover:bg-blue-50 min-h-[44px]'
           )}
         >
-          Book Appointment
+          {bookLabel}
         </Link>
       </CardContent>
     </Card>

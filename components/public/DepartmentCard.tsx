@@ -1,12 +1,14 @@
-import { Department } from '@/lib/data/departments';
+import type { LucideIcon } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 interface DepartmentCardProps {
-  department: Department;
+  name: string;
+  description: string;
+  icon: LucideIcon;
 }
 
-export function DepartmentCard({ department }: DepartmentCardProps) {
-  const Icon = department.icon;
+export function DepartmentCard({ name, description, icon }: DepartmentCardProps) {
+  const Icon = icon;
 
   return (
     <Card className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
@@ -15,12 +17,12 @@ export function DepartmentCard({ department }: DepartmentCardProps) {
           <Icon className="w-6 h-6 text-blue-800" />
         </div>
         <h3 className="text-xl font-semibold text-slate-900 mt-4">
-          {department.name}
+          {name}
         </h3>
       </CardHeader>
       <CardContent>
         <p className="text-sm text-slate-500 mt-2 leading-relaxed">
-          {department.description}
+          {description}
         </p>
       </CardContent>
     </Card>
