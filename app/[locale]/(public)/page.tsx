@@ -1,6 +1,6 @@
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import { Link } from '@/i18n/navigation';
 import { BedDouble, Users, Stethoscope, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PMJAYBadge } from '@/components/public/PMJAYBadge';
@@ -28,6 +28,10 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('home');
+  const tCommon = await getTranslations('common');
+  const tDept = await getTranslations('departments');
+  const tDoc = await getTranslations('doctors');
 
   return (
     <main>
@@ -35,10 +39,10 @@ export default async function HomePage({
       <section className="bg-white py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-            Quality Care for Every Child and Family
+            {t('hero.headline')}
           </h1>
           <p className="text-lg text-slate-500 mt-4">
-            Kanpur&apos;s trusted super-specialty hospital
+            {t('hero.tagline')}
           </p>
           <div className="mt-6 flex justify-center">
             <PMJAYBadge />
@@ -49,7 +53,7 @@ export default async function HomePage({
                 size="lg"
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
               >
-                Request an Appointment
+                {t('hero.cta')}
               </Button>
             </Link>
           </div>
@@ -58,7 +62,7 @@ export default async function HomePage({
               href="/services"
               className="text-blue-800 underline text-sm"
             >
-              Learn about our services &rarr;
+              {t('hero.secondaryLink')}
             </Link>
           </div>
         </div>
@@ -71,22 +75,22 @@ export default async function HomePage({
             <div className="flex flex-col items-center gap-2">
               <BedDouble className="w-6 h-6 text-white" />
               <span className="text-xl font-semibold text-white">90</span>
-              <span className="text-sm text-white/70">Beds</span>
+              <span className="text-sm text-white/70">{t('stats.bedsLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Users className="w-6 h-6 text-white" />
               <span className="text-xl font-semibold text-white">25+</span>
-              <span className="text-sm text-white/70">Doctors</span>
+              <span className="text-sm text-white/70">{t('stats.doctorsLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Stethoscope className="w-6 h-6 text-white" />
               <span className="text-xl font-semibold text-white">8</span>
-              <span className="text-sm text-white/70">Specialties</span>
+              <span className="text-sm text-white/70">{t('stats.specialtiesLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Clock className="w-6 h-6 text-white" />
               <span className="text-xl font-semibold text-white">24x7</span>
-              <span className="text-sm text-white/70">Emergency</span>
+              <span className="text-sm text-white/70">{t('stats.emergencyLabel')}</span>
             </div>
           </div>
         </div>
@@ -96,12 +100,17 @@ export default async function HomePage({
       <section className="py-16 px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHeading
-            title="Our Departments"
-            subtitle="Expert care across 8 medical specialties"
+            title={t('sections.departments')}
+            subtitle={tDept('pageSubtitle')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
             {departments.map((dept) => (
-              <DepartmentCard key={dept.id} department={dept} />
+              <DepartmentCard
+                key={dept.id}
+                icon={dept.icon}
+                name={tDept(`${dept.translationKey}.name`)}
+                description={tDept(`${dept.translationKey}.description`)}
+              />
             ))}
           </div>
         </div>
@@ -111,17 +120,23 @@ export default async function HomePage({
       <section className="py-16 px-4 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           <SectionHeading
-            title="Our Doctors"
-            subtitle="Our team of specialists is here to help."
+            title={t('sections.doctors')}
+            subtitle={tDoc('pageSubtitle')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
             {doctors.slice(0, 3).map((doctor) => (
-              <DoctorCard key={doctor.id} doctor={doctor} />
+              <DoctorCard
+                key={doctor.id}
+                name={doctor.name}
+                initials={doctor.initials}
+                specialty={tDept(`${doctor.specialtyKey}.name`)}
+                bookLabel={tDoc('bookAppointment')}
+              />
             ))}
           </div>
           <div className="mt-8 text-center">
             <Link href="/doctors" className="text-blue-800 underline text-sm">
-              Meet All Doctors &rarr;
+              {tCommon('meetAllDoctors')} &rarr;
             </Link>
           </div>
         </div>
@@ -131,10 +146,10 @@ export default async function HomePage({
       <section className="bg-blue-50 py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-xl font-semibold text-slate-900">
-            Ready to visit us?
+            {t('sections.appointmentCta')}
           </h2>
           <p className="text-slate-500 mt-2 text-base">
-            Our team is here to help. Request an appointment today.
+            {t('sections.appointmentCtaDesc')}
           </p>
           <div className="mt-8">
             <Link href="/appointment">
@@ -142,7 +157,7 @@ export default async function HomePage({
                 size="lg"
                 className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
               >
-                Request an Appointment
+                {t('hero.cta')}
               </Button>
             </Link>
           </div>
