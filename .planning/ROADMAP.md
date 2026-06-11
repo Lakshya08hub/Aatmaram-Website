@@ -106,7 +106,7 @@ Plans:
 Plans:
 
 **Wave 1** *(no dependencies)*
-- [ ] 04-01-PLAN.md - Auth foundation: branching middleware.ts (replaces proxy.ts), profiles migration + RLS, role config (lib/portal/roles.ts), login/logout Server Actions
+- [x] 04-01-PLAN.md - Auth foundation: branching middleware.ts (replaces proxy.ts), profiles migration + RLS, role config (lib/portal/roles.ts), login/logout Server Actions
 
 **Wave 2** *(blocked on 04-01; parallel - no file overlap)*
 - [ ] 04-02-PLAN.md - Auth-guarded portal layout + role-scoped Sidebar + role-aware dashboard + six section stubs
@@ -206,7 +206,7 @@ Plans:
 | 1. Project Setup | 2/2 | Complete | 2026-06-10 |
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
-| 4. Auth + Roles | 0/3 | Planned | - |
+| 4. Auth + Roles | 1/3 | In Progress|  |
 | 5. Content Management | 0/TBD | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |

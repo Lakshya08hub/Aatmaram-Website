@@ -48,9 +48,9 @@
 
 ### Auth + Roles
 
-- [ ] **AUTH-01**: Staff can log in to portal with email and password via Supabase Auth
-- [ ] **AUTH-02**: Four roles exist: Super Admin, Admin, Doctor, Receptionist
-- [ ] **AUTH-03**: New staff account requires Admin approval before portal access is granted
+- [x] **AUTH-01**: Staff can log in to portal with email and password via Supabase Auth
+- [x] **AUTH-02**: Four roles exist: Super Admin, Admin, Doctor, Receptionist
+- [x] **AUTH-03**: New staff account requires Admin approval before portal access is granted
 - [ ] **AUTH-04**: Portal routes are protected — unauthenticated users are redirected to login
 - [ ] **AUTH-05**: Role-based middleware restricts portal sections by role
 

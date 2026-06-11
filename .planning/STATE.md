@@ -4,13 +4,13 @@ milestone: v1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 3 complete — verification passed
-last_updated: "2026-06-11T10:28:25.435Z"
+last_updated: "2026-06-11T10:33:53.561Z"
 last_activity: 2026-06-11 -- Phase 04 planning complete
 progress:
   total_phases: 11
   completed_phases: 3
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
   percent: 27
 ---
 
@@ -30,7 +30,7 @@ Plan: 0 of TBD in current phase
 Status: Ready to execute
 Last activity: 2026-06-11 -- Phase 04 planning complete
 
-Progress: [███░░░░░░░] 27%
+Progress: [█████████░] 89%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [███░░░░░░░] 27%
 - Trend: -
 
 *Updated after each plan completion*
+| Phase 04-auth-roles P01 | 12 | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -66,6 +67,7 @@ Recent decisions affecting current work:
 - Appointment booking is Option B only — request form + staff callback, no slot reservation in v1
 - Gemini chat is public-facing only — no Supabase access, no patient data to third-party API
 - Default locale is Hindi; English is fallback
+- [Phase ?]: D-09: single middleware.ts branches portal to updateSession(), public to next-intl; proxy.ts deleted
 
 ### Pending Todos
 
@@ -86,6 +88,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-06-11T09:30:22.272Z
+Last session: 2026-06-11T10:33:42.675Z
 Stopped at: Phase 3 complete — verification passed
-Resume file: .planning/phases/04-auth-roles/04-CONTEXT.md
+Resume file: None
