@@ -1,12 +1,11 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
-import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +27,26 @@ import {
 } from '@/components/ui/form'
 import { Card, CardContent } from '@/components/ui/card'
 import { submitAppointmentAction } from '@/lib/actions/submitAppointmentAction'
+
+// ---------------------------------------------------------------------------
+// hCaptcha vanilla JS types (no React wrapper — incompatible with React 19)
+// ---------------------------------------------------------------------------
+declare global {
+  interface Window {
+    hcaptcha: {
+      render: (
+        container: HTMLElement,
+        params: {
+          sitekey: string
+          callback: (token: string) => void
+          'expired-callback': () => void
+        }
+      ) => string
+      reset: (widgetId: string) => void
+      getResponse: (widgetId: string) => string
+    }
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Zod schema — defined outside component to avoid re-creation on each render
@@ -67,7 +86,8 @@ interface AppointmentFormProps {
 // ---------------------------------------------------------------------------
 export default function AppointmentForm({ doctors }: AppointmentFormProps) {
   const t = useTranslations('appointment')
-  const captchaRef = useRef<HCaptcha>(null)
+  const captchaContainerRef = useRef<HTMLDivElement>(null)
+  const widgetIdRef = useRef<string | null>(null)
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
 
   const form = useForm<AppointmentFormValues>({
@@ -83,6 +103,40 @@ export default function AppointmentForm({ doctors }: AppointmentFormProps) {
       reason: '',
     },
   })
+
+  // Load hCaptcha vanilla JS and render widget into the container div.
+  // @hcaptcha/react-hcaptcha is incompatible with React 19 — use the JS API directly.
+  useEffect(() => {
+    const renderWidget = () => {
+      if (!captchaContainerRef.current || widgetIdRef.current !== null) return
+      widgetIdRef.current = window.hcaptcha.render(captchaContainerRef.current, {
+        sitekey: process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!,
+        callback: (token: string) => setCaptchaToken(token),
+        'expired-callback': () => setCaptchaToken(null),
+      })
+    }
+
+    if (typeof window === 'undefined') return
+
+    if (window.hcaptcha) {
+      renderWidget()
+      return
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://js.hcaptcha.com/1/api.js?render=explicit'
+    script.async = true
+    script.defer = true
+    script.onload = renderWidget
+    document.head.appendChild(script)
+  }, [])
+
+  const resetCaptcha = () => {
+    if (widgetIdRef.current !== null && window.hcaptcha) {
+      window.hcaptcha.reset(widgetIdRef.current)
+    }
+    setCaptchaToken(null)
+  }
 
   const onSubmit = async (data: AppointmentFormValues) => {
     if (!captchaToken) {
@@ -110,8 +164,7 @@ export default function AppointmentForm({ doctors }: AppointmentFormProps) {
       duration: 6000,
     })
     form.reset()
-    captchaRef.current?.resetCaptcha()
-    setCaptchaToken(null)
+    resetCaptcha()
   }
 
   return (
@@ -276,13 +329,8 @@ export default function AppointmentForm({ doctors }: AppointmentFormProps) {
               )}
             />
 
-            {/* hCaptcha */}
-            <HCaptcha
-              ref={captchaRef}
-              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
-              onVerify={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-            />
+            {/* hCaptcha — rendered via vanilla JS API (React 19 compatible) */}
+            <div ref={captchaContainerRef} />
 
             {/* Submit Button */}
             <Button
