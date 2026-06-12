@@ -633,22 +633,25 @@ export default async function DepartmentsPage({ params }) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Service Role Key in Server Actions**
    - What we know: Service role key bypasses RLS; anon key respects RLS
    - What's unclear: Whether `NEXT_PUBLIC_SUPABASE_ANON_KEY` (already in env) is sufficient for portal writes if RLS write policies are added, or if `SUPABASE_SERVICE_ROLE_KEY` should be added to env
    - Recommendation: Phase 5 plan should include a Wave 0 task to add `SUPABASE_SERVICE_ROLE_KEY` to `.env.local` and create a `lib/supabase/admin.ts` that uses it for Server Actions. Fallback: use anon key + authenticated RLS write policies.
+   - **RESOLVED:** 05-01-PLAN.md Task 1 creates `lib/supabase/admin.ts` using SUPABASE_SERVICE_ROLE_KEY. Service role key is used for all portal Server Actions in `app/(portal)/actions/content.ts`. The key is documented in .env.example and required in .env.local.
 
 2. **Doctor `availability_days` Data Type**
    - What we know: UI-SPEC shows multi-select or comma-separated input for Mon/Tue/etc.
    - What's unclear: Whether `text[]` (Postgres array) or `text` (comma-separated string) is better
    - Recommendation: Use `text[]` (Postgres array) — cleaner querying, Supabase JS client handles array serialization automatically. Portal form collects as toggled set, serializes to array before sending.
+   - **RESOLVED:** 05-01-PLAN.md migration schema uses `availability_days text[]` (Postgres array). The doctors portal form (05-03-PLAN.md) uses a multi-select toggle that serializes to array before the Server Action call.
 
 3. **Seed Data Migration Strategy**
    - What we know: Static data exists in `lib/data/departments.ts`, `lib/data/doctors.ts`, `lib/data/services.ts`
    - What's unclear: Whether seed INSERT statements belong in the migration SQL or in a separate seed script
    - Recommendation: Include seed INSERTs in the migration for departments and facilities (known values). Doctors: don't seed — Admin enters real doctor profiles via portal. Hospital info: seed one empty row (already planned above).
+   - **RESOLVED:** 05-01-PLAN.md migration seeds exactly one empty hospital_info row. Departments and facilities are NOT seeded — Admin enters content via the portal (matching the real workflow). The static lib/data/ files remain as reference only.
 
 ---
 
