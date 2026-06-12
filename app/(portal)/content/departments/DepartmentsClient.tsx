@@ -1,0 +1,360 @@
+'use client';
+// app/(portal)/content/departments/DepartmentsClient.tsx
+// Client Component — Departments CRUD: Table + Dialog (add/edit) + AlertDialog (delete).
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+import { Department } from '@/lib/db/departments';
+import {
+  createDepartmentAction,
+  updateDepartmentAction,
+  deleteDepartmentAction,
+} from '@/app/(portal)/actions/content';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+
+// ---------------------------------------------------------------------------
+// Form schema
+// ---------------------------------------------------------------------------
+
+const departmentSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(80, 'Name must be 80 characters or fewer'),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(500, 'Description must be 500 characters or fewer'),
+  image_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+});
+
+type DepartmentFormValues = z.infer<typeof departmentSchema>;
+
+// ---------------------------------------------------------------------------
+// Component
+// ---------------------------------------------------------------------------
+
+interface Props {
+  initialData: Department[];
+  fetchError: boolean;
+}
+
+export default function DepartmentsClient({ initialData, fetchError }: Props) {
+  const router = useRouter();
+
+  // Dialog state
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<Department | null>(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<DepartmentFormValues>({
+    resolver: zodResolver(departmentSchema),
+  });
+
+  // ---------------------------------------------------------------------------
+  // Handlers
+  // ---------------------------------------------------------------------------
+
+  function openAddDialog() {
+    setEditingDepartment(null);
+    reset({ name: '', description: '', image_url: '' });
+    setDialogOpen(true);
+  }
+
+  function openEditDialog(dept: Department) {
+    setEditingDepartment(dept);
+    reset({
+      name: dept.name,
+      description: dept.description,
+      image_url: dept.image_url ?? '',
+    });
+    setDialogOpen(true);
+  }
+
+  function closeDialog() {
+    setDialogOpen(false);
+    setEditingDepartment(null);
+    reset();
+  }
+
+  async function onSubmit(values: DepartmentFormValues) {
+    setSubmitting(true);
+    try {
+      const result = editingDepartment
+        ? await updateDepartmentAction(editingDepartment.id, {
+            name: values.name,
+            description: values.description,
+            image_url: values.image_url || undefined,
+          })
+        : await createDepartmentAction({
+            name: values.name,
+            description: values.description,
+            image_url: values.image_url || undefined,
+          });
+
+      if (result.error) {
+        toast.error('Failed to save. Try again.');
+      } else {
+        toast.success(editingDepartment ? 'Department saved' : 'Department added');
+        closeDialog();
+        router.refresh();
+      }
+    } catch {
+      toast.error('Failed to save. Try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      const result = await deleteDepartmentAction(deleteTarget.id);
+      if (result.error) {
+        toast.error('Failed to delete. Try again.');
+      } else {
+        toast.success('Department deleted');
+        router.refresh();
+      }
+    } catch {
+      toast.error('Failed to delete. Try again.');
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Render
+  // ---------------------------------------------------------------------------
+
+  return (
+    <div className="p-8">
+      {/* Page header */}
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-semibold text-slate-800">Departments</h1>
+        <Button onClick={openAddDialog}>Add Department</Button>
+      </div>
+
+      {/* Fetch error banner */}
+      {fetchError && (
+        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          Could not load departments. Check your connection and refresh.
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!fetchError && initialData.length === 0 && (
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
+          <h2 className="text-base font-semibold text-slate-700">No departments yet</h2>
+          <p className="text-sm text-slate-500">
+            Add your first department to display it on the public site.
+          </p>
+          <Button onClick={openAddDialog}>Add Department</Button>
+        </div>
+      )}
+
+      {/* Table */}
+      {!fetchError && initialData.length > 0 && (
+        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead className="w-24 text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {initialData.map((dept) => (
+                <TableRow key={dept.id}>
+                  <TableCell className="font-medium">{dept.name}</TableCell>
+                  <TableCell className="text-slate-500">
+                    {dept.description.length > 60
+                      ? dept.description.slice(0, 60) + '…'
+                      : dept.description}
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="p-2 h-10 w-10"
+                        aria-label={`Edit ${dept.name}`}
+                        onClick={() => openEditDialog(dept)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="p-2 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        aria-label={`Delete ${dept.name}`}
+                        onClick={() => setDeleteTarget(dept)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      {/* Add / Edit Dialog */}
+      <Dialog open={dialogOpen} onOpenChange={(open) => { if (!open) closeDialog(); }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {editingDepartment ? 'Edit Department' : 'Add Department'}
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
+            <div className="space-y-1">
+              <label htmlFor="dept-name" className="text-sm font-medium text-slate-700">
+                Name <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="dept-name"
+                placeholder="e.g. Cardiology"
+                {...register('name')}
+              />
+              {errors.name && (
+                <p className="text-xs text-red-500">{errors.name.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="dept-description" className="text-sm font-medium text-slate-700">
+                Description <span className="text-red-500">*</span>
+              </label>
+              <Textarea
+                id="dept-description"
+                placeholder="Brief overview of the department"
+                rows={3}
+                {...register('description')}
+              />
+              {errors.description && (
+                <p className="text-xs text-red-500">{errors.description.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label htmlFor="dept-image-url" className="text-sm font-medium text-slate-700">
+                Image URL <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              <Input
+                id="dept-image-url"
+                placeholder="https://example.com/image.jpg"
+                {...register('image_url')}
+              />
+              {errors.image_url && (
+                <p className="text-xs text-red-500">{errors.image_url.message}</p>
+              )}
+            </div>
+
+            <DialogFooter className="pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={closeDialog}
+                disabled={submitting}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving…
+                  </>
+                ) : editingDepartment ? (
+                  'Save Changes'
+                ) : (
+                  'Add Department'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete AlertDialog */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete department?</AlertDialogTitle>
+            <AlertDialogDescription>
+              &ldquo;{deleteTarget?.name}&rdquo; will be removed from the public site
+              immediately. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {deleting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
