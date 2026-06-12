@@ -116,3 +116,214 @@ export async function deleteDepartmentAction(
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
+
+// ---------------------------------------------------------------------------
+// Doctor actions
+// ---------------------------------------------------------------------------
+
+/**
+ * Revalidates the public doctors pages for all locales so changes
+ * are reflected on the public site immediately.
+ */
+function revalidateDoctors(): void {
+  revalidatePath('/en/doctors');
+  revalidatePath('/hi/doctors');
+}
+
+export async function createDoctorAction(input: {
+  full_name: string;
+  specialization: string;
+  qualification: string;
+  photo_url?: string;
+  bio?: string;
+  availability_days?: string[];
+  is_active?: boolean;
+}): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase.from('doctors').insert({
+      full_name: input.full_name,
+      specialization: input.specialization,
+      qualification: input.qualification,
+      photo_url: input.photo_url || null,
+      bio: input.bio || null,
+      availability_days: input.availability_days ?? null,
+      is_active: input.is_active ?? true,
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidateDoctors();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function updateDoctorAction(
+  id: string,
+  input: Partial<{
+    full_name: string;
+    specialization: string;
+    qualification: string;
+    photo_url: string;
+    bio: string;
+    availability_days: string[];
+    is_active: boolean;
+  }>
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase
+      .from('doctors')
+      .update({ ...input, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateDoctors();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function deleteDoctorAction(
+  id: string
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase.from('doctors').delete().eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateDoctors();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Facility actions (CMS-02)
+// ---------------------------------------------------------------------------
+
+type FacilityCategory = 'OPD' | 'ICU' | 'Diagnostics' | 'Surgery' | 'Other';
+
+/**
+ * Revalidates the public services pages for all locales so facility changes
+ * are reflected on the public site immediately (CMS-04).
+ */
+function revalidateFacilities(): void {
+  revalidatePath('/en/services');
+  revalidatePath('/hi/services');
+}
+
+export async function createFacilityAction(input: {
+  name: string;
+  description: string;
+  category: FacilityCategory;
+}): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase.from('facilities').insert({
+      name: input.name,
+      description: input.description,
+      category: input.category,
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidateFacilities();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function updateFacilityAction(
+  id: string,
+  input: Partial<{ name: string; description: string; category: FacilityCategory }>
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase
+      .from('facilities')
+      .update({ ...input, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateFacilities();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function deleteFacilityAction(
+  id: string
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase
+      .from('facilities')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateFacilities();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hospital Info actions (CMS-03)
+// ---------------------------------------------------------------------------
+
+/**
+ * Revalidates the public contact pages for all locales so hospital info changes
+ * are reflected on the public site immediately (CMS-04).
+ */
+function revalidateHospitalInfo(): void {
+  revalidatePath('/en/contact');
+  revalidatePath('/hi/contact');
+}
+
+export async function updateHospitalInfoAction(
+  id: string,
+  input: Partial<{
+    about_text: string;
+    opd_timings: string;
+    emergency_number: string;
+    address_line1: string;
+    address_line2: string;
+    city: string;
+    maps_embed_url: string;
+  }>
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireCmsRole();
+
+    const { error } = await supabase
+      .from('hospital_info')
+      .update({ ...input, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateHospitalInfo();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
