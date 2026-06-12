@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Project Setup** - Next.js + Supabase + Tailwind + folder structure + env config *(completed 2026-06-10)*
 - [x] **Phase 2: Public Website** - All pages with placeholder/seeded content and design system *(completed 2026-06-10)*
 - [ ] **Phase 3: Bilingual System** - next-intl, EN/HI content files, auto-detect, cookie, toggle
-- [x] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes (completed 2026-06-12)
+- [x] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes (completed 2026-06-12)
 - [ ] **Phase 5: Content Management** - Departments, doctors, facilities editable from portal, fed to public site
 - [ ] **Phase 6: Staff Management** - Add/edit/remove staff, doctor profiles sync to public site
 - [ ] **Phase 7: Appointment Request System** - Public form + portal management view + status flow
@@ -121,8 +121,21 @@ Plans:
   2. Admin can edit hospital OPD timings and the change is visible on the public Contact page immediately
   3. Admin can add, edit, or remove a facility and the Services page reflects the change in real time
   4. No department, doctor, facility, or hospital info value is hardcoded in the public site — all sourced from Supabase
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
+
+Plans:
+
+**Wave 1** *(no dependencies — foundation)*
+- [ ] 05-01-PLAN.md — DB schema migration (4 CMS tables + RLS) + admin client + env + roles.ts content section [has checkpoint]
+
+**Wave 2** *(blocked on 05-01 — parallel, no file overlap)*
+- [ ] 05-02-PLAN.md — Portal Departments CRUD (lib/db + Server Actions + Table + Dialog + AlertDialog)
+- [ ] 05-03-PLAN.md — Portal Doctors CRUD (lib/db + Server Actions + Table + Sheet)
+- [ ] 05-04-PLAN.md — Portal Facilities CRUD + Hospital Info single-record form
+
+**Wave 3** *(blocked on 05-02, 05-03, 05-04 — lib/db must exist)*
+- [ ] 05-05-PLAN.md — Convert 4 public pages from static constants to Supabase DB reads (force-dynamic)
 
 ### Phase 6: Staff Management
 **Goal**: Admin can manage the full staff roster from the portal, and doctor profile edits automatically update the public-facing Doctors page
@@ -207,7 +220,7 @@ Plans:
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
 | 4. Auth + Roles | 3/3 | Complete   | 2026-06-12 |
-| 5. Content Management | 0/TBD | Not started | - |
+| 5. Content Management | 0/5 | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
 | 8. Patient Records | 0/TBD | Not started | - |
