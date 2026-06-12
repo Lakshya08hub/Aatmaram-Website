@@ -25,7 +25,7 @@ decisions:
 metrics:
   duration: "~20 minutes"
   completed: "2026-06-12"
-  tasks_completed: 3
+  tasks_completed: 4
   tasks_total: 4
   files_created: 4
   files_modified: 1
@@ -42,7 +42,7 @@ metrics:
 | 1 | CMS migration SQL + admin client + env.example | de9b01b | supabase/migrations/20260612_cms_tables.sql, lib/supabase/admin.ts, .env.example |
 | 2 | Update roles.ts — add content section | 185dbdc | lib/portal/roles.ts |
 | 3 | Create content/layout.tsx role guard | d0e2204 | app/(portal)/content/layout.tsx |
-| 4 | [BLOCKING CHECKPOINT] Apply migration via Supabase Dashboard | — | User action required |
+| 4 | Apply migration via Supabase Dashboard | confirmed | User applied migration; SUPABASE_SERVICE_ROLE_KEY set in .env.local |
 
 ## What Was Built
 
@@ -75,10 +75,6 @@ None — plan executed exactly as written.
 | T-05-01 | SUPABASE_SERVICE_ROLE_KEY documented in .env.example with placeholder; .env.local is gitignored |
 | T-05-02 | All four tables have ENABLE ROW LEVEL SECURITY + SELECT policies |
 | T-05-03 | content/layout.tsx enforces super_admin/admin check server-side |
-
-## Pending: Blocking Human Action
-
-Task 4 requires the user to apply the migration SQL to the live Supabase project. See checkpoint below.
 
 ## Self-Check: PASSED
 
