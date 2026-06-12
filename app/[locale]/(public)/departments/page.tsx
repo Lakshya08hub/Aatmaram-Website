@@ -1,19 +1,17 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 import { DepartmentCard } from '@/components/public/DepartmentCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
-import { departments } from '@/lib/data/departments';
+import { getDepartments } from '@/lib/db/departments';
+import type { Department } from '@/lib/db/departments';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Departments | Atmaram Child Care and Critical Care',
   description:
-    'Explore 8 specialty departments including Paediatrics, Critical Care, Orthopaedics, and more.',
+    'Explore specialty departments including Paediatrics, Critical Care, Orthopaedics, and more.',
 };
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 export default async function DepartmentsPage({
   params,
@@ -24,6 +22,13 @@ export default async function DepartmentsPage({
   setRequestLocale(locale);
   const t = await getTranslations('departments');
   const tNav = await getTranslations('nav');
+
+  let departments: Department[] = [];
+  try {
+    departments = await getDepartments();
+  } catch (err) {
+    console.error('[DepartmentsPage] fetch failed:', err);
+  }
 
   return (
     <main>
@@ -46,9 +51,8 @@ export default async function DepartmentsPage({
             {departments.map((dept) => (
               <DepartmentCard
                 key={dept.id}
-                icon={dept.icon}
-                name={t(`${dept.translationKey}.name`)}
-                description={t(`${dept.translationKey}.description`)}
+                name={dept.name}
+                description={dept.description}
               />
             ))}
           </div>

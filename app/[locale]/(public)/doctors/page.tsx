@@ -1,19 +1,26 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { DoctorCard } from '@/components/public/DoctorCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
-import { doctors } from '@/lib/data/doctors';
+import { getActiveDoctors } from '@/lib/db/doctors';
+import type { Doctor } from '@/lib/db/doctors';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Our Doctors | Atmaram Child Care and Critical Care',
   description:
-    'Meet our team of 25+ specialist doctors at Atmaram Child Care and Critical Care, Kanpur.',
+    'Meet our team of specialist doctors at Atmaram Child Care and Critical Care, Kanpur.',
 };
 
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
+function getInitials(fullName: string): string {
+  return fullName
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0].toUpperCase())
+    .join('');
 }
 
 export default async function DoctorsPage({
@@ -24,8 +31,14 @@ export default async function DoctorsPage({
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('doctors');
-  const tDept = await getTranslations('departments');
   const tNav = await getTranslations('nav');
+
+  let doctors: Doctor[] = [];
+  try {
+    doctors = await getActiveDoctors();
+  } catch (err) {
+    console.error('[DoctorsPage] fetch failed:', err);
+  }
 
   return (
     <main>
@@ -45,12 +58,12 @@ export default async function DoctorsPage({
             subtitle={t('pageSubtitle')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-            {doctors.map((doc) => (
+            {doctors.map((doctor) => (
               <DoctorCard
-                key={doc.id}
-                name={doc.name}
-                initials={doc.initials}
-                specialty={tDept(`${doc.specialtyKey}.name`)}
+                key={doctor.id}
+                name={doctor.full_name}
+                initials={getInitials(doctor.full_name)}
+                specialty={doctor.specialization}
                 bookLabel={t('bookAppointment')}
               />
             ))}

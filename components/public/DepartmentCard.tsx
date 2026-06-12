@@ -1,14 +1,15 @@
 import type { LucideIcon } from 'lucide-react';
+import { Building2 } from 'lucide-react';
 import { Card, CardHeader, CardContent } from '@/components/ui/card';
 
 interface DepartmentCardProps {
   name: string;
   description: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
 }
 
 export function DepartmentCard({ name, description, icon }: DepartmentCardProps) {
-  const Icon = icon;
+  const Icon = icon ?? Building2;
 
   return (
     <Card className="bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md transition-shadow">
