@@ -131,8 +131,8 @@ Plans:
 
 **Wave 2** *(blocked on 05-01 — parallel, no file overlap)*
 - [x] 05-02-PLAN.md — Portal Departments CRUD (lib/db + Server Actions + Table + Dialog + AlertDialog)
-- [ ] 05-03-PLAN.md — Portal Doctors CRUD (lib/db + Server Actions + Table + Sheet)
-- [ ] 05-04-PLAN.md — Portal Facilities CRUD + Hospital Info single-record form
+- [x] 05-03-PLAN.md — Portal Doctors CRUD (lib/db + Server Actions + Table + Sheet)
+- [x] 05-04-PLAN.md — Portal Facilities CRUD + Hospital Info single-record form
 
 **Wave 3** *(blocked on 05-02, 05-03, 05-04 — lib/db must exist)*
 - [ ] 05-05-PLAN.md — Convert 4 public pages from static constants to Supabase DB reads (force-dynamic)
@@ -220,7 +220,7 @@ Plans:
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
 | 4. Auth + Roles | 3/3 | Complete   | 2026-06-12 |
-| 5. Content Management | 2/5 | In Progress|  |
+| 5. Content Management | 4/5 | In Progress|  |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
 | 8. Patient Records | 0/TBD | Not started | - |
