@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Project Setup** - Next.js + Supabase + Tailwind + folder structure + env config *(completed 2026-06-10)*
 - [x] **Phase 2: Public Website** - All pages with placeholder/seeded content and design system *(completed 2026-06-10)*
 - [ ] **Phase 3: Bilingual System** - next-intl, EN/HI content files, auto-detect, cookie, toggle
-- [ ] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes
+- [x] **Phase 4: Auth + Roles** - Supabase Auth, 4 roles, approval flow, protected portal routes (completed 2026-06-12)
 - [ ] **Phase 5: Content Management** - Departments, doctors, facilities editable from portal, fed to public site
 - [ ] **Phase 6: Staff Management** - Add/edit/remove staff, doctor profiles sync to public site
 - [ ] **Phase 7: Appointment Request System** - Public form + portal management view + status flow
@@ -109,8 +109,8 @@ Plans:
 - [x] 04-01-PLAN.md - Auth foundation: branching middleware.ts (replaces proxy.ts), profiles migration + RLS, role config (lib/portal/roles.ts), login/logout Server Actions
 
 **Wave 2** *(blocked on 04-01; parallel - no file overlap)*
-- [ ] 04-02-PLAN.md - Auth-guarded portal layout + role-scoped Sidebar + role-aware dashboard + six section stubs
-- [ ] 04-03-PLAN.md - Login route at app/login/ (outside portal guard) + LoginForm + human verification
+- [x] 04-02-PLAN.md - Auth-guarded portal layout + role-scoped Sidebar + role-aware dashboard + six section stubs
+- [x] 04-03-PLAN.md - Login route at app/login/ (outside portal guard) + LoginForm + human verification
 
 ### Phase 5: Content Management
 **Goal**: All public site content (departments, doctors, facilities, hospital info) is driven from Supabase and editable by Admin via the portal with immediate reflection on the public site
@@ -206,7 +206,7 @@ Plans:
 | 1. Project Setup | 2/2 | Complete | 2026-06-10 |
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
-| 4. Auth + Roles | 1/3 | In Progress|  |
+| 4. Auth + Roles | 3/3 | Complete   | 2026-06-12 |
 | 5. Content Management | 0/TBD | Not started | - |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
