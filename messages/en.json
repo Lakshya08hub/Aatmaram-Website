@@ -181,6 +181,8 @@
       "preferredDoctorPlaceholder": "Select a doctor",
       "noPreference": "No preference",
       "preferredDate": "Preferred Date",
+      "preferredTime": "Preferred Time",
+      "preferredTimePlaceholder": "Select a time slot",
       "reason": "Reason / Chief Complaint",
       "reasonPlaceholder": "Briefly describe your symptoms or reason for visit"
     },

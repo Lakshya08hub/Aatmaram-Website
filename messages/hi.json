@@ -181,6 +181,8 @@
       "preferredDoctorPlaceholder": "डॉक्टर चुनें",
       "noPreference": "कोई प्राथमिकता नहीं",
       "preferredDate": "पसंदीदा तिथि",
+      "preferredTime": "पसंदीदा समय",
+      "preferredTimePlaceholder": "एक समय स्लॉट चुनें",
       "reason": "कारण / मुख्य शिकायत",
       "reasonPlaceholder": "अपने लक्षण या विज़िट का कारण संक्षेप में बताएं"
     },

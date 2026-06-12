@@ -1,10 +1,12 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { toast } from 'sonner'
+import HCaptcha from '@hcaptcha/react-hcaptcha'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -25,7 +27,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Card, CardContent } from '@/components/ui/card'
-import { doctors } from '@/lib/data/doctors'
+import { submitAppointmentAction } from '@/lib/actions/submitAppointmentAction'
 
 // ---------------------------------------------------------------------------
 // Zod schema — defined outside component to avoid re-creation on each render
@@ -42,16 +44,35 @@ const appointmentSchema = z.object({
       new Date(val) >= new Date(new Date().toISOString().split('T')[0]),
     'Please select a date from today onwards.'
   ),
+  preferredTime: z.enum(['morning', 'afternoon', 'evening']).refine(
+    (val) => val !== undefined,
+    { message: 'Please select a preferred time slot.' }
+  ),
   reason: z.string().min(10, 'This field is required.'),
 })
 
 type AppointmentFormValues = z.infer<typeof appointmentSchema>
 
 // ---------------------------------------------------------------------------
+// Props
+// ---------------------------------------------------------------------------
+interface DoctorOption {
+  id: string
+  full_name: string
+}
+
+interface AppointmentFormProps {
+  doctors: DoctorOption[]
+}
+
+// ---------------------------------------------------------------------------
 // Component
 // ---------------------------------------------------------------------------
-export default function AppointmentForm() {
+export default function AppointmentForm({ doctors }: AppointmentFormProps) {
   const t = useTranslations('appointment')
+  const captchaRef = useRef<HCaptcha>(null)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+
   const form = useForm<AppointmentFormValues>({
     resolver: zodResolver(appointmentSchema),
     defaultValues: {
@@ -59,18 +80,39 @@ export default function AppointmentForm() {
       phone: '',
       preferredDoctor: '',
       preferredDate: '',
+      preferredTime: undefined,
       reason: '',
     },
   })
 
-  const onSubmit = (data: AppointmentFormValues) => {
-    // TODO Phase 7: Add POST /api/appointments call here
-    void data
+  const onSubmit = async (data: AppointmentFormValues) => {
+    if (!captchaToken) {
+      toast.error('Please complete the captcha before submitting.')
+      return
+    }
+
+    const result = await submitAppointmentAction({
+      patientName: data.patientName,
+      phone: data.phone,
+      preferredDoctor: data.preferredDoctor,
+      preferredDate: data.preferredDate,
+      preferredTime: data.preferredTime,
+      reason: data.reason,
+      captchaToken,
+    })
+
+    if (result.error) {
+      toast.error(result.error)
+      return
+    }
+
     toast.success(t('success.title'), {
       description: t('success.description'),
       duration: 6000,
     })
     form.reset()
+    captchaRef.current?.resetCaptcha()
+    setCaptchaToken(null)
   }
 
   return (
@@ -149,8 +191,8 @@ export default function AppointmentForm() {
                           {t('fields.noPreference')}
                         </SelectItem>
                         {doctors.map((doc) => (
-                          <SelectItem key={doc.id} value={doc.id}>
-                            {doc.name}
+                          <SelectItem key={doc.id} value={doc.full_name}>
+                            {doc.full_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -183,7 +225,37 @@ export default function AppointmentForm() {
               )}
             />
 
-            {/* Field 5 — Reason / Chief Complaint */}
+            {/* Field 5 — Preferred Time */}
+            <FormField
+              control={form.control}
+              name="preferredTime"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    {t('fields.preferredTime')}
+                    <span className="text-red-500 ml-1">*</span>
+                  </FormLabel>
+                  <FormControl asWrapper>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('fields.preferredTimePlaceholder')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="morning">Morning OPD (9am–12pm)</SelectItem>
+                        <SelectItem value="afternoon">Afternoon OPD (12–3pm)</SelectItem>
+                        <SelectItem value="evening">Evening OPD (3–6pm)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Field 6 — Reason / Chief Complaint */}
             <FormField
               control={form.control}
               name="reason"
@@ -205,10 +277,19 @@ export default function AppointmentForm() {
               )}
             />
 
+            {/* hCaptcha */}
+            <HCaptcha
+              ref={captchaRef}
+              sitekey={process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY!}
+              onVerify={(token) => setCaptchaToken(token)}
+              onExpire={() => setCaptchaToken(null)}
+            />
+
             {/* Submit Button */}
             <Button
               type="submit"
               size="lg"
+              disabled={!captchaToken || form.formState.isSubmitting}
               className="w-full bg-blue-800 hover:bg-blue-900 text-white font-semibold min-h-[44px]"
             >
               {t('submit')}

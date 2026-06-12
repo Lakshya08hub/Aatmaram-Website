@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server'
 import { routing } from '@/i18n/routing'
 import type { Metadata } from 'next'
 import AppointmentForm from '@/components/public/AppointmentForm'
+import { getActiveDoctors } from '@/lib/db/doctors'
 
 export const metadata: Metadata = {
   title: 'Request an Appointment | Atmaram Child Care and Critical Care',
@@ -25,6 +26,13 @@ export default async function AppointmentPage({
   const t = await getTranslations('appointment')
   const tNav = await getTranslations('nav')
 
+  let doctors: Awaited<ReturnType<typeof getActiveDoctors>> = []
+  try {
+    doctors = await getActiveDoctors()
+  } catch {
+    // fall through with empty array — form still works with "No Preference"
+  }
+
   return (
     <>
       {/* Section 1 — Page Header */}
@@ -46,7 +54,7 @@ export default async function AppointmentPage({
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-lg mx-auto">
-            <AppointmentForm />
+            <AppointmentForm doctors={doctors} />
           </div>
         </div>
       </section>

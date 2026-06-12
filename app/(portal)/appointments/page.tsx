@@ -1,8 +1,17 @@
-export default function AppointmentsPage() {
-  return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Appointments</h1>
-      <p className="mt-4 text-slate-500">Appointment Management — Coming in Phase 7</p>
-    </div>
-  );
+import { getAppointmentRequests, AppointmentRequest } from '@/lib/db/appointment_requests'
+import AppointmentsClient from '@/components/portal/AppointmentsClient'
+
+export const dynamic = 'force-dynamic'
+
+export default async function AppointmentsPage() {
+  let appointments: AppointmentRequest[] = []
+  let fetchError = false
+
+  try {
+    appointments = await getAppointmentRequests()
+  } catch {
+    fetchError = true
+  }
+
+  return <AppointmentsClient appointments={appointments} fetchError={fetchError} />
 }
