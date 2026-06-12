@@ -1,8 +1,25 @@
-export default function StaffPage() {
+// app/(portal)/staff/page.tsx
+// Server Component — fetches staff list and doctors in parallel, passes to StaffClient.
+// Auth + role guard enforced by the parent StaffLayout.
+
+import { getStaffList, StaffMember } from '@/lib/db/staff';
+import { getDoctors, Doctor } from '@/lib/db/doctors';
+import StaffClient from './StaffClient';
+
+export const dynamic = 'force-dynamic';
+
+export default async function StaffPage() {
+  let staff: StaffMember[] = [];
+  let doctors: Doctor[] = [];
+  let fetchError = false;
+
+  try {
+    [staff, doctors] = await Promise.all([getStaffList(), getDoctors()]);
+  } catch {
+    fetchError = true;
+  }
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Staff Management</h1>
-      <p className="mt-4 text-slate-500">Staff Management — Coming in Phase 6</p>
-    </div>
+    <StaffClient initialStaff={staff} doctors={doctors} fetchError={fetchError} />
   );
 }
