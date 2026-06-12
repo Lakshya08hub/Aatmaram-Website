@@ -152,6 +152,36 @@ export async function toggleActiveAction(
 }
 
 /**
+ * Links (or unlinks) a doctor record to a staff profile user.
+ * Sets doctors.staff_user_id = profileUserId where doctors.id = doctorId.
+ * Pass null for profileUserId to unlink (STAFF-05).
+ */
+export async function updateDoctorStaffLinkAction(
+  doctorId: string | null,
+  profileUserId: string | null
+): Promise<{ error?: string }> {
+  try {
+    const supabase = await requireAdminRole();
+
+    if (!doctorId) {
+      // Nothing to link/unlink — no-op
+      return {};
+    }
+
+    const { error } = await supabase
+      .from('doctors')
+      .update({ staff_user_id: profileUserId })
+      .eq('id', doctorId);
+
+    if (error) throw new Error(error.message);
+
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+/**
  * Deletes a staff member: removes the profiles row first, then the Auth user.
  * Both must succeed for the staff record to be fully removed.
  */
