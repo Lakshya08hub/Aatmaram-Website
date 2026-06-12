@@ -76,7 +76,10 @@ const addStaffSchema = z.object({
   temp_password: z.string().min(8, 'Password must be at least 8 characters'),
   role: z.enum(['admin', 'doctor', 'receptionist']),
   phone: z.string().optional(),
-  salary: z.coerce.number().optional(),
+  salary: z.preprocess(
+    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
+    z.number().optional()
+  ),
   join_date: z.string().optional(),
 });
 
@@ -84,7 +87,10 @@ const editStaffSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters'),
   role: z.enum(['admin', 'doctor', 'receptionist']),
   phone: z.string().optional(),
-  salary: z.coerce.number().optional(),
+  salary: z.preprocess(
+    (v) => (v === '' || v === undefined || v === null ? undefined : Number(v)),
+    z.number().optional()
+  ),
   join_date: z.string().optional(),
   doctor_id: z.string().optional(),
 });
@@ -147,8 +153,8 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   // Add form
   // ---------------------------------------------------------------------------
 
-  const addForm = useForm<AddStaffValues>({
-    resolver: zodResolver(addStaffSchema),
+  const addForm = useForm<AddStaffValues, unknown, AddStaffValues>({
+    resolver: zodResolver(addStaffSchema) as import('react-hook-form').Resolver<AddStaffValues>,
     defaultValues: {
       full_name: '',
       email: '',
@@ -163,8 +169,8 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   // Edit form
   // ---------------------------------------------------------------------------
 
-  const editForm = useForm<EditStaffValues>({
-    resolver: zodResolver(editStaffSchema),
+  const editForm = useForm<EditStaffValues, unknown, EditStaffValues>({
+    resolver: zodResolver(editStaffSchema) as import('react-hook-form').Resolver<EditStaffValues>,
   });
 
   // ---------------------------------------------------------------------------
@@ -254,9 +260,9 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
       // Doctor profile linkage (STAFF-05)
       if (editingStaff.role === 'doctor' || values.role === 'doctor') {
-        const selectedDoctorId = values.doctor_id || null;
+        const selectedDoctorId = values.doctor_id || undefined;
         const linkResult = await updateDoctorStaffLinkAction(
-          selectedDoctorId,
+          selectedDoctorId ?? null,
           selectedDoctorId ? editingStaff.user_id : null
         );
         if (linkResult.error) {
@@ -670,7 +676,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
                 <label className="text-sm font-medium text-slate-700">Doctor Profile</label>
                 <Select
                   defaultValue={editForm.getValues('doctor_id') ?? ''}
-                  onValueChange={(val) => editForm.setValue('doctor_id', val)}
+                  onValueChange={(val) => editForm.setValue('doctor_id', val ?? undefined)}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Link to doctor record (optional)" />
