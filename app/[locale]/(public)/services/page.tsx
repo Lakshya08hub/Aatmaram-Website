@@ -1,21 +1,19 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { routing } from '@/i18n/routing';
 import type { Metadata } from 'next';
 import { CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { PMJAYBadge } from '@/components/public/PMJAYBadge';
 import { SectionHeading } from '@/components/public/SectionHeading';
-import { services, facilities } from '@/lib/data/services';
+import { getFacilities } from '@/lib/db/facilities';
+import type { Facility } from '@/lib/db/facilities';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Services & Facilities | Atmaram Child Care and Critical Care',
   description:
     'Comprehensive hospital services including ICU, NICU, emergency care, and Ayushman Bharat PM-JAY empanelled treatment.',
 };
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 interface PageProps {
   params: Promise<{ locale: string }>;
@@ -26,6 +24,13 @@ export default async function ServicesPage({ params }: PageProps) {
   setRequestLocale(locale);
   const t = await getTranslations('services');
   const tNav = await getTranslations('nav');
+
+  let facilities: Facility[] = [];
+  try {
+    facilities = await getFacilities();
+  } catch (err) {
+    console.error('[ServicesPage] fetch failed:', err);
+  }
 
   return (
     <main>
@@ -45,10 +50,10 @@ export default async function ServicesPage({ params }: PageProps) {
             subtitle={t('pageSubtitle')}
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
-            {services.map((service) => (
-              <div key={service.id} className="flex items-center gap-3">
+            {facilities.map((facility) => (
+              <div key={facility.id} className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span className="text-base text-slate-700">{t(`list.${service.translationKey}`)}</span>
+                <span className="text-base text-slate-700">{facility.name}</span>
               </div>
             ))}
           </div>
@@ -77,17 +82,16 @@ export default async function ServicesPage({ params }: PageProps) {
         <div className="max-w-7xl mx-auto">
           <SectionHeading title={t('facilities.heading')} />
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-8">
-            {facilities.map((facility) => {
-              const Icon = facility.icon;
-              return (
-                <Card key={facility.id}>
-                  <CardContent className="p-4 flex flex-col items-center text-center gap-3">
-                    <Icon className="w-8 h-8 text-blue-800" />
-                    <p className="text-sm font-semibold text-slate-900">{t(`facilities.items.${facility.translationKey}`)}</p>
-                  </CardContent>
-                </Card>
-              );
-            })}
+            {facilities.map((facility) => (
+              <Card key={facility.id}>
+                <CardContent className="p-4 flex flex-col items-center text-center gap-3">
+                  <p className="text-sm font-semibold text-slate-900">{facility.name}</p>
+                  {facility.description && (
+                    <p className="text-xs text-slate-500">{facility.description}</p>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </section>
