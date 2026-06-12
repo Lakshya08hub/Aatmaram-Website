@@ -44,10 +44,7 @@ const appointmentSchema = z.object({
       new Date(val) >= new Date(new Date().toISOString().split('T')[0]),
     'Please select a date from today onwards.'
   ),
-  preferredTime: z.enum(['morning', 'afternoon', 'evening']).refine(
-    (val) => val !== undefined,
-    { message: 'Please select a preferred time slot.' }
-  ),
+  preferredTime: z.enum(['morning', 'afternoon', 'evening']),
   reason: z.string().min(10, 'This field is required.'),
 })
 
@@ -80,7 +77,9 @@ export default function AppointmentForm({ doctors }: AppointmentFormProps) {
       phone: '',
       preferredDoctor: '',
       preferredDate: '',
-      preferredTime: undefined,
+      // Empty string keeps Select controlled from mount (avoids uncontrolled→controlled warning).
+      // Zod enum rejects '' on submit, showing the required error.
+      preferredTime: '' as unknown as 'morning',
       reason: '',
     },
   })
@@ -241,7 +240,7 @@ export default function AppointmentForm({ doctors }: AppointmentFormProps) {
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder={t('fields.preferredTimePlaceholder')} />
+                        <SelectValue placeholder={t('fields.preferredTimePlaceholder') || 'Select a time slot'} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="morning">Morning OPD (9am–12pm)</SelectItem>
