@@ -130,7 +130,7 @@ Plans:
 - [x] 05-01-PLAN.md — DB schema migration (4 CMS tables + RLS) + admin client + env + roles.ts content section [has checkpoint]
 
 **Wave 2** *(blocked on 05-01 — parallel, no file overlap)*
-- [ ] 05-02-PLAN.md — Portal Departments CRUD (lib/db + Server Actions + Table + Dialog + AlertDialog)
+- [x] 05-02-PLAN.md — Portal Departments CRUD (lib/db + Server Actions + Table + Dialog + AlertDialog)
 - [ ] 05-03-PLAN.md — Portal Doctors CRUD (lib/db + Server Actions + Table + Sheet)
 - [ ] 05-04-PLAN.md — Portal Facilities CRUD + Hospital Info single-record form
 
@@ -220,7 +220,7 @@ Plans:
 | 2. Public Website | 0/6 | Planned | - |
 | 3. Bilingual System | 4/7 | In progress | - |
 | 4. Auth + Roles | 3/3 | Complete   | 2026-06-12 |
-| 5. Content Management | 1/5 | In Progress|  |
+| 5. Content Management | 2/5 | In Progress|  |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
 | 8. Patient Records | 0/TBD | Not started | - |
