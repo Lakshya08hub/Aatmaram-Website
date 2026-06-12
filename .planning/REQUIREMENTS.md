@@ -41,10 +41,10 @@
 
 ### Dynamic Content (Portal-driven)
 
-- [ ] **DYN-01**: All doctor profiles on public site are sourced from Supabase (no hardcoded content)
-- [ ] **DYN-02**: All department listings on public site are sourced from Supabase
-- [ ] **DYN-03**: Facilities/services list on public site is sourced from Supabase
-- [ ] **DYN-04**: Hospital info (about text, timings, contact) on public site is sourced from Supabase
+- [x] **DYN-01**: All doctor profiles on public site are sourced from Supabase (no hardcoded content)
+- [x] **DYN-02**: All department listings on public site are sourced from Supabase
+- [x] **DYN-03**: Facilities/services list on public site is sourced from Supabase
+- [x] **DYN-04**: Hospital info (about text, timings, contact) on public site is sourced from Supabase
 
 ### Auth + Roles
 
@@ -64,10 +64,10 @@
 
 ### Public Content Management
 
-- [ ] **CMS-01**: Admin can add, edit, and remove departments (name, description, image)
-- [ ] **CMS-02**: Admin can add, edit, and remove facilities/services
-- [ ] **CMS-03**: Admin can edit hospital info (about text, OPD timings, emergency number, contact details)
-- [ ] **CMS-04**: All CMS changes reflect on the public site immediately without a build step
+- [x] **CMS-01**: Admin can add, edit, and remove departments (name, description, image)
+- [x] **CMS-02**: Admin can add, edit, and remove facilities/services
+- [x] **CMS-03**: Admin can edit hospital info (about text, OPD timings, emergency number, contact details)
+- [x] **CMS-04**: All CMS changes reflect on the public site immediately without a build step
 
 ### Patient Records
 
