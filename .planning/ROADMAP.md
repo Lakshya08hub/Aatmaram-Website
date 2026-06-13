@@ -204,10 +204,10 @@ Plans:
 Plans:
 
 **Wave 1** *(no dependencies)*
-- [ ] 10-01-PLAN.md — GA4 property setup (human checkpoint) + gtag snippet in public site root layout [has checkpoint]
+- [ ] 10-01-PLAN.md ï¿½ GA4 property setup (human checkpoint) + gtag snippet in public site root layout [has checkpoint]
 
 **Wave 2** *(blocked on 10-01)*
-- [ ] 10-02-PLAN.md — lib/db/analytics.ts query functions + /analytics Server Component page (four-section render)
+- [ ] 10-02-PLAN.md ï¿½ lib/db/analytics.ts query functions + /analytics Server Component page (four-section render)
 
 ### Phase 11: Gemini Chat
 **Goal**: A floating chat widget on every public page answers visitor questions about the hospital using only public information, with no access to patient or staff data
@@ -240,4 +240,19 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |
+
+## Backlog
+
+### Phase 999.1: Homepage Content Curation & CMS Fixes (BACKLOG)
+
+**Goal:** Give admins control over what appears on the public homepage â€” replacing static hardcoded sections with portal-managed, curated content.
+
+**Requirements:** TBD
+
+**Captured ideas:**
+- [ ] Department homepage toggle â€” per-department toggle in the portal to feature it on the homepage "Our Departments" grid (max 8). Homepage pulls only featured departments; /departments page shows all.
+- [ ] Doctor homepage toggle â€” per-doctor toggle to feature up to 3 doctors on the homepage. /doctors page shows all active doctors.
+- [ ] Audit other homepage sections (facilities, etc.) for the same hardcoded-vs-portal redundancy and apply the same curation layer.
+
+**Notes:** Promote with `/gsd:discuss-phase 999.1` when ready to plan.
 
