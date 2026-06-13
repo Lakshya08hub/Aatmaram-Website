@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Content Management** - Departments, doctors, facilities editable from portal, fed to public site
 - [ ] **Phase 6: Staff Management** - Add/edit/remove staff, doctor profiles sync to public site
 - [ ] **Phase 7: Appointment Request System** - Public form + portal management view + status flow
-- [ ] **Phase 8: Patient Records** - Receptionist creates, doctor adds notes, role-scoped views
+- [x] **Phase 8: Patient Records** - Receptionist creates, doctor adds notes, role-scoped views (completed 2026-06-13)
 - [ ] **Phase 9: Payroll Tracker** - Monthly salary tracking, mark as paid, history
 - [ ] **Phase 10: Analytics Dashboard** - GA embed + ops numbers + staff summary
 - [ ] **Phase 11: Gemini Chat** - Widget on public site, hospital info knowledge base
@@ -175,7 +175,7 @@ Plans:
 Plans:
 - [x] 08-01-PLAN.md — DB migration: patient_records table + blocking schema push
 - [x] 08-02-PLAN.md — Data layer + server actions (lib/db/patient_records.ts, actions/patients.ts)
-- [ ] 08-03-PLAN.md — PatientClient component + portal page with role-aware field rendering
+- [x] 08-03-PLAN.md — PatientClient component + portal page with role-aware field rendering
 
 ### Phase 9: Payroll Tracker
 **Goal**: Admin can track monthly salary payments for all staff and view payment history per staff member
@@ -228,7 +228,7 @@ Plans:
 | 5. Content Management | 4/5 | In Progress|  |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
-| 8. Patient Records | 2/3 | In Progress|  |
+| 8. Patient Records | 3/3 | Complete   | 2026-06-13 |
 | 9. Payroll Tracker | 0/TBD | Not started | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |
