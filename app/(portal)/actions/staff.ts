@@ -113,9 +113,10 @@ export async function updateStaffAction(
   }>
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireAdminRole();
+    await requireAdminRole();
+    const adminClient = createAdminClient();
 
-    const { error } = await supabase
+    const { error } = await adminClient
       .from('profiles')
       .update(input)
       .eq('id', id);
@@ -136,9 +137,10 @@ export async function toggleActiveAction(
   is_active: boolean
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireAdminRole();
+    await requireAdminRole();
+    const adminClient = createAdminClient();
 
-    const { error } = await supabase
+    const { error } = await adminClient
       .from('profiles')
       .update({ is_active })
       .eq('id', id);
@@ -161,14 +163,16 @@ export async function updateDoctorStaffLinkAction(
   profileUserId: string | null
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireAdminRole();
+    await requireAdminRole();
 
     if (!doctorId) {
       // Nothing to link/unlink — no-op
       return {};
     }
 
-    const { error } = await supabase
+    // Must use adminClient — doctors table RLS blocks session-role writes
+    const adminClient = createAdminClient();
+    const { error } = await adminClient
       .from('doctors')
       .update({ staff_user_id: profileUserId })
       .eq('id', doctorId);
@@ -190,10 +194,11 @@ export async function deleteStaffAction(
   user_id: string
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireAdminRole();
+    await requireAdminRole();
+    const adminClient = createAdminClient();
 
     // Delete profile row first (FK constraints cascade from Auth, but explicit is safer)
-    const { error: profileError } = await supabase
+    const { error: profileError } = await adminClient
       .from('profiles')
       .delete()
       .eq('id', id);
@@ -201,7 +206,6 @@ export async function deleteStaffAction(
     if (profileError) throw new Error(profileError.message);
 
     // Remove Auth account — prevents orphaned credentials
-    const adminClient = createAdminClient();
     const { error: authError } = await adminClient.auth.admin.deleteUser(user_id);
 
     if (authError) throw new Error(authError.message);
