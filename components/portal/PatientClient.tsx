@@ -4,7 +4,7 @@
 // Receptionist/Admin/Super Admin: full CRUD except clinical_notes.
 // Doctor: read-only view of assigned records + editable clinical_notes textarea.
 
-import { useState, useActionState, useTransition } from 'react';
+import { useState, useEffect, useActionState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -112,31 +112,20 @@ function ReceptionistSheetForm({
     : createPatientAction;
 
   const [state, formAction, isPending] = useActionState(boundAction, {});
-
-  // Track previous state to detect success (error field goes from present to absent)
-  const [prevError, setPrevError] = useState<string | undefined>(undefined);
-
-  // Handle side effects after action
-  if (state && !isPending) {
-    if (state.error && state.error !== prevError) {
-      setPrevError(state.error);
-      toast.error(state.error);
-    } else if (!state.error && prevError !== null && prevError !== undefined) {
-      // success — handled below
-    }
-  }
-
-  // We rely on form submission + useActionState: detect success via no error after submit
-  // Use a ref-based approach to detect success:
   const [submitted, setSubmitted] = useState(false);
 
-  if (submitted && !isPending && state && !state.error) {
-    // Reset and notify parent
-    setSubmitted(false);
-    setPrevError(undefined);
-    toast.success(isEdit ? 'Record updated' : 'Patient record added');
-    onSuccess();
-  }
+  // Move all side-effects into useEffect — calling setState/toast in render body
+  // throws "Cannot update a component while rendering a different component" in React 19.
+  useEffect(() => {
+    if (!submitted || isPending) return;
+    if (state?.error) {
+      toast.error(state.error);
+    } else {
+      toast.success(isEdit ? 'Record updated' : 'Patient record added');
+      setSubmitted(false);
+      onSuccess();
+    }
+  }, [state, isPending, submitted]);
 
   const [assignedDoctor, setAssignedDoctor] = useState<string>(
     editingRecord !== null && editingRecord.assigned_doctor_id !== null
@@ -148,7 +137,6 @@ function ReceptionistSheetForm({
     <form
       action={(fd) => {
         setSubmitted(true);
-        setPrevError(undefined);
         formAction(fd);
       }}
       className="space-y-4 pt-4"
@@ -218,7 +206,11 @@ function ReceptionistSheetForm({
           onValueChange={(val) => setAssignedDoctor(val ?? '')}
         >
           <SelectTrigger>
-            <SelectValue placeholder="None / Unassigned" />
+            <SelectValue placeholder="None / Unassigned">
+              {assignedDoctor
+                ? (doctors.find((d) => d.id === assignedDoctor)?.full_name ?? assignedDoctor)
+                : 'None / Unassigned'}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="">None / Unassigned</SelectItem>
@@ -286,25 +278,22 @@ function DoctorSheetForm({
   const boundAction = updateClinicalNotesAction.bind(null, editingRecord.id);
   const [state, formAction, isPending] = useActionState(boundAction, {});
   const [submitted, setSubmitted] = useState(false);
-  const [prevError, setPrevError] = useState<string | undefined>(undefined);
 
-  if (submitted && !isPending && state) {
-    if (state.error && state.error !== prevError) {
-      setPrevError(state.error);
+  useEffect(() => {
+    if (!submitted || isPending) return;
+    if (state?.error) {
       toast.error(state.error);
-    } else if (!state.error) {
-      setSubmitted(false);
-      setPrevError(undefined);
+    } else {
       toast.success('Notes saved');
+      setSubmitted(false);
       onSuccess();
     }
-  }
+  }, [state, isPending, submitted]);
 
   return (
     <form
       action={(fd) => {
         setSubmitted(true);
-        setPrevError(undefined);
         formAction(fd);
       }}
       className="space-y-4 pt-4"
