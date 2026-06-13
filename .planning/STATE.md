@@ -25,8 +25,8 @@ See: .planning/PROJECT.md (updated 2026-06-10)
 
 ## Current Position
 
-Phase: 6 of 11 (Staff Management)
-Plan: 1 of 2 in current phase
+Phase: 8 of 11 (Patient Records)
+Plan: 1 of 3 complete — next is 08-02
 Status: Ready to execute
 Last activity: 2026-06-13
 
@@ -89,5 +89,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-06-13T08:00:25.981Z
-Stopped at: Phase 4 complete — verification passed
+Stopped at: Phase 8 Plan 01 complete — patient_records table live in Supabase
 Resume file: None
