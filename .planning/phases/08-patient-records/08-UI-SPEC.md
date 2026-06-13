@@ -53,8 +53,10 @@ Matches portal conventions detected in StaffClient.tsx and Sidebar.tsx:
 |------|------|--------|-------------|-------|
 | Page heading | 20px (`text-xl`) | 600 (`font-semibold`) | 1.4 | "Patient Records" page title |
 | Body / table cell | 14px (`text-sm`) | 400 (`font-normal`) | 1.5 | Table row data, form labels, helper text |
-| Label | 14px (`text-sm`) | 500 (`font-medium`) | 1.5 | Form field labels (`text-slate-700`) |
+| Label | 14px (`text-sm`) | 600 (`font-semibold`) | 1.5 | Form field labels (`text-slate-700`) |
 | Micro | 12px (`text-xs`) | 400 (`font-normal`) | 1.4 | Validation errors, helper notes, badge counts |
+
+Two weights only: `font-normal` (400) and `font-semibold` (600). `font-medium` (500) is not used.
 
 ---
 
@@ -70,7 +72,7 @@ Inherits portal color contract established in prior phases. No new tokens introd
 | Destructive | `bg-red-600 hover:bg-red-700` | Not applicable — no hard delete in this phase |
 | Sidebar | `bg-slate-900` | Portal sidebar (inherited, no change) |
 
-Accent reserved for: the "Add Patient" button in the page header. All other interactive elements use `variant="ghost"` (icon buttons in table rows) or `variant="outline"` (Cancel in sheet footer).
+Accent reserved for: the "Add Patient" button in the page header. All other interactive elements use `variant="ghost"` (icon buttons in table rows) or `variant="outline"` (dismiss buttons in sheet footer).
 
 Semantic status colors used in badges (matching existing portal badge convention):
 - Doctor-assigned: `variant="secondary"` (neutral-100 bg, neutral-800 text)
@@ -88,7 +90,8 @@ Matches staff page layout exactly:
   {/* Header row */}
   <div className="flex items-center justify-between">
     <h1 className="text-xl font-semibold text-slate-800">Patient Records</h1>
-    {/* "Add Patient" button — receptionist/admin/super_admin only; hidden for doctor role */}
+    {/* Primary focal point: the "Add Patient" button in the page header */}
+    {/* Visible for receptionist/admin/super_admin; hidden for doctor role */}
     <Button>Add Patient</Button>
   </div>
 
@@ -187,7 +190,7 @@ Uses `Sheet` (slides from right), `sm:max-w-lg overflow-y-auto` — identical to
 
 #### Doctor — Edit (clinical notes only)
 
-All fields above are rendered as **read-only display text** (not form inputs), inside a `space-y-3` container using `<p className="text-sm text-slate-700">` with a `<label className="text-xs font-medium text-slate-400 uppercase tracking-wide">` above each.
+All fields above are rendered as **read-only display text** (not form inputs), inside a `space-y-3` container using `<p className="text-sm text-slate-700">` with a `<label className="text-xs font-semibold text-slate-400 uppercase tracking-wide">` above each.
 
 Only one editable field is shown:
 
@@ -202,7 +205,7 @@ A helper note below the textarea: `<p className="text-xs text-slate-400">Only yo
 Each read-only field uses this pattern:
 ```tsx
 <div className="space-y-1">
-  <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">{label}</p>
+  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
   <p className="text-sm text-slate-700">{value || '—'}</p>
 </div>
 ```
@@ -211,11 +214,11 @@ Wrap all read-only fields in: `<div className="space-y-3 rounded-md border borde
 
 ### Sheet footer buttons
 
-| Role | Cancel | Submit |
-|------|--------|--------|
-| Receptionist / Admin (Add) | `variant="outline"` "Cancel" | `variant="default"` "Add Patient" |
-| Receptionist / Admin (Edit) | `variant="outline"` "Cancel" | `variant="default"` "Save Changes" |
-| Doctor (clinical notes) | `variant="outline"` "Cancel" | `variant="default"` "Save Notes" |
+| Role | Dismiss | Submit |
+|------|---------|--------|
+| Receptionist / Admin (Add) | `variant="outline"` "Discard" | `variant="default"` "Add Patient" |
+| Receptionist / Admin (Edit) | `variant="outline"` "Discard Changes" | `variant="default"` "Save Changes" |
+| Doctor (clinical notes) | `variant="outline"` "Close" | `variant="default"` "Save Notes" |
 
 Loading state: replace submit button content with `<Loader2 className="mr-2 h-4 w-4 animate-spin" />` + in-progress label ("Adding…" / "Saving…").
 
@@ -258,6 +261,9 @@ Inline below each field:
 | Submit — add | "Add Patient" |
 | Submit — edit | "Save Changes" |
 | Submit — doctor notes | "Save Notes" |
+| Dismiss — add flow | "Discard" |
+| Dismiss — edit flow (receptionist) | "Discard Changes" |
+| Dismiss — doctor notes flow | "Close" |
 | Empty state — no records | "No patient records yet. Add a new patient record to get started." |
 | Empty state — search miss | "No records match your search. Try a different name or phone number." |
 | Fetch error | "Could not load patient records. Check your connection and refresh." |
