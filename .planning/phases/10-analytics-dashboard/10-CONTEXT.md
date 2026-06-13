@@ -33,8 +33,8 @@ Build a single `/analytics` portal page giving admins a bird's-eye operational v
 
 ### GA4 Website Traffic (ANA-01)
 - **D-01:** GA4 property does NOT exist yet — create it as part of this phase. Plan includes: create GA4 property, obtain Measurement ID (G-XXXXXXX), add gtag snippet to the public site's root layout (`app/[locale]/layout.tsx`), store Measurement ID in `NEXT_PUBLIC_GA_MEASUREMENT_ID` env var.
-- **D-02:** GA4 traffic section in the analytics portal uses an **iframe embed** of the GA4 dashboard URL (not the Data API). Height: 600px. The iframe URL points to the GA4 reporting view for the property.
-- **D-03:** GA4 iframe permission: the user must grant the admin Google account permission to access the GA4 property. The iframe embed shows the live GA4 UI (requires the logged-in Google account in the browser to have GA4 access).
+- **D-02:** ~~GA4 iframe embed~~ → **REVISED:** GA4 traffic section uses a **link card** — a full-width Card containing a description and a "View in Google Analytics" button/link that opens the GA4 property URL in a new tab. Reason: `analytics.google.com` sends `X-Frame-Options: SAMEORIGIN`; cross-origin iframe embed is blocked by all browsers.
+- **D-03:** The link card directs the admin to the GA4 property for their website. The admin must be signed in to the correct Google account to view data.
 
 ### Page Layout
 - **D-04:** Stacked full-width sections, top to bottom:
@@ -46,7 +46,7 @@ Build a single `/analytics` portal page giving admins a bird's-eye operational v
 
 ### Date Range Controls
 - **D-06:** No date range picker. Fixed periods only. Each stat section shows **two numbers simultaneously**: "This week" and "This month". No toggle needed — both displayed side by side as stat chips inside each card.
-- **D-07:** Appointment stats show: total count (this week / this month) + by-status breakdown (pending / confirmed / cancelled) + by-doctor table (doctor name + count). No day-by-day chart.
+- **D-07:** Appointment stats show: total count (this week / this month) + by-status breakdown (**pending / contacted / confirmed / cancelled** — 4 values per migration schema) + by-doctor table (doctor name + count). No day-by-day chart.
 
 ### Data Freshness
 - **D-08:** Server Component fetches all stats on page load. No polling, no auto-refresh, no refresh button. Admin refreshes the page manually if they want updated data.
