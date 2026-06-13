@@ -445,9 +445,9 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   // Available doctors for linkage dropdown (unlinked OR linked to this staff)
   // ---------------------------------------------------------------------------
 
-  function availableDoctors(staffUserId: string) {
+  function availableDoctors(staffProfileId: string) {
     return doctors.filter(
-      (d) => d.staff_user_id === null || d.staff_user_id === staffUserId
+      (d) => d.staff_user_id === null || d.staff_user_id === staffProfileId
     );
   }
 
@@ -674,22 +674,33 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
             {editingStaff && (editingStaff.role === 'doctor' || editForm.watch('role') === 'doctor') && (
               <div className="space-y-1">
                 <label className="text-sm font-medium text-slate-700">Doctor Profile</label>
-                <Select
-                  defaultValue={editForm.getValues('doctor_id') ?? ''}
-                  onValueChange={(val) => editForm.setValue('doctor_id', val ?? undefined)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Link to doctor record (optional)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {availableDoctors(editingStaff.user_id).map((d) => (
-                      <SelectItem key={d.id} value={d.id}>
-                        {d.full_name} — {d.specialization}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {(() => {
+                  const watchedId = editForm.watch('doctor_id') ?? '';
+                  const selectedDoc = doctors.find((d) => d.id === watchedId);
+                  const displayLabel = selectedDoc
+                    ? `${selectedDoc.full_name} — ${selectedDoc.specialization}`
+                    : undefined;
+                  return (
+                    <Select
+                      value={watchedId}
+                      onValueChange={(val) => editForm.setValue('doctor_id', val || undefined)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Link to doctor record (optional)">
+                          {displayLabel}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">None</SelectItem>
+                        {availableDoctors(editingStaff.id).map((d) => (
+                          <SelectItem key={d.id} value={d.id}>
+                            {d.full_name} — {d.specialization}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  );
+                })()}
                 <p className="text-xs text-slate-400">
                   Links this login to a doctor record on the public site.
                 </p>
