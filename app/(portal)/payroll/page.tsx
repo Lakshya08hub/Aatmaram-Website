@@ -1,8 +1,25 @@
-export default function PayrollPage() {
+import { getActiveStaffWithPaymentStatus, getMonthlyPayrollTotal } from '@/lib/db/payroll';
+import PayrollClient from './PayrollClient';
+
+function toFirstOfMonth(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  return `${y}-${m}-01`;
+}
+
+export default async function PayrollPage() {
+  const currentMonth = toFirstOfMonth(new Date());
+
+  const [staff, total] = await Promise.all([
+    getActiveStaffWithPaymentStatus(currentMonth),
+    getMonthlyPayrollTotal(currentMonth),
+  ]);
+
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Payroll</h1>
-      <p className="mt-4 text-slate-500">Payroll — Coming in Phase 9</p>
-    </div>
+    <PayrollClient
+      initialStaff={staff}
+      initialTotal={total}
+      initialMonth={currentMonth}
+    />
   );
 }
