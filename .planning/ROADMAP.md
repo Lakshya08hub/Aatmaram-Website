@@ -198,8 +198,16 @@ Plans:
   2. Portal displays appointment request counts grouped by day/week, by doctor, and by status
   3. Portal shows total staff count by role and the current month payroll total
   4. Portal shows patient volume: new patients registered per week and per month
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+
+**Wave 1** *(no dependencies)*
+- [ ] 10-01-PLAN.md — GA4 property setup (human checkpoint) + gtag snippet in public site root layout [has checkpoint]
+
+**Wave 2** *(blocked on 10-01)*
+- [ ] 10-02-PLAN.md — lib/db/analytics.ts query functions + /analytics Server Component page (four-section render)
 
 ### Phase 11: Gemini Chat
 **Goal**: A floating chat widget on every public page answers visitor questions about the hospital using only public information, with no access to patient or staff data
@@ -232,3 +240,4 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |
+
