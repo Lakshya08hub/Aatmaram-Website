@@ -6,6 +6,7 @@
 // Sidebar link visibility alone is insufficient; this layout is the
 // authoritative server-side gate.
 
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
@@ -47,7 +48,29 @@ export default async function ContentLayout({
     redirect('/portal/dashboard');
   }
 
-  // Security-only layout — no visible UI. The portal root layout provides
-  // the sidebar and chrome.
-  return <>{children}</>;
+  const tabs = [
+    { label: 'Departments', href: '/content/departments' },
+    { label: 'Doctors', href: '/content/doctors' },
+    { label: 'Facilities', href: '/content/facilities' },
+    { label: 'Hospital Info', href: '/content/hospital-info' },
+  ];
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="border-b border-slate-200 bg-white px-6">
+        <nav className="flex gap-1">
+          {tabs.map((tab) => (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className="px-4 py-3 text-sm font-medium text-slate-600 hover:text-slate-900 border-b-2 border-transparent hover:border-slate-300 transition-colors"
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+      <div className="flex-1">{children}</div>
+    </div>
+  );
 }

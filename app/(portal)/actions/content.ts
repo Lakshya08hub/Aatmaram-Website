@@ -7,6 +7,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { StaffRole } from '@/lib/portal/roles';
 
 const CMS_ROLES: StaffRole[] = ['super_admin', 'admin'];
@@ -59,9 +60,8 @@ export async function createDepartmentAction(input: {
   image_url?: string;
 }): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase.from('departments').insert({
+    await requireCmsRole();
+    const { error } = await createAdminClient().from('departments').insert({
       name: input.name,
       description: input.description,
       image_url: input.image_url || null,
@@ -81,9 +81,8 @@ export async function updateDepartmentAction(
   input: Partial<{ name: string; description: string; image_url: string }>
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('departments')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id);
@@ -101,9 +100,8 @@ export async function deleteDepartmentAction(
   id: string
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('departments')
       .delete()
       .eq('id', id);
@@ -140,9 +138,8 @@ export async function createDoctorAction(input: {
   is_active?: boolean;
 }): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase.from('doctors').insert({
+    await requireCmsRole();
+    const { error } = await createAdminClient().from('doctors').insert({
       full_name: input.full_name,
       specialization: input.specialization,
       qualification: input.qualification,
@@ -174,9 +171,8 @@ export async function updateDoctorAction(
   }>
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('doctors')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id);
@@ -194,9 +190,8 @@ export async function deleteDoctorAction(
   id: string
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase.from('doctors').delete().eq('id', id);
+    await requireCmsRole();
+    const { error } = await createAdminClient().from('doctors').delete().eq('id', id);
 
     if (error) throw new Error(error.message);
 
@@ -228,9 +223,8 @@ export async function createFacilityAction(input: {
   category: FacilityCategory;
 }): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase.from('facilities').insert({
+    await requireCmsRole();
+    const { error } = await createAdminClient().from('facilities').insert({
       name: input.name,
       description: input.description,
       category: input.category,
@@ -250,9 +244,8 @@ export async function updateFacilityAction(
   input: Partial<{ name: string; description: string; category: FacilityCategory }>
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('facilities')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id);
@@ -270,9 +263,8 @@ export async function deleteFacilityAction(
   id: string
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('facilities')
       .delete()
       .eq('id', id);
@@ -312,9 +304,8 @@ export async function updateHospitalInfoAction(
   }>
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireCmsRole();
-
-    const { error } = await supabase
+    await requireCmsRole();
+    const { error } = await createAdminClient()
       .from('hospital_info')
       .update({ ...input, updated_at: new Date().toISOString() })
       .eq('id', id);

@@ -2,6 +2,7 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { StaffRole } from '@/lib/portal/roles'
 
 type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
@@ -36,9 +37,9 @@ export async function updateAppointmentStatusAction(
   notes?: string
 ): Promise<{ error?: string }> {
   try {
-    const supabase = await requireAppointmentRole()
+    await requireAppointmentRole()
 
-    const { error } = await supabase
+    const { error } = await createAdminClient()
       .from('appointment_requests')
       .update({ status, notes: notes ?? null })
       .eq('id', id)

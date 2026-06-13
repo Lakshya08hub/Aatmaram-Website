@@ -3,7 +3,6 @@
 // Uses adminClient to list Auth users (email access) merged with profiles rows.
 
 import { createAdminClient } from '@/lib/supabase/admin';
-import { createClient } from '@/lib/supabase/server';
 import { StaffRole } from '@/lib/portal/roles';
 
 export interface StaffMember {
@@ -27,7 +26,6 @@ export interface StaffMember {
  */
 export async function getStaffList(): Promise<StaffMember[]> {
   const adminClient = createAdminClient();
-  const supabase = await createClient();
 
   // Fetch all Auth users (provides email)
   const { data: authData, error: authError } = await adminClient.auth.admin.listUsers({
@@ -42,8 +40,8 @@ export async function getStaffList(): Promise<StaffMember[]> {
     authData.users.map((u) => [u.id, u.email ?? ''])
   );
 
-  // Fetch all profiles
-  const { data: profiles, error: profilesError } = await supabase
+  // Fetch all profiles via admin client (bypasses RLS "own read" policy)
+  const { data: profiles, error: profilesError } = await adminClient
     .from('profiles')
     .select('id, user_id, role, is_active, full_name, phone, salary, join_date, created_at')
     .order('created_at', { ascending: true });

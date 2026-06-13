@@ -11,6 +11,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { PortalSidebar } from '@/components/portal/Sidebar';
+import { Toaster } from '@/components/ui/sonner';
 
 export default async function PortalLayout({
   children,
@@ -48,6 +49,7 @@ export default async function PortalLayout({
           <PortalSidebar role={profile.role} />
           <main className="flex-1 bg-slate-50">{children}</main>
         </div>
+        <Toaster />
       </body>
     </html>
   );

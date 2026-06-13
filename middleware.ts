@@ -19,6 +19,7 @@ const intlMiddleware = createIntlMiddleware(routing);
 const PORTAL_PATHS = [
   '/login',
   '/dashboard',
+  '/content',
   '/staff',
   '/appointments',
   '/patients',
