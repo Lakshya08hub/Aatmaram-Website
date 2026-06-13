@@ -174,7 +174,7 @@ Plans:
 
 Plans:
 - [x] 08-01-PLAN.md — DB migration: patient_records table + blocking schema push
-- [ ] 08-02-PLAN.md — Data layer + server actions (lib/db/patient_records.ts, actions/patients.ts)
+- [x] 08-02-PLAN.md — Data layer + server actions (lib/db/patient_records.ts, actions/patients.ts)
 - [ ] 08-03-PLAN.md — PatientClient component + portal page with role-aware field rendering
 
 ### Phase 9: Payroll Tracker
@@ -228,7 +228,7 @@ Plans:
 | 5. Content Management | 4/5 | In Progress|  |
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
-| 8. Patient Records | 1/3 | In Progress | 2026-06-13 (08-01 done) |
+| 8. Patient Records | 2/3 | In Progress|  |
 | 9. Payroll Tracker | 0/TBD | Not started | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |

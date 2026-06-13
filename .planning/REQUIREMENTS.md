@@ -71,11 +71,11 @@
 
 ### Patient Records
 
-- [ ] **PAT-01**: Receptionist can create a patient record with name, age, phone, reason for visit, assigned doctor, and date
-- [ ] **PAT-02**: Doctor can view only the patients assigned to them
-- [ ] **PAT-03**: Doctor can add clinical notes to their patients (medications prescribed, treatment notes)
-- [ ] **PAT-04**: Admin and Super Admin can view all patient records
-- [ ] **PAT-05**: Receptionist can view all patient records for check-in purposes
+- [x] **PAT-01**: Receptionist can create a patient record with name, age, phone, reason for visit, assigned doctor, and date
+- [x] **PAT-02**: Doctor can view only the patients assigned to them
+- [x] **PAT-03**: Doctor can add clinical notes to their patients (medications prescribed, treatment notes)
+- [x] **PAT-04**: Admin and Super Admin can view all patient records
+- [x] **PAT-05**: Receptionist can view all patient records for check-in purposes
 
 ### Appointment Request Management
 
