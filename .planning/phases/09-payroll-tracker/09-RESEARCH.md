@@ -464,17 +464,13 @@ const currentMonth = toFirstOfMonth(new Date()); // e.g. "2026-06-01"
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Future month guard in UI**
-   - What we know: D-05 says no lower bound on navigation. Future months not mentioned.
-   - What's unclear: Should the "next" button be disabled when the selected month = current month?
-   - Recommendation: Disable `>` button when `selectedMonth >= currentMonth` to prevent accidentally navigating to future months. Also add server-side guard in action.
+1. **Future month guard in UI** — RESOLVED
+   - Decision: Disable `>` button when `selectedMonth >= currentMonth`. Server-side guard in `markAsPaidAction` rejects future months. Implemented in 09-03 and 09-04.
 
-2. **Staff with null salary UX**
-   - What we know: Claude's discretion says they appear and can be marked paid at ₹0.
-   - What's unclear: Should the "Mark as Paid" button show a confirmation dialog for ₹0 payments?
-   - Recommendation: Show a warning toast after marking (not a blocking dialog) — keeps UX fast.
+2. **Staff with null salary UX** — RESOLVED
+   - Decision: No confirmation dialog. Show warning toast after marking at ₹0 ("Marked as ₹0. Update salary on the Staff page first."). Implemented in 09-03/09-04.
 
 ---
 
