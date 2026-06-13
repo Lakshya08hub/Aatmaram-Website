@@ -223,7 +223,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   function openEditSheet(staff: StaffMember) {
     setEditingStaff(staff);
     // Find linked doctor for this staff member
-    const linkedDoctor = doctors.find((d) => d.staff_user_id === staff.user_id);
+    const linkedDoctor = doctors.find((d) => d.staff_user_id === staff.id);
     editForm.reset({
       full_name: staff.full_name ?? '',
       role: (staff.role === 'super_admin' ? 'admin' : staff.role) as 'admin' | 'doctor' | 'receptionist',
@@ -263,7 +263,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
         const selectedDoctorId = values.doctor_id || undefined;
         const linkResult = await updateDoctorStaffLinkAction(
           selectedDoctorId ?? null,
-          selectedDoctorId ? editingStaff.user_id : null
+          selectedDoctorId ? editingStaff.id : null
         );
         if (linkResult.error) {
           toast.error(`Staff saved but doctor link failed: ${linkResult.error}`);

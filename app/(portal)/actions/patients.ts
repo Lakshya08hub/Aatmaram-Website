@@ -191,11 +191,19 @@ export async function updateClinicalNotesAction(
 
     const adminClient = createAdminClient();
 
-    // Resolve this doctor's doctors.id via staff_user_id (auth UID matches staff_user_id)
+    // doctors.staff_user_id references profiles(id) — resolve auth UID → profiles.id first
+    const { data: profileRow } = await adminClient
+      .from('profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!profileRow) return { error: 'Forbidden' };
+
     const { data: doctorRow } = await adminClient
       .from('doctors')
       .select('id')
-      .eq('staff_user_id', user.id)
+      .eq('staff_user_id', profileRow.id)
       .single();
 
     if (!doctorRow) {

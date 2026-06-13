@@ -35,11 +35,19 @@ export async function getPatientRecords(
   const adminClient = createAdminClient();
 
   if (role === 'doctor') {
-    // Resolve the doctors.id for this auth user via staff_user_id
+    // doctors.staff_user_id references profiles(id) — resolve auth UID → profiles.id first
+    const { data: profileRow } = await adminClient
+      .from('profiles')
+      .select('id')
+      .eq('user_id', authUserId)
+      .single();
+
+    if (!profileRow) return [];
+
     const { data: doctorRow } = await adminClient
       .from('doctors')
       .select('id')
-      .eq('staff_user_id', authUserId)
+      .eq('staff_user_id', profileRow.id)
       .single();
 
     if (!doctorRow) {
