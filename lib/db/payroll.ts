@@ -13,15 +13,23 @@ export interface StaffPayrollRow {
 
 /**
  * Returns all active staff with their payment status for the given month.
+ * Only includes staff whose join_date is on or before the last day of the month
+ * (staff who joined after the month are excluded). Null join_date is always included.
  * @param month - ISO date string for first day of month, e.g. "2026-06-01" (must be zero-padded)
  */
 export async function getActiveStaffWithPaymentStatus(month: string): Promise<StaffPayrollRow[]> {
   const adminClient = createAdminClient();
 
+  // Compute last day of the selected month for the join_date filter.
+  const [y, m] = month.split('-').map(Number);
+  const lastDay = new Date(y, m, 0); // day 0 of next month = last day of this month
+  const lastDayStr = `${lastDay.getFullYear()}-${String(lastDay.getMonth() + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`;
+
   const { data: profiles, error: profilesError } = await adminClient
     .from('profiles')
-    .select('id, full_name, role, salary')
+    .select('id, full_name, role, salary, join_date')
     .eq('is_active', true)
+    .or(`join_date.is.null,join_date.lte.${lastDayStr}`)
     .order('created_at', { ascending: true });
 
   if (profilesError) {
