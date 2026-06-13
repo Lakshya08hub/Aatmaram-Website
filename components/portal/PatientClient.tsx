@@ -97,11 +97,13 @@ function ReadOnlyField({ label, value }: { label: string; value: string | null |
 function ReceptionistSheetForm({
   editingRecord,
   doctors,
+  role,
   onSuccess,
   onClose,
 }: {
   editingRecord: PatientRecord | null;
   doctors: { id: string; full_name: string }[];
+  role: StaffRole;
   onSuccess: () => void;
   onClose: () => void;
 }) {
@@ -235,6 +237,23 @@ function ReceptionistSheetForm({
           required
         />
       </div>
+
+      {/* Clinical Notes — admin/super_admin editable; receptionist read-only (edit mode only) */}
+      {isEdit && role !== 'receptionist' && (
+        <div className="space-y-1">
+          <label className="text-sm font-semibold text-slate-700">Clinical Notes</label>
+          <Textarea
+            name="clinical_notes"
+            placeholder="Medications prescribed, treatment notes, follow-up instructions…"
+            rows={4}
+            className="resize-none"
+            defaultValue={editingRecord?.clinical_notes ?? ''}
+          />
+        </div>
+      )}
+      {isEdit && role === 'receptionist' && editingRecord?.clinical_notes && (
+        <ReadOnlyField label="Clinical Notes" value={editingRecord.clinical_notes} />
+      )}
 
       {/* Error */}
       {state?.error && (
@@ -543,6 +562,7 @@ export default function PatientClient({
             <ReceptionistSheetForm
               editingRecord={editingRecord}
               doctors={doctors}
+              role={role}
               onSuccess={handleSuccess}
               onClose={closeSheet}
             />

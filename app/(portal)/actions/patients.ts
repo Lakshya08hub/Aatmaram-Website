@@ -22,6 +22,7 @@ const receptionistPatientSchema = z.object({
   reason: z.string().min(3),
   assigned_doctor_id: z.string().uuid().nullable().optional(),
   visit_date: z.string(),
+  clinical_notes: z.string().optional(),
 });
 
 const doctorNotesSchema = z.object({
@@ -143,7 +144,7 @@ export async function updatePatientAction(
   formData: FormData
 ): Promise<{ error?: string }> {
   try {
-    await requirePatientWriteRole();
+    const { role } = await requirePatientWriteRole();
 
     const validation = receptionistPatientSchema.safeParse(
       Object.fromEntries(formData)
@@ -155,6 +156,8 @@ export async function updatePatientAction(
 
     const adminClient = createAdminClient();
 
+    const isAdmin = role === 'super_admin' || role === 'admin';
+
     const { error } = await adminClient
       .from('patient_records')
       .update({
@@ -164,6 +167,7 @@ export async function updatePatientAction(
         reason: validation.data.reason,
         assigned_doctor_id: validation.data.assigned_doctor_id ?? null,
         visit_date: validation.data.visit_date,
+        ...(isAdmin && { clinical_notes: validation.data.clinical_notes ?? null }),
       })
       .eq('id', id);
 
