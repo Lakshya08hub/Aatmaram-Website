@@ -1,4 +1,4 @@
----
+﻿---
 phase: 9
 slug: payroll-tracker
 status: draft
@@ -42,7 +42,7 @@ Declared values (multiples of 4 only):
 | 2xl | 48px | Not used in this phase |
 | 3xl | 64px | Not used in this phase |
 
-Exceptions: Month navigator touch target minimum 44px height (accessibility — prev/next buttons).
+Exceptions: Month navigator touch target minimum 48px height (accessibility — satisfies WCAG ≥44px; on 4px grid).
 
 ---
 
@@ -51,13 +51,13 @@ Exceptions: Month navigator touch target minimum 44px height (accessibility — 
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px | 400 (regular) | 1.5 |
-| Label | 12px | 500 (medium) | 1.4 |
+| Label | 12px | 400 (regular) | 1.4 |
 | Heading | 20px | 600 (semibold) | 1.2 |
 | Display | 28px | 600 (semibold) | 1.2 |
 
 Notes:
 - Body (14px/400) applies to table cell content: staff name, role, salary amount.
-- Label (12px/500) applies to table column headers and badge text.
+- Label (12px/400) applies to table column headers and badge text.
 - Heading (20px/600) applies to the page title "Payroll" and the summary card value "₹X,XX,XXX".
 - Display (28px/600) is reserved for the summary card total amount figure only.
 - Month navigator label ("June 2026") uses Heading size (20px/600) — it is the primary navigation landmark.
@@ -117,12 +117,12 @@ Icons (lucide-react):
 ├── Page Header (flex row, space-between, items-center)
 │   ├── Title: "Payroll" (Heading 20px/600)
 │   └── Month Navigator (flex row, gap-sm)
-│       ├── ChevronLeft Button (ghost, 44px min-height)
+│       ├── ChevronLeft Button (ghost, 48px min-height, aria-label="Previous month")
 │       ├── Month Label: "June 2026" (20px/600, min-w: 140px, text-center)
-│       └── ChevronRight Button (ghost, 44px min-height, disabled when selectedMonth >= currentMonth)
+│       └── ChevronRight Button (ghost, 48px min-height, aria-label="Next month", disabled when selectedMonth >= currentMonth)
 │
 ├── Summary Card (full width, muted background)
-│   ├── Label: "Total Paid This Month" (12px/500, muted-foreground)
+│   ├── Label: "Total Paid This Month" (12px/400, muted-foreground)
 │   └── Value: "₹1,25,000" (28px/600, foreground) — sum of amount_paid for paid rows only
 │
 └── Staff Payment Table
@@ -193,6 +193,8 @@ Icons (lucide-react):
 | Empty state body | "Add staff on the Staff page before running payroll." |
 | Pending button label | "Marking..." |
 | Disabled next button tooltip | "Cannot navigate to future months" |
+| Previous month button aria-label | "Previous month" |
+| Next month button aria-label | "Next month" |
 
 Destructive actions: None in this phase. "Mark as Paid" is irreversible in v1 but is a positive action, not destructive. No confirmation dialog required. Irreversibility communicated via post-action toast ("This cannot be undone" is NOT needed — admin UX, not public).
 
@@ -210,11 +212,11 @@ No third-party registries. No registry vetting gate required.
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: FLAG (non-blocking — focal point implied by Display typography)
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved — 2026-06-13
