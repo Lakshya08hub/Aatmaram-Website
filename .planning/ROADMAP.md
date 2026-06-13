@@ -205,10 +205,10 @@ Plans:
 Plans:
 
 **Wave 1** *(no dependencies)*
-- [ ] 10-01-PLAN.md � GA4 property setup (human checkpoint) + gtag snippet in public site root layout [has checkpoint]
+- [ ] 10-01-PLAN.md — GA4 property setup (human checkpoint) + gtag snippet in public site root layout [has checkpoint]
 
 **Wave 2** *(blocked on 10-01)*
-- [ ] 10-02-PLAN.md � lib/db/analytics.ts query functions + /analytics Server Component page (four-section render)
+- [ ] 10-02-PLAN.md — lib/db/analytics.ts query functions + /analytics Server Component page (four-section render)
 
 ### Phase 11: Gemini Chat
 **Goal**: A floating chat widget on every public page answers visitor questions about the hospital using only public information, with no access to patient or staff data
@@ -219,8 +219,16 @@ Plans:
   2. Visitor can ask about departments, timings, services, or how to book and receive an accurate answer
   3. Chat widget makes no Supabase queries — it operates entirely from a static system prompt containing public hospital info
   4. When a question is out of scope, the widget responds with the hospital phone number rather than hallucinating
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+
+**Wave 1** *(no dependencies)*
+- [ ] 11-01-PLAN.md — @google/genai install + hospital knowledge base (lib/chat/hospital-knowledge.ts) + streaming Gemini Route Handler (app/api/chat/route.ts) [has checkpoint: package legitimacy]
+
+**Wave 2** *(blocked on 11-01)*
+- [ ] 11-02-PLAN.md — ChatWidget Client Component (components/public/ChatWidget.tsx) + mount in public layout [has checkpoint: end-to-end smoke test]
 
 ### Phase 12: Homepage Content Curation
 **Goal**: Replace all hardcoded static data on the public homepage with Supabase-sourced, portal-curated content — eliminating the redundancy between homepage sections and their dedicated portal-managed pages
@@ -257,6 +265,5 @@ Plans:
 | 8. Patient Records | 3/3 | Complete   | 2026-06-13 |
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
-| 11. Gemini Chat | 0/TBD | Not started | - |
+| 11. Gemini Chat | 0/2 | Planned | - |
 | 12. Homepage Content Curation | 0/TBD | Not started | - |
-
