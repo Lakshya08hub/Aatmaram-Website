@@ -32,7 +32,7 @@ async function requireAdminRole() {
     .single();
 
   if (error || !profile || !ADMIN_ROLES.includes(profile.role as StaffRole)) {
-    throw new Error('Forbidden');
+    redirect('/dashboard');
   }
 }
 
