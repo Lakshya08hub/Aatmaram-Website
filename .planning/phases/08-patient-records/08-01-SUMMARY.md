@@ -43,15 +43,15 @@ A single migration file (`supabase/migrations/20260613_patient_records.sql`) tha
 | Task | Status | Commit |
 |------|--------|--------|
 | 1: Write migration SQL | Complete | a216bd2 |
-| 2: Apply migration via Supabase Dashboard | Pending — awaiting human action | — |
+| 2: Apply migration via Supabase Dashboard | Complete — user confirmed "migration applied" | (human action) |
 
 ## Deviations from Plan
 
 None — plan executed exactly as written. The trigger was wrapped in a `DO $$` block to gracefully handle whether or not the moddatetime extension is installed (plan specified both patterns; the DO block selects at runtime).
 
-## Checkpoint State
+## Completion Note
 
-Task 2 is a `checkpoint:human-action` gate. The migration SQL is committed and must be applied manually in the Supabase Dashboard SQL Editor before plans 08-02 and 08-03 can proceed.
+Both tasks are complete. The patient_records table is live in Supabase (user confirmed: "migration applied"). Plans 08-02 and 08-03 can now proceed without a missing-table error.
 
 ## Self-Check
 
