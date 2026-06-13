@@ -23,6 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 9: Payroll Tracker** - Monthly salary tracking, mark as paid, history
 - [ ] **Phase 10: Analytics Dashboard** - GA embed + ops numbers + staff summary
 - [ ] **Phase 11: Gemini Chat** - Widget on public site, hospital info knowledge base
+- [ ] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3)
 
 ---
 
@@ -221,11 +222,28 @@ Plans:
 **Plans**: TBD
 **UI hint**: yes
 
+### Phase 12: Homepage Content Curation
+**Goal**: Replace all hardcoded static data on the public homepage with Supabase-sourced, portal-curated content — eliminating the redundancy between homepage sections and their dedicated portal-managed pages
+**Depends on**: Phase 5
+**Requirements**: TBD
+**Success Criteria** (what must be TRUE):
+  1. Homepage "Our Departments" grid pulls featured departments from Supabase (not `lib/data/departments.ts`); admin can toggle each department as featured (max 8) from the portal
+  2. Homepage "Meet Our Doctors" section pulls featured doctors from Supabase (not `lib/data/doctors.ts`); admin can toggle up to 3 doctors as featured from the portal
+  3. `/departments` and `/doctors` pages continue to show all active records regardless of featured status
+  4. `lib/data/departments.ts` and `lib/data/doctors.ts` are no longer imported anywhere in the public site
+**Plans**: TBD
+**UI hint**: yes
+
+**Bugs driving this phase (found 2026-06-13):**
+- `app/[locale]/(public)/page.tsx:10` — imports hardcoded `departments` from `lib/data/departments.ts` instead of Supabase
+- `app/[locale]/(public)/page.tsx:11` — imports hardcoded `doctors` from `lib/data/doctors.ts` instead of Supabase
+- Root cause: Phase 5 plan `05-05-PLAN.md` (convert public pages to DB) was never completed for the homepage
+
 ---
 
 ## Progress
 
-**Execution Order:** Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11
+**Execution Order:** Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -240,19 +258,5 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |
-
-## Backlog
-
-### Phase 999.1: Homepage Content Curation & CMS Fixes (BACKLOG)
-
-**Goal:** Give admins control over what appears on the public homepage — replacing static hardcoded sections with portal-managed, curated content.
-
-**Requirements:** TBD
-
-**Captured ideas:**
-- [ ] Department homepage toggle — per-department toggle in the portal to feature it on the homepage "Our Departments" grid (max 8). Homepage pulls only featured departments; /departments page shows all.
-- [ ] Doctor homepage toggle — per-doctor toggle to feature up to 3 doctors on the homepage. /doctors page shows all active doctors.
-- [ ] Audit other homepage sections (facilities, etc.) for the same hardcoded-vs-portal redundancy and apply the same curation layer.
-
-**Notes:** Promote with `/gsd:discuss-phase 999.1` when ready to plan.
+| 12. Homepage Content Curation | 0/TBD | Not started | - |
 
