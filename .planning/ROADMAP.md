@@ -229,6 +229,6 @@ Plans:
 | 6. Staff Management | 0/TBD | Not started | - |
 | 7. Appointment Request System | 0/TBD | Not started | - |
 | 8. Patient Records | 3/3 | Complete   | 2026-06-13 |
-| 9. Payroll Tracker | 0/TBD | Not started | - |
+| 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/TBD | Not started | - |
