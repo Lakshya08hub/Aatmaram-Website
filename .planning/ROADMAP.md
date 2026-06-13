@@ -169,8 +169,13 @@ Plans:
   2. Doctor logs in and sees only patients assigned to them — no other patient records are visible
   3. Doctor can add medication and treatment notes to their patients' records
   4. Admin or Super Admin can view all patient records regardless of assigned doctor
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 08-01-PLAN.md — DB migration: patient_records table + blocking schema push
+- [ ] 08-02-PLAN.md — Data layer + server actions (lib/db/patient_records.ts, actions/patients.ts)
+- [ ] 08-03-PLAN.md — PatientClient component + portal page with role-aware field rendering
 
 ### Phase 9: Payroll Tracker
 **Goal**: Admin can track monthly salary payments for all staff and view payment history per staff member
