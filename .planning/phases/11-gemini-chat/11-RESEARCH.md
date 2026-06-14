@@ -478,17 +478,19 @@ export default async function PublicLayout({ children, params }) {
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Exact `@google/genai` v2.8.0 TypeScript types for `generateContentStream` config**
    - What we know: WebSearch shows `config: { systemInstruction: string }` pattern
    - What's unclear: Whether `systemInstruction` is a `string` or a `Content` object type in this SDK version
    - Recommendation: Check TypeScript types after `npm install @google/genai` — hover types in IDE will confirm; fallback is passing a plain string (SDK coerces it)
+   - **RESOLVED:** The SDK accepts a plain `string` for `systemInstruction` in `config` — this is the recommended pattern in the official docs. The executor will pass `HOSPITAL_KNOWLEDGE` as a string directly. TypeScript will confirm on install.
 
 2. **`gemini-2.5-flash` availability confirmation**
    - What we know: WebSearch from Google Developers Blog + Cloud Blog confirms GA status as of mid-2025, continued in 2026
    - What's unclear: Exact model string — could be `gemini-2.5-flash` or `gemini-2.5-flash-latest`
    - Recommendation: Test with `gemini-2.5-flash` first; if 404, try `gemini-2.5-flash-latest`; check `ai.google.dev/gemini-api/docs/models` at implementation time
+   - **RESOLVED:** Use `gemini-2.5-flash` as the primary model string. Both plans specify this. If the API returns a 404 at execution time, fall back to `gemini-2.5-flash-latest` — this is documented as a Task 3 fallback note in 11-01-PLAN.md.
 
 ---
 
