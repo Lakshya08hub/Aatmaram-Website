@@ -8,6 +8,8 @@ import { DepartmentCard } from '@/components/public/DepartmentCard';
 import { DoctorCard } from '@/components/public/DoctorCard';
 import { FacilityCard } from '@/components/public/FacilityCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
+import { FadeIn } from '@/components/motion/fade-in';
+import { CountUp } from '@/components/motion/count-up';
 import { getFeaturedDepartments } from '@/lib/db/departments';
 import { getFeaturedDoctors } from '@/lib/db/doctors';
 import { getFeaturedFacilities } from '@/lib/db/facilities';
@@ -77,20 +79,20 @@ export default async function HomePage({
       {/* Section 2 — Trust Signals Band */}
       <section className="bg-blue-800 py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <FadeIn className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div className="flex flex-col items-center gap-2">
               <BedDouble className="w-6 h-6 text-white" />
-              <span className="text-xl font-semibold text-white">90</span>
+              <CountUp value={90} className="text-xl font-semibold text-white" />
               <span className="text-sm text-white/70">{t('stats.bedsLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Users className="w-6 h-6 text-white" />
-              <span className="text-xl font-semibold text-white">25+</span>
+              <CountUp value={25} suffix="+" className="text-xl font-semibold text-white" />
               <span className="text-sm text-white/70">{t('stats.doctorsLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
               <Stethoscope className="w-6 h-6 text-white" />
-              <span className="text-xl font-semibold text-white">8</span>
+              <CountUp value={8} className="text-xl font-semibold text-white" />
               <span className="text-sm text-white/70">{t('stats.specialtiesLabel')}</span>
             </div>
             <div className="flex flex-col items-center gap-2">
@@ -98,12 +100,12 @@ export default async function HomePage({
               <span className="text-xl font-semibold text-white">24x7</span>
               <span className="text-sm text-white/70">{t('stats.emergencyLabel')}</span>
             </div>
-          </div>
+          </FadeIn>
         </div>
       </section>
 
       {/* Section 3 — Departments Preview */}
-      <section className="py-16 px-4">
+      <section className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           <SectionHeading
             title={t('sections.departments')}
@@ -122,7 +124,7 @@ export default async function HomePage({
       </section>
 
       {/* Section 4 — Doctors Preview */}
-      <section className="py-16 px-4 bg-slate-50">
+      <section className="py-16 md:py-24 px-4 bg-slate-50">
         <div className="max-w-7xl mx-auto">
           <SectionHeading
             title={t('sections.doctors')}
@@ -148,7 +150,7 @@ export default async function HomePage({
       </section>
 
       {/* Section 5 — Facilities Preview */}
-      <section className="py-16 px-4">
+      <section className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
           {/* TODO: use t('facilities.heading') once translation key is added to messages files */}
           <SectionHeading
@@ -167,7 +169,7 @@ export default async function HomePage({
       </section>
 
       {/* Section 6 — Appointment CTA Band */}
-      <section className="bg-blue-50 py-16 px-4">
+      <section className="bg-blue-50 py-16 md:py-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-xl font-semibold text-slate-900">
             {t('sections.appointmentCta')}
