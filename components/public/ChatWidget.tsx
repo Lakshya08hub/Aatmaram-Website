@@ -145,13 +145,14 @@ export function ChatWidget() {
       wrap.style.left = target.left + 'px';
       wrap.style.top = target.top + 'px';
 
-      // After spring ends, clear inline styles so React takes over via cornerPixels.
+      // After spring ends, remove only the transition so future drags start clean.
+      // React overwrites left/top via its style prop — no need to clear them.
       setTimeout(() => {
-        if (wrapRef.current) wrapRef.current.style.cssText = '';
+        if (wrapRef.current) wrapRef.current.style.transition = '';
         setIsDragging(false);
       }, 420);
     } else {
-      if (wrap) wrap.style.cssText = '';
+      if (wrap) wrap.style.transition = '';
       setIsDragging(false);
     }
     // didDragRef intentionally NOT reset here; handleBubbleClick reads it to suppress toggle.
