@@ -286,15 +286,15 @@ These four phases take the functional-but-plain site to a polished, engaging pro
 Plans:
 
 **Wave 0** *(de-risks the dark-token approach — runs first, alone)*
-- [ ] 13-01-PLAN.md — Dark brand-token override spike + WCAG AA contrast verification (globals.css) [UI-02] [has checkpoint]
+- [x] 13-01-PLAN.md — Dark brand-token override spike + WCAG AA contrast verification (globals.css) [UI-02] [has checkpoint]
 
 **Wave 1** *(blocked on 13-01 for 13-04; 13-02/13-03 independent — all parallel, no file overlap)*
-- [ ] 13-02-PLAN.md — Shared `<EmptyState>` component [UI-04]
-- [ ] 13-03-PLAN.md — framer-motion install + FadeIn/CountUp/hover-lift primitives [UI-03] [has checkpoint: package legitimacy]
-- [ ] 13-04-PLAN.md — Portal-only dark mode wiring: provider, sidebar toggle, slate→token migration [UI-02]
+- [x] 13-02-PLAN.md — Shared `<EmptyState>` component [UI-04]
+- [x] 13-03-PLAN.md — framer-motion install + FadeIn/CountUp/hover-lift primitives [UI-03] [has checkpoint: package legitimacy]
+- [x] 13-04-PLAN.md — Portal-only dark mode wiring: provider, sidebar toggle, slate→token migration [UI-02]
 
 **Wave 2** *(blocked on 13-02, 13-03, 13-04)*
-- [ ] 13-05-PLAN.md — Adoption: homepage spacing + CountUp/FadeIn proof, EmptyState in 3 portal clients [UI-01/UI-03/UI-04]
+- [x] 13-05-PLAN.md — Adoption: homepage spacing + CountUp/FadeIn proof, EmptyState in 3 portal clients [UI-01/UI-03/UI-04]
 
 ### Phase 14: Media Infrastructure
 **Goal**: Super Admin can upload, replace, and remove images from the portal, and those images render optimized on the public site — no image is hardcoded in source
@@ -355,7 +355,7 @@ Plans:
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
-| 13. Design System Foundation | 0/5 | Planned | - |
+| 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
 | 14. Media Infrastructure | 0/TBD | Not started | - |
 | 15. Public Site Engagement Overhaul | 0/TBD | Not started | - |
 | 16. Portal UX Upgrade | 0/TBD | Not started | - |
