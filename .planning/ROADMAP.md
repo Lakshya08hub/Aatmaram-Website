@@ -23,7 +23,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 9: Payroll Tracker** - Monthly salary tracking, mark as paid, history
 - [ ] **Phase 10: Analytics Dashboard** - GA embed + ops numbers + staff summary
 - [ ] **Phase 11: Gemini Chat** - Widget on public site, hospital info knowledge base
-- [ ] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3)
+- [x] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3) (completed 2026-06-14)
 
 ---
 
@@ -252,7 +252,7 @@ Plans:
 - [x] 12-03-PLAN.md — Portal featured toggle UI + Server Actions (departments, doctors, facilities)
 
 **Wave 3** *(blocked on Wave 2)*
-- [ ] 12-04-PLAN.md — Schema push (BLOCKING) + stale file deletion + human verification [has checkpoint]
+- [x] 12-04-PLAN.md — Schema push (BLOCKING) + stale file deletion + human verification [has checkpoint]
 
 **Bugs driving this phase (found 2026-06-13):**
 - `app/[locale]/(public)/page.tsx:10` — imports hardcoded `departments` from `lib/data/departments.ts` instead of Supabase
@@ -278,4 +278,4 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
-| 12. Homepage Content Curation | 3/4 | In Progress|  |
+| 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
