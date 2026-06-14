@@ -50,7 +50,7 @@ completed: 2026-06-14
 - **Duration:** ~10 min
 - **Started:** 2026-06-14T00:00:00Z
 - **Completed:** 2026-06-14T00:10:00Z
-- **Tasks:** 1 of 2 (Task 2 is checkpoint:human-verify, pending user approval)
+- **Tasks:** 2 of 2 (checkpoint:human-verify passed — all 10 smoke test checks approved)
 - **Files modified:** 3 deleted
 
 ## Accomplishments
@@ -81,9 +81,17 @@ None
 ## User Setup Required
 None - no external service configuration required.
 
+## Human Checkpoint
+
+**Task 2: checkpoint:human-verify — APPROVED**
+- All 10 smoke test checks passed
+- Homepage renders Departments, Doctors, and Facilities from live Supabase data
+- Portal pages (/portal/content/departments, /portal/content/doctors, /portal/content/facilities) each show Featured toggle and Order input
+- Phase 12 is complete
+
 ## Next Phase Readiness
-- Homepage is fully Supabase-sourced, pending human checkpoint approval (Task 2)
-- Phase 12 complete once human verifies homepage renders live data end-to-end
+- Homepage is fully Supabase-sourced — confirmed end-to-end with live data
+- Phase 12 complete
 
 ---
 *Phase: 12-homepage-content-curation*
