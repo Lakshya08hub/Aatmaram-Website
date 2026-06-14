@@ -8,19 +8,20 @@
 import Link from 'next/link';
 import { ALL_SECTIONS, ROLE_SECTIONS, StaffRole } from '@/lib/portal/roles';
 import { signOutAction } from '@/app/(portal)/actions/auth';
+import { ThemeToggle } from '@/components/portal/theme-toggle';
 
 export function PortalSidebar({ role }: { role: StaffRole }) {
   const allowed = new Set(ROLE_SECTIONS[role]);
   const visibleSections = ALL_SECTIONS.filter((s) => allowed.has(s.key));
 
   return (
-    <aside className="w-56 bg-slate-900 min-h-screen text-white flex flex-col">
+    <aside className="w-56 bg-sidebar text-sidebar-foreground min-h-screen flex flex-col">
       {/* Hospital branding */}
-      <div className="px-4 py-5 border-b border-white/10">
-        <p className="text-xs font-semibold uppercase tracking-widest text-white/50">
+      <div className="px-4 py-5 border-b border-sidebar-border">
+        <p className="text-xs font-semibold uppercase tracking-widest text-sidebar-foreground/50">
           Atmaram
         </p>
-        <p className="text-sm font-bold text-white mt-0.5">Staff Portal</p>
+        <p className="text-sm font-bold text-sidebar-foreground mt-0.5">Staff Portal</p>
       </div>
 
       {/* Navigation */}
@@ -30,7 +31,7 @@ export function PortalSidebar({ role }: { role: StaffRole }) {
             <li key={section.key}>
               <Link
                 href={section.href}
-                className="flex items-center px-3 py-2 rounded-md text-sm text-white/80 hover:text-white hover:bg-white/10 transition-colors"
+                className="flex items-center px-3 py-2 rounded-md text-sm text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
               >
                 {section.label}
               </Link>
@@ -39,12 +40,16 @@ export function PortalSidebar({ role }: { role: StaffRole }) {
         </ul>
       </nav>
 
-      {/* Sign-out */}
-      <div className="px-2 py-4 border-t border-white/10">
+      {/* Footer: theme toggle + sign-out */}
+      <div className="px-2 py-4 border-t border-sidebar-border space-y-1">
+        <div className="flex items-center justify-between px-1">
+          <span className="text-xs text-sidebar-foreground/50">Theme</span>
+          <ThemeToggle />
+        </div>
         <form action={signOutAction}>
           <button
             type="submit"
-            className="w-full flex items-center px-3 py-2 rounded-md text-sm text-white/60 hover:text-white hover:bg-white/10 transition-colors text-left"
+            className="w-full flex items-center px-3 py-2 rounded-md text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors text-left"
           >
             Sign out
           </button>

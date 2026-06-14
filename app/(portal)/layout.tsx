@@ -11,6 +11,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { PortalSidebar } from '@/components/portal/Sidebar';
+import { ThemeProvider } from '@/components/portal/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 
 export default async function PortalLayout({
@@ -43,13 +44,20 @@ export default async function PortalLayout({
   }
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <div className="flex min-h-screen">
-          <PortalSidebar role={profile.role} />
-          <main className="flex-1 bg-slate-50">{children}</main>
-        </div>
-        <Toaster />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <div className="flex min-h-screen">
+            <PortalSidebar role={profile.role} />
+            <main className="flex-1 bg-background text-foreground">{children}</main>
+          </div>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );
