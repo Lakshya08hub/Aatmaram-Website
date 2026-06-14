@@ -50,12 +50,13 @@ Exceptions: Touch targets for Switch and icon buttons must be minimum 44px heigh
 
 Inherited from established project design system. Phase 12 introduces no new type roles.
 
+Declared weights: 2 (400 regular, 600 semibold). Label copy is distinguished from body by color (`text-slate-500`), not weight.
+
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
-| Body | 14px | 400 (regular) | 1.5 |
-| Label | 14px | 500 (medium) | 1.4 |
+| Body and Label | 14px | 400 (regular) | 1.5 |
 | Heading (card) | 20px (text-xl) | 600 (semibold) | 1.2 |
-| Section heading | 28px (text-2xl/3xl) | 700 (bold) | 1.2 |
+| Section heading | 28px (text-2xl/3xl) | 600 (semibold) | 1.2 |
 
 Source: Detected from DepartmentCard (`text-xl font-semibold`), DepartmentsClient (`text-xl font-semibold`, `text-sm`).
 
@@ -114,6 +115,8 @@ Section structure:
 ```
 
 Grid breakpoints: 1 column mobile, 2 columns tablet (sm: 640px+), 3 columns desktop (lg: 1024px+). Gap: 24px (gap-6).
+
+Focal point: The "Our Facilities" section heading (`SectionHeading`) is the visual entry point for the section. The FacilityCard name (`text-xl font-semibold`) is the secondary focal anchor within each card.
 
 ### Portal — Featured Toggle Column (all three content pages)
 
