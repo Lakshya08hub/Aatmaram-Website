@@ -239,8 +239,20 @@ Plans:
   2. Homepage "Meet Our Doctors" section pulls featured doctors from Supabase (not `lib/data/doctors.ts`); admin can toggle up to 3 doctors as featured from the portal
   3. `/departments` and `/doctors` pages continue to show all active records regardless of featured status
   4. `lib/data/departments.ts` and `lib/data/doctors.ts` are no longer imported anywhere in the public site
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
+
+Plans:
+
+**Wave 1** *(no dependencies)*
+- [ ] 12-01-PLAN.md — Migration (featured columns) + getFeatured* DB query functions
+
+**Wave 2** *(blocked on 12-01 — parallel, no file overlap)*
+- [ ] 12-02-PLAN.md — FacilityCard component + homepage wired to Supabase (force-dynamic, three sections)
+- [ ] 12-03-PLAN.md — Portal featured toggle UI + Server Actions (departments, doctors, facilities)
+
+**Wave 3** *(blocked on Wave 2)*
+- [ ] 12-04-PLAN.md — Schema push (BLOCKING) + stale file deletion + human verification [has checkpoint]
 
 **Bugs driving this phase (found 2026-06-13):**
 - `app/[locale]/(public)/page.tsx:10` — imports hardcoded `departments` from `lib/data/departments.ts` instead of Supabase
@@ -266,4 +278,4 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
-| 12. Homepage Content Curation | 0/TBD | Not started | - |
+| 12. Homepage Content Curation | 0/4 | Planned | - |
