@@ -9,14 +9,18 @@
   --font-sans: var(--font-geist-sans), 'Noto Sans Devanagari', 'Nirmala UI', system-ui;
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-geist-sans);
-  /* Project design tokens */
-  --color-bg: #F8FAFC;
-  --color-surface: #FFFFFF;
+  /* Project design tokens.
+     The 5 literal-hex brand tokens use var()-indirection (private vars in :root/.dark)
+     so a `.dark` override actually wins — Tailwind v4 `@theme inline` inlines literal
+     values at build time, so a direct `.dark { --color-bg: … }` would NOT flip them.
+     primary/accent/border are re-aliased to shadcn neutrals later in this block. */
+  --color-bg: var(--brand-bg);
+  --color-surface: var(--brand-surface);
   --color-primary: #1E40AF;
   --color-accent: #16A34A;
-  --color-nav: #1E3A5F;
-  --color-text: #0F172A;
-  --color-muted: #64748B;
+  --color-nav: var(--brand-nav);
+  --color-text: var(--brand-text);
+  --color-muted: var(--brand-muted);
   --color-border: #E2E8F0;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -57,6 +61,12 @@
 }
 
 :root {
+  /* Brand token private vars (light). Overridden in .dark for portal-only dark mode. */
+  --brand-bg: #F8FAFC;
+  --brand-surface: #FFFFFF;
+  --brand-nav: #1E3A5F;
+  --brand-text: #0F172A;
+  --brand-muted: #64748B;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -92,6 +102,14 @@
 }
 
 .dark {
+  /* Brand token dark values (portal-only). WCAG AA verified against #0B1220 surface:
+     text #F1F5F9 ~16:1 (AAA), muted #94A3B8 ~7:1 (AA), accents blue #60A5FA ~7:1,
+     green #4ADE80 ~10:1. primary/accent/border flip via the shadcn neutral block below. */
+  --brand-bg: #0B1220;
+  --brand-surface: #111827;
+  --brand-nav: #0F172A;
+  --brand-text: #F1F5F9;
+  --brand-muted: #94A3B8;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
