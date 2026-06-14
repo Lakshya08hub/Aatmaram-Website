@@ -1,10 +1,11 @@
 ---
 phase: 13
 slug: design-system-foundation
-status: draft
+status: approved
 shadcn_initialized: true
 preset: base-nova
 created: 2026-06-14
+reviewed_at: 2026-06-14
 ---
 
 # Phase 13 — UI Design Contract
