@@ -248,8 +248,8 @@ Plans:
 - [x] 12-01-PLAN.md — Migration (featured columns) + getFeatured* DB query functions
 
 **Wave 2** *(blocked on 12-01 — parallel, no file overlap)*
-- [ ] 12-02-PLAN.md — FacilityCard component + homepage wired to Supabase (force-dynamic, three sections)
-- [ ] 12-03-PLAN.md — Portal featured toggle UI + Server Actions (departments, doctors, facilities)
+- [x] 12-02-PLAN.md — FacilityCard component + homepage wired to Supabase (force-dynamic, three sections)
+- [x] 12-03-PLAN.md — Portal featured toggle UI + Server Actions (departments, doctors, facilities)
 
 **Wave 3** *(blocked on Wave 2)*
 - [ ] 12-04-PLAN.md — Schema push (BLOCKING) + stale file deletion + human verification [has checkpoint]
@@ -278,4 +278,4 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
-| 12. Homepage Content Curation | 1/4 | In Progress|  |
+| 12. Homepage Content Curation | 3/4 | In Progress|  |
