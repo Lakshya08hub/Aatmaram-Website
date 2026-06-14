@@ -1,78 +1,130 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, SendHorizonal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 
 type Message = { role: 'user' | 'assistant'; content: string };
+type Corner = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
 
 const GREETING =
   "Hi, I'm Nidhi! I'm here to help you with information about Atmaram Child Care and Critical Care. Feel free to ask me about our departments, doctors, OPD timings, or how to book an appointment.";
+
+const GAP = 24;
+const BTN = 56;
+
+function snapToCorner(x: number, y: number): Corner {
+  const right = x > window.innerWidth / 2;
+  const bottom = y > window.innerHeight / 2;
+  if (bottom && right) return 'bottom-right';
+  if (bottom && !right) return 'bottom-left';
+  if (!bottom && right) return 'top-right';
+  return 'top-left';
+}
+
+function bubblePos(corner: Corner): React.CSSProperties {
+  switch (corner) {
+    case 'bottom-right': return { bottom: GAP, right: GAP };
+    case 'bottom-left':  return { bottom: GAP, left: GAP };
+    case 'top-right':    return { top: GAP + 64, right: GAP };
+    case 'top-left':     return { top: GAP + 64, left: GAP };
+  }
+}
+
+function panelPos(corner: Corner): React.CSSProperties {
+  switch (corner) {
+    case 'bottom-right': return { bottom: GAP + BTN + 8, right: GAP };
+    case 'bottom-left':  return { bottom: GAP + BTN + 8, left: GAP };
+    case 'top-right':    return { top: GAP + 64 + BTN + 8, right: GAP };
+    case 'top-left':     return { top: GAP + 64 + BTN + 8, left: GAP };
+  }
+}
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
+  const [corner, setCorner] = useState<Corner>('bottom-right');
+  const [isDragging, setIsDragging] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bubbleRef = useRef<HTMLButtonElement>(null);
+  const dragStart = useRef<{ x: number; y: number } | null>(null);
+  const didDrag = useRef(false);
 
-  // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus management
   useEffect(() => {
     if (isOpen) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-      return () => clearTimeout(timer);
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     } else {
       bubbleRef.current?.focus();
     }
   }, [isOpen]);
 
-  function handleOpen() {
-    setIsOpen(true);
-    if (messages.length === 0) {
-      setMessages([{ role: 'assistant', content: GREETING }]);
-    }
-  }
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    dragStart.current = { x: e.clientX, y: e.clientY };
+    didDrag.current = false;
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, []);
 
-  function handleClose() {
-    setIsOpen(false);
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    if (!dragStart.current) return;
+    const moved =
+      Math.abs(e.clientX - dragStart.current.x) > 6 ||
+      Math.abs(e.clientY - dragStart.current.y) > 6;
+    if (moved) {
+      didDrag.current = true;
+      setIsDragging(true);
+    }
+  }, []);
+
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
+    if (didDrag.current) {
+      setCorner(snapToCorner(e.clientX, e.clientY));
+      setIsDragging(false);
+    }
+    dragStart.current = null;
+  }, []);
+
+  function handleBubbleClick() {
+    if (didDrag.current) {
+      didDrag.current = false;
+      return;
+    }
+    if (isOpen) {
+      setIsOpen(false);
+    } else {
+      setIsOpen(true);
+      if (messages.length === 0) {
+        setMessages([{ role: 'assistant', content: GREETING }]);
+      }
+    }
   }
 
   async function sendMessage(text: string) {
     if (text.trim() === '' || isStreaming) return;
-
     const userText = text.trim();
     setInput('');
-
     const newMessages: Message[] = [...messages, { role: 'user', content: userText }];
     setMessages([...newMessages, { role: 'assistant', content: '' }]);
     setIsStreaming(true);
-
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: newMessages }),
       });
-
-      if (!res.ok || !res.body) {
-        throw new Error('Stream failed');
-      }
-
+      if (!res.ok || !res.body) throw new Error('Stream failed');
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
@@ -112,7 +164,8 @@ export function ChatWidget() {
       {/* Chat Panel */}
       {isOpen && (
         <Card
-          className="fixed bottom-24 right-12 w-[360px] h-[500px] z-50 flex flex-col shadow-xl rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
+          className="fixed w-[360px] h-[500px] z-50 flex flex-col shadow-xl rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
+          style={panelPos(corner)}
           role="dialog"
           aria-label="Nidhi — Atmaram chat assistant"
           aria-modal="false"
@@ -128,7 +181,7 @@ export function ChatWidget() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleClose}
+              onClick={() => setIsOpen(false)}
               aria-label="Close chat"
               className="text-white/70 hover:text-white hover:bg-transparent"
             >
@@ -143,11 +196,8 @@ export function ChatWidget() {
             aria-live="polite"
           >
             {messages.map((msg, idx) => {
-              const isLastAssistant =
-                msg.role === 'assistant' && idx === messages.length - 1;
-              const showTypingIndicator =
-                isLastAssistant && isStreaming && msg.content === '';
-
+              const isLastAssistant = msg.role === 'assistant' && idx === messages.length - 1;
+              const showTyping = isLastAssistant && isStreaming && msg.content === '';
               return (
                 <div
                   key={idx}
@@ -157,20 +207,11 @@ export function ChatWidget() {
                     <span className="bg-primary text-white rounded-2xl rounded-br-sm px-4 py-2 text-sm leading-relaxed max-w-[80%]">
                       {msg.content}
                     </span>
-                  ) : showTypingIndicator ? (
-                    <span className="bg-slate-100 text-slate-900 rounded-2xl rounded-bl-sm px-4 py-2 text-sm leading-relaxed max-w-[80%] flex items-center gap-1">
-                      <span
-                        className="inline-block w-2 h-2 rounded-full bg-primary animate-bounce"
-                        style={{ animationDelay: '0ms' }}
-                      />
-                      <span
-                        className="inline-block w-2 h-2 rounded-full bg-primary animate-bounce"
-                        style={{ animationDelay: '150ms' }}
-                      />
-                      <span
-                        className="inline-block w-2 h-2 rounded-full bg-primary animate-bounce"
-                        style={{ animationDelay: '300ms' }}
-                      />
+                  ) : showTyping ? (
+                    <span className="bg-slate-100 rounded-2xl rounded-bl-sm px-4 py-3 flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '0ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '150ms' }} />
+                      <span className="w-2 h-2 rounded-full bg-sky-400 animate-bounce" style={{ animationDelay: '300ms' }} />
                     </span>
                   ) : (
                     <span className="bg-slate-100 text-slate-900 rounded-2xl rounded-bl-sm px-4 py-2 text-sm leading-relaxed max-w-[80%]">
@@ -183,7 +224,7 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </CardContent>
 
-          {/* Message Composer */}
+          {/* Composer */}
           <div className="border-t border-border p-3 bg-white flex gap-2 shrink-0">
             <Input
               ref={inputRef}
@@ -199,7 +240,8 @@ export function ChatWidget() {
               onClick={() => sendMessage(input)}
               disabled={!input.trim() || isStreaming}
               aria-label="Send message"
-              className="bg-primary hover:bg-primary/90 shrink-0"
+              className="shrink-0"
+              style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}
             >
               <SendHorizonal size={16} className="text-white" />
             </Button>
@@ -207,12 +249,20 @@ export function ChatWidget() {
         </Card>
       )}
 
-      {/* FAB Bubble Button */}
+      {/* FAB Bubble — draggable, snaps to nearest corner on release */}
       <button
         ref={bubbleRef}
-        onClick={isOpen ? handleClose : handleOpen}
-        className="fixed bottom-8 right-12 w-14 h-14 rounded-full bg-primary z-50 shadow-lg hover:scale-105 hover:brightness-110 transition-transform duration-150 flex items-center justify-center"
-        aria-label={isOpen ? 'Close chat' : 'Open Atmaram chat assistant'}
+        onClick={handleBubbleClick}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        style={{
+          ...bubblePos(corner),
+          cursor: isDragging ? 'grabbing' : 'grab',
+          background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 100%)',
+        }}
+        className="fixed w-14 h-14 rounded-full z-50 shadow-lg hover:scale-105 transition-transform duration-150 flex items-center justify-center select-none"
+        aria-label={isOpen ? 'Close chat' : 'Open Nidhi chat assistant'}
         aria-expanded={isOpen}
       >
         {isOpen ? (
