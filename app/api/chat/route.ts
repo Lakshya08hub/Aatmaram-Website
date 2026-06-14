@@ -4,6 +4,10 @@ import { NextRequest } from 'next/server';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
+// SEC-02: Per-message character limit to prevent cost-amplification DoS.
+// A hospital chat message has no legitimate need for more than 2000 characters.
+const MAX_MESSAGE_LENGTH = 2000;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -27,6 +31,17 @@ export async function POST(request: NextRequest) {
           status: 400,
           headers: { 'Content-Type': 'application/json' },
         });
+      }
+
+      // SEC-02: Reject messages that exceed the per-message length cap.
+      if (m.content.length > MAX_MESSAGE_LENGTH) {
+        return new Response(
+          JSON.stringify({ error: 'Message too long. Please keep messages under 2000 characters.' }),
+          {
+            status: 400,
+            headers: { 'Content-Type': 'application/json' },
+          }
+        );
       }
     }
 
