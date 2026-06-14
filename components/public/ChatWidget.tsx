@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 type Message = { role: 'user' | 'assistant'; content: string };
 
 const GREETING =
-  'Hello! I can help with information about Atmaram Child Care and Critical Care. Ask me about our departments, doctors, OPD timings, or how to book an appointment.';
+  "Hi, I'm Nidhi! I'm here to help you with information about Atmaram Child Care and Critical Care. Feel free to ask me about our departments, doctors, OPD timings, or how to book an appointment.";
 
 export function ChatWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -114,7 +114,7 @@ export function ChatWidget() {
         <Card
           className="fixed bottom-24 right-12 w-[360px] h-[500px] z-50 flex flex-col shadow-xl rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
           role="dialog"
-          aria-label="Atmaram chat assistant"
+          aria-label="Nidhi — Atmaram chat assistant"
           aria-modal="false"
         >
           {/* Panel Header */}
@@ -123,7 +123,7 @@ export function ChatWidget() {
             style={{ backgroundColor: '#1E3A5F', height: '56px' }}
           >
             <span className="text-white font-semibold" style={{ fontSize: '15px' }}>
-              Atmaram Child Care
+              Nidhi — Atmaram Child Care
             </span>
             <Button
               variant="ghost"
