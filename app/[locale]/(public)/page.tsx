@@ -6,20 +6,19 @@ import { Button } from '@/components/ui/button';
 import { PMJAYBadge } from '@/components/public/PMJAYBadge';
 import { DepartmentCard } from '@/components/public/DepartmentCard';
 import { DoctorCard } from '@/components/public/DoctorCard';
+import { FacilityCard } from '@/components/public/FacilityCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
-import { departments } from '@/lib/data/departments';
-import { doctors } from '@/lib/data/doctors';
-import { routing } from '@/i18n/routing';
+import { getFeaturedDepartments } from '@/lib/db/departments';
+import { getFeaturedDoctors } from '@/lib/db/doctors';
+import { getFeaturedFacilities } from '@/lib/db/facilities';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Atmaram Child Care and Critical Care — Kanpur',
   description:
     'A 90-bed super-specialty hospital in Kanpur offering paediatrics, critical care, surgery and more. Ayushman Bharat PM-JAY empanelled.',
 };
-
-export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }));
-}
 
 export default async function HomePage({
   params,
@@ -28,6 +27,13 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const [departments, doctors, facilities] = await Promise.all([
+    getFeaturedDepartments(),
+    getFeaturedDoctors(),
+    getFeaturedFacilities(),
+  ]);
+
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
   const tDept = await getTranslations('departments');
@@ -107,9 +113,8 @@ export default async function HomePage({
             {departments.map((dept) => (
               <DepartmentCard
                 key={dept.id}
-                icon={dept.icon}
-                name={tDept(`${dept.translationKey}.name`)}
-                description={tDept(`${dept.translationKey}.description`)}
+                name={dept.name}
+                description={dept.description}
               />
             ))}
           </div>
@@ -124,12 +129,12 @@ export default async function HomePage({
             subtitle={tDoc('pageSubtitle')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-8">
-            {doctors.slice(0, 3).map((doctor) => (
+            {doctors.map((doctor) => (
               <DoctorCard
                 key={doctor.id}
-                name={doctor.name}
-                initials={doctor.initials}
-                specialty={tDept(`${doctor.specialtyKey}.name`)}
+                name={doctor.full_name}
+                initials={doctor.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                specialty={doctor.specialization}
                 bookLabel={tDoc('bookAppointment')}
               />
             ))}
@@ -142,7 +147,26 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* Section 5 — Appointment CTA Band */}
+      {/* Section 5 — Facilities Preview */}
+      <section className="py-16 px-4">
+        <div className="max-w-7xl mx-auto">
+          {/* TODO: use t('facilities.heading') once translation key is added to messages files */}
+          <SectionHeading
+            title="Our Facilities"
+          />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {facilities.map((facility) => (
+              <FacilityCard
+                key={facility.id}
+                name={facility.name}
+                description={facility.description}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 6 — Appointment CTA Band */}
       <section className="bg-blue-50 py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-xl font-semibold text-slate-900">
