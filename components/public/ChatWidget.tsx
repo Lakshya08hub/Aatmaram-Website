@@ -1,26 +1,19 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, SendHorizonal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
 
 const BUBBLE_STYLES = `
   @keyframes nidhi-float {
     0%, 100% { transform: translateY(0px) scale(1); }
     50%       { transform: translateY(-5px) scale(1.03); }
   }
-  @keyframes nidhi-snap {
-    0%   { transform: scale(1); }
-    40%  { transform: scale(0.82); }
-    70%  { transform: scale(1.18); }
-    100% { transform: scale(1); }
-  }
-  .nidhi-float  { animation: nidhi-float 3s ease-in-out infinite; }
-  .nidhi-snap   { animation: nidhi-snap 0.35s cubic-bezier(.36,.07,.19,.97); }
+  .nidhi-float { animation: nidhi-float 3s ease-in-out infinite; }
   .nidhi-bubble:hover { animation: none; }
 `;
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 
 type Message = { role: 'user' | 'assistant'; content: string };
 type Corner = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
@@ -40,12 +33,13 @@ function snapToCorner(x: number, y: number): Corner {
   return 'top-left';
 }
 
-function bubblePos(corner: Corner): React.CSSProperties {
-  switch (corner) {
-    case 'bottom-right': return { bottom: GAP, right: GAP };
-    case 'bottom-left':  return { bottom: GAP, left: GAP };
-    case 'top-right':    return { top: GAP + 64, right: GAP };
-    case 'top-left':     return { top: GAP + 64, left: GAP };
+// Always left/top pixel coords so there is no coordinate-system conflict during or after drag.
+function cornerPixels(c: Corner, w: number, h: number): { left: number; top: number } {
+  switch (c) {
+    case 'bottom-right': return { left: w - BTN - GAP, top: h - BTN - GAP };
+    case 'bottom-left':  return { left: GAP,            top: h - BTN - GAP };
+    case 'top-right':    return { left: w - BTN - GAP,  top: GAP + 64 };
+    case 'top-left':     return { left: GAP,            top: GAP + 64 };
   }
 }
 
@@ -65,13 +59,25 @@ export function ChatWidget() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [corner, setCorner] = useState<Corner>('bottom-right');
   const [isDragging, setIsDragging] = useState(false);
-  const [isSnapping, setIsSnapping] = useState(false);
+  const [win, setWin] = useState({ w: 0, h: 0 });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const bubbleRef = useRef<HTMLButtonElement>(null);
-  const dragStart = useRef<{ x: number; y: number } | null>(null);
-  const didDrag = useRef(false);
+  const wrapRef = useRef<HTMLDivElement>(null);
+
+  // Drag tracking via refs so rapid pointer moves do not cause React re-renders.
+  const isDraggingRef = useRef(false);
+  const didDragRef = useRef(false);
+  const pointerStartRef = useRef({ x: 0, y: 0 });
+  const dragOffsetRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const update = () => setWin({ w: window.innerWidth, h: window.innerHeight });
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -86,36 +92,74 @@ export function ChatWidget() {
     }
   }, [isOpen]);
 
-  const onPointerDown = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    didDrag.current = false;
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    pointerStartRef.current = { x: e.clientX, y: e.clientY };
+    didDragRef.current = false;
+    isDraggingRef.current = true;
+
+    const rect = wrap.getBoundingClientRect();
+    dragOffsetRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+    // Lock wrapper to pixel left/top so pointer moves do not cause a position jump.
+    wrap.style.transition = 'none';
+    wrap.style.left = rect.left + 'px';
+    wrap.style.top = rect.top + 'px';
+
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   }, []);
 
-  const onPointerMove = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
-    if (!dragStart.current) return;
-    const moved =
-      Math.abs(e.clientX - dragStart.current.x) > 6 ||
-      Math.abs(e.clientY - dragStart.current.y) > 6;
-    if (moved) {
-      didDrag.current = true;
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return;
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    const dx = e.clientX - pointerStartRef.current.x;
+    const dy = e.clientY - pointerStartRef.current.y;
+
+    if (!didDragRef.current && (Math.abs(dx) > 6 || Math.abs(dy) > 6)) {
+      didDragRef.current = true;
       setIsDragging(true);
+    }
+
+    if (didDragRef.current) {
+      wrap.style.left = (e.clientX - dragOffsetRef.current.x) + 'px';
+      wrap.style.top = (e.clientY - dragOffsetRef.current.y) + 'px';
     }
   }, []);
 
-  const onPointerUp = useCallback((e: React.PointerEvent<HTMLButtonElement>) => {
-    if (didDrag.current) {
-      setCorner(snapToCorner(e.clientX, e.clientY));
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    isDraggingRef.current = false;
+    const wrap = wrapRef.current;
+
+    if (didDragRef.current && wrap) {
+      const newCorner = snapToCorner(e.clientX, e.clientY);
+      setCorner(newCorner);
+
+      const target = cornerPixels(newCorner, window.innerWidth, window.innerHeight);
+      // Spring easing: slight overshoot then settle feels physical rather than mechanical.
+      wrap.style.transition =
+        'left 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), top 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
+      wrap.style.left = target.left + 'px';
+      wrap.style.top = target.top + 'px';
+
+      // After spring ends, clear inline styles so React takes over via cornerPixels.
+      setTimeout(() => {
+        if (wrapRef.current) wrapRef.current.style.cssText = '';
+        setIsDragging(false);
+      }, 420);
+    } else {
+      if (wrap) wrap.style.cssText = '';
       setIsDragging(false);
-      setIsSnapping(true);
-      setTimeout(() => setIsSnapping(false), 350);
     }
-    dragStart.current = null;
+    // didDragRef intentionally NOT reset here; handleBubbleClick reads it to suppress toggle.
   }, []);
 
   function handleBubbleClick() {
-    if (didDrag.current) {
-      didDrag.current = false;
+    if (didDragRef.current) {
+      didDragRef.current = false;
       return;
     }
     if (isOpen) {
@@ -178,9 +222,13 @@ export function ChatWidget() {
     }
   }
 
+  // Skip render until window dimensions are known; prevents SSR mismatch and off-screen flash.
+  if (!win.w) return null;
+
+  const pos = cornerPixels(corner, win.w, win.h);
+
   return (
     <>
-      {/* Chat Panel */}
       {isOpen && (
         <Card
           className="fixed w-[360px] h-[500px] z-50 flex flex-col shadow-xl rounded-xl overflow-hidden animate-in slide-in-from-bottom-4 fade-in duration-200"
@@ -189,7 +237,6 @@ export function ChatWidget() {
           aria-label="Nidhi — Atmaram chat assistant"
           aria-modal="false"
         >
-          {/* Panel Header */}
           <div
             className="flex items-center justify-between px-4 shrink-0"
             style={{ backgroundColor: '#1E3A5F', height: '56px' }}
@@ -208,7 +255,6 @@ export function ChatWidget() {
             </Button>
           </div>
 
-          {/* Message List */}
           <CardContent
             className="flex flex-col flex-1 overflow-y-auto p-4 gap-3"
             style={{ backgroundColor: '#F8FAFC' }}
@@ -243,7 +289,6 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </CardContent>
 
-          {/* Composer */}
           <div className="border-t border-border p-3 bg-white flex gap-2 shrink-0">
             <Input
               ref={inputRef}
@@ -268,29 +313,26 @@ export function ChatWidget() {
         </Card>
       )}
 
-      {/* FAB Bubble — draggable, snaps to nearest corner on release */}
+      {/* Draggable FAB — wrapper div owns positioning; DOM manipulation during drag for perf */}
       <style>{BUBBLE_STYLES}</style>
-      <div className="fixed z-50" style={bubblePos(corner)}>
-        {/* Ping ring — only when closed and idle */}
-        {!isOpen && !isDragging && (
-          <span
-            className="absolute inset-0 rounded-full opacity-40 animate-ping"
-            style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}
-          />
-        )}
+      <div
+        ref={wrapRef}
+        className="fixed z-50"
+        style={{ left: pos.left, top: pos.top, touchAction: 'none' }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+      >
         <button
           ref={bubbleRef}
           onClick={handleBubbleClick}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
           style={{
             cursor: isDragging ? 'grabbing' : 'grab',
             background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 100%)',
           }}
           className={[
-            'relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center select-none nidhi-bubble',
-            isSnapping ? 'nidhi-snap' : !isDragging && !isOpen ? 'nidhi-float' : '',
+            'w-14 h-14 rounded-full shadow-lg flex items-center justify-center select-none nidhi-bubble',
+            !isDragging && !isOpen ? 'nidhi-float' : '',
           ].join(' ')}
           aria-label={isOpen ? 'Close chat' : 'Open Nidhi chat assistant'}
           aria-expanded={isOpen}
