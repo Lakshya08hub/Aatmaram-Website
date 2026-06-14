@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Stethoscope } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Doctor } from '@/lib/db/doctors';
@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { EmptyState } from '@/components/ui/empty-state';
 import {
   Table,
   TableBody,
@@ -243,13 +244,12 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
       {/* Empty state */}
       {!fetchError && initialData.length === 0 && (
-        <div className="mt-16 flex flex-col items-center gap-3 text-center">
-          <h2 className="text-base font-semibold text-slate-700">No doctors yet</h2>
-          <p className="text-sm text-slate-500">
-            Add your first doctor profile to display it on the public site.
-          </p>
-          <Button onClick={openAddSheet}>Add Doctor</Button>
-        </div>
+        <EmptyState
+          icon={Stethoscope}
+          title="No doctors yet"
+          description="Add your first doctor to display it on the public site."
+          action={<Button onClick={openAddSheet}>Add Doctor</Button>}
+        />
       )}
 
       {/* Table */}

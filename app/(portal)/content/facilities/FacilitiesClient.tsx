@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Pencil, Trash2, Loader2, Building } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Facility, FacilityCategory } from '@/lib/db/facilities';
@@ -20,6 +20,7 @@ import {
 } from '@/app/(portal)/actions/content';
 
 import { Switch } from '@/components/ui/switch';
+import { EmptyState } from '@/components/ui/empty-state';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -216,13 +217,12 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
       {/* Empty state */}
       {!fetchError && initialData.length === 0 && (
-        <div className="mt-16 flex flex-col items-center gap-3 text-center">
-          <h2 className="text-base font-semibold text-slate-700">No facilities listed yet</h2>
-          <p className="text-sm text-slate-500">
-            Add your first facility to display it on the public site.
-          </p>
-          <Button onClick={openAddDialog}>Add Facility</Button>
-        </div>
+        <EmptyState
+          icon={Building}
+          title="No facilities yet"
+          description="Add your first facility to display it on the public site."
+          action={<Button onClick={openAddDialog}>Add Facility</Button>}
+        />
       )}
 
       {/* Table */}
