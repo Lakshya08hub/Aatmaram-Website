@@ -9,6 +9,7 @@ export interface Department {
   name: string;
   description: string;
   image_url: string | null;
+  is_active: boolean;
   is_featured: boolean;
   featured_order: number;
   created_at: string;
@@ -43,18 +44,23 @@ export async function getDepartments(): Promise<Department[]> {
 export async function getFeaturedDepartments(): Promise<Department[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: featured, error: featuredErr } = await supabase
     .from('departments')
     .select('*')
-    .order('is_featured', { ascending: false })
+    .eq('is_active', true)
+    .eq('is_featured', true)
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: true });
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (featuredErr) throw new Error(featuredErr.message);
+  if (featured && featured.length > 0) return featured as Department[];
 
-  const rows = data as Department[];
-  const hasFeatured = rows.some((row) => row.is_featured);
-  return hasFeatured ? rows.filter((row) => row.is_featured) : rows;
+  const { data: all, error: allErr } = await supabase
+    .from('departments')
+    .select('*')
+    .eq('is_active', true)
+    .order('created_at', { ascending: true });
+
+  if (allErr) throw new Error(allErr.message);
+  return (all ?? []) as Department[];
 }

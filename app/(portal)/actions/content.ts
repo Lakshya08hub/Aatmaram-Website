@@ -284,6 +284,14 @@ export async function deleteFacilityAction(
 
 type FeaturedTable = 'departments' | 'doctors' | 'facilities';
 
+const ALLOWED_FEATURED_TABLES: readonly FeaturedTable[] = ['departments', 'doctors', 'facilities'];
+
+function assertAllowedTable(table: string): asserts table is FeaturedTable {
+  if (!ALLOWED_FEATURED_TABLES.includes(table as FeaturedTable)) {
+    throw new Error('Invalid table');
+  }
+}
+
 /**
  * Revalidates both locale homepages so featured changes appear immediately.
  */
@@ -303,10 +311,10 @@ export async function toggleFeatured(
   value: boolean
 ): Promise<{ error?: string }> {
   try {
+    assertAllowedTable(table);
     await requireCmsRole();
     const admin = createAdminClient();
 
-    // Cap enforcement when enabling featured (T-12-06 mitigated at input level)
     if (value) {
       if (table === 'doctors') {
         const { count, error: countErr } = await admin
@@ -322,13 +330,20 @@ export async function toggleFeatured(
           .eq('is_featured', true);
         if (countErr) throw new Error(countErr.message);
         if ((count ?? 0) >= 8) throw new Error('Maximum 8 featured departments allowed');
+      } else if (table === 'facilities') {
+        const { count, error: countErr } = await admin
+          .from('facilities')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_featured', true);
+        if (countErr) throw new Error(countErr.message);
+        if ((count ?? 0) >= 6) throw new Error('Maximum 6 featured facilities allowed');
       }
     }
 
     const { error } = await admin.from(table).update({ is_featured: value }).eq('id', id);
     if (error) throw new Error(error.message);
 
-    revalidatePath('/content/' + table);
+    revalidatePath('/portal/content/' + table);
     revalidateHomepages();
     return {};
   } catch (err) {
@@ -338,7 +353,10 @@ export async function toggleFeatured(
 
 /**
  * Update featured_order for a record in departments, doctors, or facilities.
- * T-12-06: NaN and negative order values are rejected early.
+ * Security fix: requireCmsRole() is called first — unauthenticated callers are
+ * rejected before any input validation runs. This prevents unauthenticated
+ * behavioral probing of the early-return path (SEC-01).
+ * T-12-06: NaN and negative order values are still rejected after auth check.
  */
 export async function setFeaturedOrder(
   table: FeaturedTable,
@@ -346,17 +364,20 @@ export async function setFeaturedOrder(
   order: number
 ): Promise<{ error?: string }> {
   try {
-    // Guard: reject non-numeric or negative values (T-12-06)
+    // Auth check first — never allow unauthenticated callers to observe
+    // the success path even when input is rejected (SEC-01).
+    assertAllowedTable(table);
+    await requireCmsRole();
+
     if (isNaN(order) || order < 0) return {};
 
-    await requireCmsRole();
     const { error } = await createAdminClient()
       .from(table)
       .update({ featured_order: order })
       .eq('id', id);
     if (error) throw new Error(error.message);
 
-    revalidatePath('/content/' + table);
+    revalidatePath('/portal/content/' + table);
     revalidateHomepages();
     return {};
   } catch (err) {

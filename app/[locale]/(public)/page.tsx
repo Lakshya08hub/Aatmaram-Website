@@ -133,7 +133,7 @@ export default async function HomePage({
               <DoctorCard
                 key={doctor.id}
                 name={doctor.full_name}
-                initials={doctor.full_name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()}
+                initials={(doctor.full_name ?? '').trim().split(/\s+/).filter(Boolean).map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
                 specialty={doctor.specialization}
                 bookLabel={tDoc('bookAppointment')}
               />

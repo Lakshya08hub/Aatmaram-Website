@@ -280,10 +280,20 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                         type="number"
                         min="0"
                         max="99"
-                        defaultValue={fs.order}
+                        value={fs.order}
                         className="w-14 border rounded px-1 text-sm"
-                        onBlur={async (e) => {
+                        onChange={(e) => {
                           const val = Number(e.target.value);
+                          if (e.target.value === '' || isNaN(val)) return;
+                          setFeaturedState((prev) => ({
+                            ...prev,
+                            [facility.id]: { ...prev[facility.id], order: val },
+                          }));
+                        }}
+                        onBlur={async (e) => {
+                          if (e.target.value === '') return;
+                          const val = Number(e.target.value);
+                          if (isNaN(val) || val === (facility.featured_order ?? 0)) return;
                           await setFeaturedOrder('facilities', facility.id, val);
                         }}
                       />
