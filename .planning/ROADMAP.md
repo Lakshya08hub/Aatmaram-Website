@@ -280,8 +280,21 @@ These four phases take the functional-but-plain site to a polished, engaging pro
   2. A theme toggle switches the entire site between light and dark mode; the choice persists across navigation and sessions; no element is unreadable in either theme
   3. `framer-motion` is installed and a small set of reusable animation primitives (fade-in-on-scroll, hover-lift, count-up) exist as components and are used in at least one place
   4. A shared `<EmptyState>` component (illustration + message + action slot) replaces at least one plain-text "No items yet" block
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
+
+Plans:
+
+**Wave 0** *(de-risks the dark-token approach — runs first, alone)*
+- [ ] 13-01-PLAN.md — Dark brand-token override spike + WCAG AA contrast verification (globals.css) [UI-02] [has checkpoint]
+
+**Wave 1** *(blocked on 13-01 for 13-04; 13-02/13-03 independent — all parallel, no file overlap)*
+- [ ] 13-02-PLAN.md — Shared `<EmptyState>` component [UI-04]
+- [ ] 13-03-PLAN.md — framer-motion install + FadeIn/CountUp/hover-lift primitives [UI-03] [has checkpoint: package legitimacy]
+- [ ] 13-04-PLAN.md — Portal-only dark mode wiring: provider, sidebar toggle, slate→token migration [UI-02]
+
+**Wave 2** *(blocked on 13-02, 13-03, 13-04)*
+- [ ] 13-05-PLAN.md — Adoption: homepage spacing + CountUp/FadeIn proof, EmptyState in 3 portal clients [UI-01/UI-03/UI-04]
 
 ### Phase 14: Media Infrastructure
 **Goal**: Super Admin can upload, replace, and remove images from the portal, and those images render optimized on the public site — no image is hardcoded in source
@@ -342,7 +355,7 @@ These four phases take the functional-but-plain site to a polished, engaging pro
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
-| 13. Design System Foundation | 0/TBD | Not started | - |
+| 13. Design System Foundation | 0/5 | Planned | - |
 | 14. Media Infrastructure | 0/TBD | Not started | - |
 | 15. Public Site Engagement Overhaul | 0/TBD | Not started | - |
 | 16. Portal UX Upgrade | 0/TBD | Not started | - |
