@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Exclude Next.js internals and any paths with a file extension (static files).
-    '/((?!_next|_vercel|.*\\..*).*)',
+    // Exclude Next.js internals, static files, and API routes.
+    '/((?!_next|_vercel|api|.*\\..*).*)',
   ],
 };
