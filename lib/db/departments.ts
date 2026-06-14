@@ -9,6 +9,8 @@ export interface Department {
   name: string;
   description: string;
   image_url: string | null;
+  is_featured: boolean;
+  featured_order: number;
   created_at: string;
   updated_at: string;
 }
@@ -30,4 +32,29 @@ export async function getDepartments(): Promise<Department[]> {
   }
 
   return data as Department[];
+}
+
+/**
+ * Returns featured departments for the homepage.
+ * Single query ordered by is_featured DESC, featured_order ASC, created_at ASC.
+ * If any row has is_featured = true, only those rows are returned (homepage curation).
+ * Otherwise returns all departments (fallback so the homepage section is never empty).
+ */
+export async function getFeaturedDepartments(): Promise<Department[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('departments')
+    .select('*')
+    .order('is_featured', { ascending: false })
+    .order('featured_order', { ascending: true })
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  const rows = data as Department[];
+  const hasFeatured = rows.some((row) => row.is_featured);
+  return hasFeatured ? rows.filter((row) => row.is_featured) : rows;
 }
