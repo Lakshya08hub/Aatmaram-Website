@@ -245,7 +245,7 @@ Plans:
 Plans:
 
 **Wave 1** *(no dependencies)*
-- [ ] 12-01-PLAN.md — Migration (featured columns) + getFeatured* DB query functions
+- [x] 12-01-PLAN.md — Migration (featured columns) + getFeatured* DB query functions
 
 **Wave 2** *(blocked on 12-01 — parallel, no file overlap)*
 - [ ] 12-02-PLAN.md — FacilityCard component + homepage wired to Supabase (force-dynamic, three sections)
@@ -278,4 +278,4 @@ Plans:
 | 9. Payroll Tracker | 0/4 | Planned | - |
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
-| 12. Homepage Content Curation | 0/4 | Planned | - |
+| 12. Homepage Content Curation | 1/4 | In Progress|  |
