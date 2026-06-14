@@ -2,6 +2,22 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { MessageCircle, X, SendHorizonal } from 'lucide-react';
+
+const BUBBLE_STYLES = `
+  @keyframes nidhi-float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50%       { transform: translateY(-5px) scale(1.03); }
+  }
+  @keyframes nidhi-snap {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(0.82); }
+    70%  { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+  .nidhi-float  { animation: nidhi-float 3s ease-in-out infinite; }
+  .nidhi-snap   { animation: nidhi-snap 0.35s cubic-bezier(.36,.07,.19,.97); }
+  .nidhi-bubble:hover { animation: none; }
+`;
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -49,6 +65,7 @@ export function ChatWidget() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [corner, setCorner] = useState<Corner>('bottom-right');
   const [isDragging, setIsDragging] = useState(false);
+  const [isSnapping, setIsSnapping] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -90,6 +107,8 @@ export function ChatWidget() {
     if (didDrag.current) {
       setCorner(snapToCorner(e.clientX, e.clientY));
       setIsDragging(false);
+      setIsSnapping(true);
+      setTimeout(() => setIsSnapping(false), 350);
     }
     dragStart.current = null;
   }, []);
@@ -250,27 +269,39 @@ export function ChatWidget() {
       )}
 
       {/* FAB Bubble — draggable, snaps to nearest corner on release */}
-      <button
-        ref={bubbleRef}
-        onClick={handleBubbleClick}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        style={{
-          ...bubblePos(corner),
-          cursor: isDragging ? 'grabbing' : 'grab',
-          background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 100%)',
-        }}
-        className="fixed w-14 h-14 rounded-full z-50 shadow-lg hover:scale-105 transition-transform duration-150 flex items-center justify-center select-none"
-        aria-label={isOpen ? 'Close chat' : 'Open Nidhi chat assistant'}
-        aria-expanded={isOpen}
-      >
-        {isOpen ? (
-          <X size={24} className="text-white" />
-        ) : (
-          <MessageCircle size={24} className="text-white" />
+      <style>{BUBBLE_STYLES}</style>
+      <div className="fixed z-50" style={bubblePos(corner)}>
+        {/* Ping ring — only when closed and idle */}
+        {!isOpen && !isDragging && (
+          <span
+            className="absolute inset-0 rounded-full opacity-40 animate-ping"
+            style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}
+          />
         )}
-      </button>
+        <button
+          ref={bubbleRef}
+          onClick={handleBubbleClick}
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          style={{
+            cursor: isDragging ? 'grabbing' : 'grab',
+            background: 'linear-gradient(135deg, #38bdf8 0%, #818cf8 100%)',
+          }}
+          className={[
+            'relative w-14 h-14 rounded-full shadow-lg flex items-center justify-center select-none nidhi-bubble',
+            isSnapping ? 'nidhi-snap' : !isDragging && !isOpen ? 'nidhi-float' : '',
+          ].join(' ')}
+          aria-label={isOpen ? 'Close chat' : 'Open Nidhi chat assistant'}
+          aria-expanded={isOpen}
+        >
+          {isOpen ? (
+            <X size={24} className="text-white" />
+          ) : (
+            <MessageCircle size={24} className="text-white" />
+          )}
+        </button>
+      </div>
     </>
   );
 }
