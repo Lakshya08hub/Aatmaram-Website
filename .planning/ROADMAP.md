@@ -2,7 +2,7 @@
 
 ## Overview
 
-Eleven sequential phases take this project from a blank Next.js repo to a fully operational bilingual hospital website with an integrated management portal. The first three phases establish the public-facing deliverable (the paid client work). Phases 4 through 11 layer in the full portal capabilities that are the gift to the client. Each phase delivers a coherent, independently verifiable capability before the next begins.
+Sixteen sequential phases take this project from a blank Next.js repo to a polished, engaging bilingual hospital website with an integrated management portal. Phases 1–3 establish the public-facing deliverable (the paid client work). Phases 4–12 layer in the full portal capabilities and content management that are the gift to the client. Phases 13–16 are a UI overhaul milestone that lifts both the public site and the portal from functional to genuinely engaging. Each phase delivers a coherent, independently verifiable capability before the next begins.
 
 ## Phases
 
@@ -24,6 +24,10 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 10: Analytics Dashboard** - GA embed + ops numbers + staff summary
 - [ ] **Phase 11: Gemini Chat** - Widget on public site, hospital info knowledge base
 - [x] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3) (completed 2026-06-14)
+- [ ] **Phase 13: Design System Foundation** - 8pt spacing system, dark mode, motion library (framer-motion), shared empty-state component — cross-cutting primitives for the UI overhaul
+- [ ] **Phase 14: Media Infrastructure** - Supabase Storage bucket + Super Admin image upload UI + optimized image rendering, so all photos (hero, doctors, facilities, testimonials) are client-managed
+- [ ] **Phase 15: Public Site Engagement Overhaul** - Full-bleed hero, testimonials/social-proof strip, PM-JAY explainer, prominent bilingual toggle, scroll/hover motion across all public pages
+- [ ] **Phase 16: Portal UX Upgrade** - Analytics dashboard with live charts, kanban appointment queue, inline table editing, dark mode + empty states applied portal-wide
 
 ---
 
@@ -261,9 +265,68 @@ Plans:
 
 ---
 
+## UI Overhaul Milestone (Phases 13–16)
+
+These four phases take the functional-but-plain site to a polished, engaging product across both the public site and the portal. They derive from a 12-point UI review (2026-06-14). Super Admin manages all media, so the build provides the upload infrastructure rather than hardcoding assets.
+
+**Dependency graph:** 13 → (14 ∥ 16) → 15. Phase 13 ships the design primitives everything else consumes. Phase 15 depends on both Phase 13 (motion) and Phase 14 (uploaded images). Phase 16 only needs Phase 13.
+
+### Phase 13: Design System Foundation
+**Goal**: A reusable design layer — consistent spacing, dark mode, motion primitives, and a shared empty-state component — exists and is adopted by at least one public and one portal surface as proof
+**Depends on**: Phase 12
+**Requirements**: UI-01, UI-02, UI-03, UI-04
+**Success Criteria** (what must be TRUE):
+  1. An 8pt spacing scale is defined in the Tailwind config and section padding is unified across all existing pages (no ad-hoc `py-16`/`py-24` divergence)
+  2. A theme toggle switches the entire site between light and dark mode; the choice persists across navigation and sessions; no element is unreadable in either theme
+  3. `framer-motion` is installed and a small set of reusable animation primitives (fade-in-on-scroll, hover-lift, count-up) exist as components and are used in at least one place
+  4. A shared `<EmptyState>` component (illustration + message + action slot) replaces at least one plain-text "No items yet" block
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 14: Media Infrastructure
+**Goal**: Super Admin can upload, replace, and remove images from the portal, and those images render optimized on the public site — no image is hardcoded in source
+**Depends on**: Phase 12
+**Requirements**: MEDIA-01, MEDIA-02, MEDIA-03, MEDIA-04
+**Success Criteria** (what must be TRUE):
+  1. A Supabase Storage bucket exists with RLS allowing Super Admin/Admin writes and public reads
+  2. Portal forms for doctors, departments, and facilities include an image upload control that stores the file and saves its public URL to the record
+  3. Uploaded images render through `next/image` with correct sizing, lazy loading, and a fallback for records without an image
+  4. Super Admin can upload site-level images (hero background, testimonials avatars) from a dedicated portal media section
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 15: Public Site Engagement Overhaul
+**Goal**: Every public page is visually engaging — a full-bleed hero, social proof, a PM-JAY explainer, a prominent language toggle, and motion throughout — using client-managed media and the Phase 13 primitives
+**Depends on**: Phase 13, Phase 14
+**Requirements**: PUBUI-01, PUBUI-02, PUBUI-03, PUBUI-04, PUBUI-05
+**Success Criteria** (what must be TRUE):
+  1. The homepage hero is full-bleed with a client-uploaded background image/overlay and a clear primary CTA above the fold
+  2. A testimonials/social-proof strip displays at least three patient quotes with names and star ratings, content managed from the portal
+  3. A PM-JAY explainer section tells eligible patients what Ayushman Bharat means for them with a clear "check eligibility / contact" CTA
+  4. The EN/HI language toggle is prominent in the header and obvious to a first-time Hindi-speaking visitor
+  5. Scroll-in and hover motion (from Phase 13 primitives) is applied across the hero, trust band (count-up), and card grids without harming performance or accessibility (`prefers-reduced-motion` respected)
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 16: Portal UX Upgrade
+**Goal**: The portal feels like a management product, not a set of CRUD tables — a real dashboard, a kanban appointment queue, inline editing, and the Phase 13 dark mode / empty states applied throughout
+**Depends on**: Phase 13
+**Requirements**: PORTUI-01, PORTUI-02, PORTUI-03, PORTUI-04
+**Success Criteria** (what must be TRUE):
+  1. The portal dashboard shows live charts — appointments over time, patient admissions trend, staff-on-duty, and current-month payroll total — sourced from existing Supabase data
+  2. The appointment request queue offers a kanban view (Pending → Contacted → Confirmed → Completed/Cancelled) where staff move a request by dragging or a one-click status action
+  3. Common edits (name, status, featured order, notes) can be done inline in the table without opening a dialog
+  4. Dark mode and the shared empty-state component from Phase 13 are applied across all portal sections
+**Plans**: TBD
+**UI hint**: yes
+
+---
+
 ## Progress
 
-**Execution Order:** Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12
+**Execution Order:** Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10 → 11 → 12 → 13 → 14 → 15 → 16
+
+*UI Overhaul note:* Phase 13 must precede 14–16. Phases 14 and 16 can run in parallel after 13. Phase 15 requires both 13 and 14 complete.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -279,3 +342,7 @@ Plans:
 | 10. Analytics Dashboard | 0/TBD | Not started | - |
 | 11. Gemini Chat | 0/2 | Planned | - |
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
+| 13. Design System Foundation | 0/TBD | Not started | - |
+| 14. Media Infrastructure | 0/TBD | Not started | - |
+| 15. Public Site Engagement Overhaul | 0/TBD | Not started | - |
+| 16. Portal UX Upgrade | 0/TBD | Not started | - |

@@ -26,6 +26,10 @@ A credible, professional online presence for the hospital that lets patients fin
 - [ ] Monthly payroll tracker (mark-as-paid, history)
 - [ ] Analytics dashboard (GA embed + appointment ops + staff summary)
 - [ ] All public content editable from the portal (departments, facilities, doctors)
+- [ ] Reusable design system: 8pt spacing, dark mode, motion primitives, shared empty states (Phase 13)
+- [ ] Super Admin media management: image upload to Supabase Storage, optimized rendering (Phase 14)
+- [ ] Engaging public site: full-bleed hero, testimonials, PM-JAY explainer, prominent language toggle, scroll/hover motion (Phase 15)
+- [ ] Portal UX upgrade: dashboard charts, kanban appointment queue, inline editing, dark mode (Phase 16)
 
 ### Out of Scope
 
