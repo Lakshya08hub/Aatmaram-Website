@@ -15,7 +15,11 @@ import {
   createDepartmentAction,
   updateDepartmentAction,
   deleteDepartmentAction,
+  toggleFeatured,
+  setFeaturedOrder,
 } from '@/app/(portal)/actions/content';
+
+import { Switch } from '@/components/ui/switch';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -72,6 +76,17 @@ interface Props {
 
 export default function DepartmentsClient({ initialData, fetchError }: Props) {
   const router = useRouter();
+
+  // Featured optimistic state: record id -> { isFeatured, order }
+  const [featuredState, setFeaturedState] = useState<
+    Record<string, { isFeatured: boolean; order: number }>
+  >(() =>
+    Object.fromEntries(
+      initialData.map((d) => [d.id, { isFeatured: d.is_featured ?? false, order: d.featured_order ?? 0 }])
+    )
+  );
+
+  const featuredCount = Object.values(featuredState).filter((s) => s.isFeatured).length;
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -198,47 +213,87 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
         <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <p className="px-4 pt-3 text-sm text-slate-500">{featuredCount} of 8 featured</p>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Description</TableHead>
+                <TableHead>Featured</TableHead>
+                <TableHead>Order</TableHead>
                 <TableHead className="w-24 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {initialData.map((dept) => (
-                <TableRow key={dept.id}>
-                  <TableCell className="font-medium">{dept.name}</TableCell>
-                  <TableCell className="text-slate-500">
-                    {dept.description.length > 60
-                      ? dept.description.slice(0, 60) + '…'
-                      : dept.description}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="p-2 h-10 w-10"
-                        aria-label={`Edit ${dept.name}`}
-                        onClick={() => openEditDialog(dept)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="p-2 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        aria-label={`Delete ${dept.name}`}
-                        onClick={() => setDeleteTarget(dept)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {initialData.map((dept) => {
+                const fs = featuredState[dept.id] ?? { isFeatured: dept.is_featured ?? false, order: dept.featured_order ?? 0 };
+                return (
+                  <TableRow key={dept.id}>
+                    <TableCell className="font-medium">{dept.name}</TableCell>
+                    <TableCell className="text-slate-500">
+                      {dept.description.length > 60
+                        ? dept.description.slice(0, 60) + '…'
+                        : dept.description}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex min-h-[44px] items-center">
+                        <Switch
+                          checked={fs.isFeatured}
+                          onCheckedChange={async (checked) => {
+                            setFeaturedState((prev) => ({
+                              ...prev,
+                              [dept.id]: { ...prev[dept.id], isFeatured: checked },
+                            }));
+                            const result = await toggleFeatured('departments', dept.id, checked);
+                            if (result.error) {
+                              toast.error(result.error);
+                              setFeaturedState((prev) => ({
+                                ...prev,
+                                [dept.id]: { ...prev[dept.id], isFeatured: !checked },
+                              }));
+                            }
+                          }}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        defaultValue={fs.order}
+                        className="w-14 border rounded px-1 text-sm"
+                        onBlur={async (e) => {
+                          const val = Number(e.target.value);
+                          await setFeaturedOrder('departments', dept.id, val);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="p-2 h-10 w-10"
+                          aria-label={`Edit ${dept.name}`}
+                          onClick={() => openEditDialog(dept)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="p-2 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          aria-label={`Delete ${dept.name}`}
+                          onClick={() => setDeleteTarget(dept)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>

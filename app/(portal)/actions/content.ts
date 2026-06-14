@@ -279,6 +279,92 @@ export async function deleteFacilityAction(
 }
 
 // ---------------------------------------------------------------------------
+// Featured curation actions (Phase 12)
+// ---------------------------------------------------------------------------
+
+type FeaturedTable = 'departments' | 'doctors' | 'facilities';
+
+/**
+ * Revalidates both locale homepages so featured changes appear immediately.
+ */
+function revalidateHomepages(): void {
+  revalidatePath('/en');
+  revalidatePath('/hi');
+}
+
+/**
+ * Toggle is_featured for a record in departments, doctors, or facilities.
+ * Enforces max caps: departments <= 8, doctors <= 3.
+ * T-12-05: requireCmsRole() guards all writes.
+ */
+export async function toggleFeatured(
+  table: FeaturedTable,
+  id: string,
+  value: boolean
+): Promise<{ error?: string }> {
+  try {
+    await requireCmsRole();
+    const admin = createAdminClient();
+
+    // Cap enforcement when enabling featured (T-12-06 mitigated at input level)
+    if (value) {
+      if (table === 'doctors') {
+        const { count, error: countErr } = await admin
+          .from('doctors')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_featured', true);
+        if (countErr) throw new Error(countErr.message);
+        if ((count ?? 0) >= 3) throw new Error('Maximum 3 featured doctors allowed');
+      } else if (table === 'departments') {
+        const { count, error: countErr } = await admin
+          .from('departments')
+          .select('id', { count: 'exact', head: true })
+          .eq('is_featured', true);
+        if (countErr) throw new Error(countErr.message);
+        if ((count ?? 0) >= 8) throw new Error('Maximum 8 featured departments allowed');
+      }
+    }
+
+    const { error } = await admin.from(table).update({ is_featured: value }).eq('id', id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/content/' + table);
+    revalidateHomepages();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+/**
+ * Update featured_order for a record in departments, doctors, or facilities.
+ * T-12-06: NaN and negative order values are rejected early.
+ */
+export async function setFeaturedOrder(
+  table: FeaturedTable,
+  id: string,
+  order: number
+): Promise<{ error?: string }> {
+  try {
+    // Guard: reject non-numeric or negative values (T-12-06)
+    if (isNaN(order) || order < 0) return {};
+
+    await requireCmsRole();
+    const { error } = await createAdminClient()
+      .from(table)
+      .update({ featured_order: order })
+      .eq('id', id);
+    if (error) throw new Error(error.message);
+
+    revalidatePath('/content/' + table);
+    revalidateHomepages();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Hospital Info actions (CMS-03)
 // ---------------------------------------------------------------------------
 

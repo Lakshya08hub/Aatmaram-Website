@@ -16,6 +16,8 @@ import {
   createDoctorAction,
   updateDoctorAction,
   deleteDoctorAction,
+  toggleFeatured,
+  setFeaturedOrder,
 } from '@/app/(portal)/actions/content';
 
 import { Button } from '@/components/ui/button';
@@ -81,6 +83,17 @@ interface Props {
 
 export default function DoctorsClient({ initialData, fetchError }: Props) {
   const router = useRouter();
+
+  // Featured optimistic state: record id -> { isFeatured, order }
+  const [featuredState, setFeaturedState] = useState<
+    Record<string, { isFeatured: boolean; order: number }>
+  >(() =>
+    Object.fromEntries(
+      initialData.map((d) => [d.id, { isFeatured: d.is_featured ?? false, order: d.featured_order ?? 0 }])
+    )
+  );
+
+  const featuredCount = Object.values(featuredState).filter((s) => s.isFeatured).length;
 
   // Sheet state
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -242,55 +255,95 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
         <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <p className="px-4 pt-3 text-sm text-slate-500">{featuredCount} of 3 featured</p>
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Full Name</TableHead>
                 <TableHead>Specialization</TableHead>
                 <TableHead>Active</TableHead>
+                <TableHead>Featured</TableHead>
+                <TableHead>Order</TableHead>
                 <TableHead className="w-24 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {initialData.map((doctor) => (
-                <TableRow key={doctor.id}>
-                  <TableCell className="font-medium">{doctor.full_name}</TableCell>
-                  <TableCell className="text-slate-500">{doctor.specialization}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                        doctor.is_active
-                          ? 'bg-green-50 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}
-                    >
-                      {doctor.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="p-2 h-10 w-10"
-                        aria-label={`Edit ${doctor.full_name}`}
-                        onClick={() => openEditSheet(doctor)}
+              {initialData.map((doctor) => {
+                const fs = featuredState[doctor.id] ?? { isFeatured: doctor.is_featured ?? false, order: doctor.featured_order ?? 0 };
+                return (
+                  <TableRow key={doctor.id}>
+                    <TableCell className="font-medium">{doctor.full_name}</TableCell>
+                    <TableCell className="text-slate-500">{doctor.specialization}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                          doctor.is_active
+                            ? 'bg-green-50 text-green-700'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}
                       >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="p-2 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50"
-                        aria-label={`Delete ${doctor.full_name}`}
-                        onClick={() => setDeleteTarget(doctor)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                        {doctor.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex min-h-[44px] items-center">
+                        <Switch
+                          checked={fs.isFeatured}
+                          onCheckedChange={async (checked) => {
+                            setFeaturedState((prev) => ({
+                              ...prev,
+                              [doctor.id]: { ...prev[doctor.id], isFeatured: checked },
+                            }));
+                            const result = await toggleFeatured('doctors', doctor.id, checked);
+                            if (result.error) {
+                              toast.error(result.error);
+                              setFeaturedState((prev) => ({
+                                ...prev,
+                                [doctor.id]: { ...prev[doctor.id], isFeatured: !checked },
+                              }));
+                            }
+                          }}
+                        />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <input
+                        type="number"
+                        min="0"
+                        max="99"
+                        defaultValue={fs.order}
+                        className="w-14 border rounded px-1 text-sm"
+                        onBlur={async (e) => {
+                          const val = Number(e.target.value);
+                          await setFeaturedOrder('doctors', doctor.id, val);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="p-2 h-10 w-10"
+                          aria-label={`Edit ${doctor.full_name}`}
+                          onClick={() => openEditSheet(doctor)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="p-2 h-10 w-10 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          aria-label={`Delete ${doctor.full_name}`}
+                          onClick={() => setDeleteTarget(doctor)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
