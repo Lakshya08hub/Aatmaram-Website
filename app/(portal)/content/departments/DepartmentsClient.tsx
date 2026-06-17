@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Pencil, Trash2, Loader2, Building2 } from 'lucide-react';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 import { Department } from '@/lib/db/departments';
 import {
@@ -18,6 +19,7 @@ import {
   toggleFeatured,
   setFeaturedOrder,
 } from '@/app/(portal)/actions/content';
+import { uploadImageAction } from '@/app/(portal)/actions/media';
 
 import { Switch } from '@/components/ui/switch';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -61,7 +63,7 @@ const departmentSchema = z.object({
     .string()
     .min(1, 'Description is required')
     .max(500, 'Description must be 500 characters or fewer'),
-  image_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  image_url: z.string().optional(),
 });
 
 type DepartmentFormValues = z.infer<typeof departmentSchema>;
@@ -98,10 +100,14 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
   const [deleteTarget, setDeleteTarget] = useState<Department | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   const {
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<DepartmentFormValues>({
     resolver: zodResolver(departmentSchema),
@@ -349,16 +355,47 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="dept-image-url" className="text-sm font-medium text-slate-700">
-                Image URL <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="text-sm font-medium text-slate-700">
+                Image <span className="text-slate-400 font-normal">(optional)</span>
               </label>
-              <Input
-                id="dept-image-url"
-                placeholder="https://example.com/image.jpg"
-                {...register('image_url')}
+              {watch('image_url') && (
+                <div className="relative w-20 h-20 overflow-hidden rounded border border-slate-200">
+                  <Image src={watch('image_url')!} alt="Preview" fill className="object-cover" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploadingImage || !editingDepartment}
+                className="block text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !editingDepartment) return;
+                  setUploadingImage(true);
+                  try {
+                    const fd = new FormData();
+                    fd.append('image', file);
+                    const result = await uploadImageAction(fd, 'departments', editingDepartment.id, 'departments', 'image_url');
+                    if (result.url) {
+                      setValue('image_url', result.url);
+                      toast.success('Image uploaded');
+                      router.refresh();
+                    } else if (result.error) {
+                      toast.error(result.error);
+                    }
+                  } finally {
+                    setUploadingImage(false);
+                  }
+                }}
               />
-              {errors.image_url && (
-                <p className="text-xs text-red-500">{errors.image_url.message}</p>
+              {!editingDepartment && (
+                <p className="text-xs text-slate-400">Save the department first, then upload an image.</p>
+              )}
+              {uploadingImage && (
+                <p className="text-xs text-slate-500 flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Uploading…
+                </p>
               )}
             </div>
 
