@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -9,20 +10,27 @@ interface DoctorCardProps {
   initials: string;
   specialty: string;
   bookLabel: string;
+  photoUrl?: string | null;
 }
 
-export function DoctorCard({ name, initials, specialty, bookLabel }: DoctorCardProps) {
+export function DoctorCard({ name, initials, specialty, bookLabel, photoUrl }: DoctorCardProps) {
   return (
     <Card className="bg-white border border-slate-200 rounded-xl shadow-sm">
       <CardContent className="p-6 flex flex-col items-center text-center">
-        <div
-          className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center"
-          aria-label={'Doctor avatar for ' + name}
-        >
-          <span className="text-blue-800 font-semibold text-xl">
-            {initials}
-          </span>
-        </div>
+        {photoUrl && photoUrl.length > 0 ? (
+          <div className="w-20 h-20 rounded-full overflow-hidden relative">
+            <Image src={photoUrl} alt={name + ' photo'} fill sizes="80px" className="object-cover" />
+          </div>
+        ) : (
+          <div
+            className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center"
+            aria-label={'Doctor avatar for ' + name}
+          >
+            <span className="text-blue-800 font-semibold text-xl">
+              {initials}
+            </span>
+          </div>
+        )}
         <h3 className="text-xl font-semibold text-slate-900 mt-4">
           {name}
         </h3>
