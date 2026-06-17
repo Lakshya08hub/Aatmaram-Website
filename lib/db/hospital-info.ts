@@ -13,6 +13,7 @@ export interface HospitalInfo {
   address_line2: string | null;
   city: string;
   maps_embed_url: string | null;
+  hero_image_url: string | null;
   updated_at: string;
 }
 
