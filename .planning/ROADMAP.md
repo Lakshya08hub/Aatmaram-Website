@@ -356,6 +356,6 @@ Plans:
 | 11. Gemini Chat | 0/2 | Planned | - |
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
 | 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
-| 14. Media Infrastructure | 0/TBD | Not started | - |
+| 14. Media Infrastructure | 0/6 | Planning complete | - |
 | 15. Public Site Engagement Overhaul | 0/TBD | Not started | - |
 | 16. Portal UX Upgrade | 0/TBD | Not started | - |
