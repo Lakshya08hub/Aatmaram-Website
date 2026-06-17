@@ -14,6 +14,7 @@ export interface SectionConfig {
 export const ALL_SECTIONS: SectionConfig[] = [
   { key: 'dashboard',     label: 'Dashboard',     href: '/dashboard' },
   { key: 'content',       label: 'Content',       href: '/content' },
+  { key: 'media',         label: 'Media',         href: '/media' },
   { key: 'staff',         label: 'Staff',         href: '/staff' },
   { key: 'appointments',  label: 'Appointments',  href: '/appointments' },
   { key: 'patients',      label: 'Patients',      href: '/patients' },
@@ -31,8 +32,8 @@ export const ALL_SECTIONS: SectionConfig[] = [
  *   doctor       — dashboard + patients (own patients only — enforced in Phase 8)
  */
 export const ROLE_SECTIONS: Record<StaffRole, string[]> = {
-  super_admin:  ['dashboard', 'content', 'staff', 'appointments', 'patients', 'payroll', 'analytics', 'settings'],
-  admin:        ['dashboard', 'content', 'staff', 'appointments', 'patients', 'payroll', 'analytics'],
+  super_admin:  ['dashboard', 'content', 'media', 'staff', 'appointments', 'patients', 'payroll', 'analytics', 'settings'],
+  admin:        ['dashboard', 'content', 'media', 'staff', 'appointments', 'patients', 'payroll', 'analytics'],
   receptionist: ['dashboard', 'appointments', 'patients'],
   doctor:       ['dashboard', 'patients'],
 };
