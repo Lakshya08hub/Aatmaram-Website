@@ -9,6 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Pencil, Trash2, Loader2, Building } from 'lucide-react';
 import { toast } from 'sonner';
+import Image from 'next/image';
 
 import { Facility, FacilityCategory } from '@/lib/db/facilities';
 import {
@@ -18,6 +19,7 @@ import {
   toggleFeatured,
   setFeaturedOrder,
 } from '@/app/(portal)/actions/content';
+import { uploadImageAction } from '@/app/(portal)/actions/media';
 
 import { Switch } from '@/components/ui/switch';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -72,6 +74,7 @@ const facilitySchema = z.object({
     .min(1, 'Description is required')
     .max(300, 'Description must be 300 characters or fewer'),
   category: z.enum(['OPD', 'ICU', 'Diagnostics', 'Surgery', 'Other']),
+  image_url: z.string().optional(),
 });
 
 type FacilityFormValues = z.infer<typeof facilitySchema>;
@@ -99,6 +102,8 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
   const featuredCount = Object.values(featuredState).filter((s) => s.isFeatured).length;
 
+  const [uploadingImage, setUploadingImage] = useState(false);
+
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingFacility, setEditingFacility] = useState<Facility | null>(null);
@@ -117,7 +122,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
     formState: { errors },
   } = useForm<FacilityFormValues>({
     resolver: zodResolver(facilitySchema),
-    defaultValues: { category: 'OPD' },
+    defaultValues: { category: 'OPD', image_url: '' },
   });
 
   const watchedCategory = watch('category');
@@ -128,7 +133,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
   function openAddDialog() {
     setEditingFacility(null);
-    reset({ name: '', description: '', category: 'OPD' });
+    reset({ name: '', description: '', category: 'OPD', image_url: '' });
     setDialogOpen(true);
   }
 
@@ -138,6 +143,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
       name: facility.name,
       description: facility.description,
       category: facility.category,
+      image_url: facility.image_url ?? '',
     });
     setDialogOpen(true);
   }
@@ -156,11 +162,13 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
             name: values.name,
             description: values.description,
             category: values.category,
+            image_url: values.image_url || undefined,
           })
         : await createFacilityAction({
             name: values.name,
             description: values.description,
             category: values.category,
+            image_url: values.image_url || undefined,
           });
 
       if (result.error) {
@@ -386,6 +394,51 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
               </Select>
               {errors.category && (
                 <p className="text-xs text-red-500">{errors.category.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-slate-700">
+                Image <span className="text-slate-400 font-normal">(optional)</span>
+              </label>
+              {watch('image_url') && (
+                <div className="relative w-40 aspect-video overflow-hidden rounded border border-slate-200">
+                  <Image src={watch('image_url')!} alt="Preview" fill className="object-cover" />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                disabled={uploadingImage || !editingFacility}
+                className="block text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file || !editingFacility) return;
+                  setUploadingImage(true);
+                  try {
+                    const fd = new FormData();
+                    fd.append('image', file);
+                    const result = await uploadImageAction(fd, 'facilities', editingFacility.id, 'facilities', 'image_url');
+                    if (result.url) {
+                      setValue('image_url', result.url);
+                      toast.success('Image uploaded');
+                      router.refresh();
+                    } else if (result.error) {
+                      toast.error(result.error);
+                    }
+                  } finally {
+                    setUploadingImage(false);
+                  }
+                }}
+              />
+              {!editingFacility && (
+                <p className="text-xs text-slate-400">Save the facility first, then upload an image.</p>
+              )}
+              {uploadingImage && (
+                <p className="text-xs text-slate-500 flex items-center gap-1">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Uploading…
+                </p>
               )}
             </div>
 

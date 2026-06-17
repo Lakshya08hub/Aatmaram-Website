@@ -221,6 +221,7 @@ export async function createFacilityAction(input: {
   name: string;
   description: string;
   category: FacilityCategory;
+  image_url?: string;
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -228,6 +229,7 @@ export async function createFacilityAction(input: {
       name: input.name,
       description: input.description,
       category: input.category,
+      image_url: input.image_url || null,
     });
 
     if (error) throw new Error(error.message);
@@ -241,7 +243,7 @@ export async function createFacilityAction(input: {
 
 export async function updateFacilityAction(
   id: string,
-  input: Partial<{ name: string; description: string; category: FacilityCategory }>
+  input: Partial<{ name: string; description: string; category: FacilityCategory; image_url: string }>
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();

@@ -9,7 +9,6 @@ export interface Department {
   name: string;
   description: string;
   image_url: string | null;
-  is_active: boolean;
   is_featured: boolean;
   featured_order: number;
   created_at: string;
@@ -47,7 +46,6 @@ export async function getFeaturedDepartments(): Promise<Department[]> {
   const { data: featured, error: featuredErr } = await supabase
     .from('departments')
     .select('*')
-    .eq('is_active', true)
     .eq('is_featured', true)
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: true });
@@ -58,7 +56,6 @@ export async function getFeaturedDepartments(): Promise<Department[]> {
   const { data: all, error: allErr } = await supabase
     .from('departments')
     .select('*')
-    .eq('is_active', true)
     .order('created_at', { ascending: true });
 
   if (allErr) throw new Error(allErr.message);

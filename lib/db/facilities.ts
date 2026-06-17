@@ -11,6 +11,7 @@ export interface Facility {
   name: string;
   description: string;
   category: FacilityCategory;
+  image_url: string | null;
   is_featured: boolean;
   featured_order: number;
   created_at: string;
