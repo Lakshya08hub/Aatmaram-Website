@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
@@ -13,6 +14,7 @@ import { CountUp } from '@/components/motion/count-up';
 import { getFeaturedDepartments } from '@/lib/db/departments';
 import { getFeaturedDoctors } from '@/lib/db/doctors';
 import { getFeaturedFacilities } from '@/lib/db/facilities';
+import { getHospitalInfo } from '@/lib/db/hospital-info';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,11 +32,14 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [departments, doctors, facilities] = await Promise.all([
+  const [departments, doctors, facilities, info] = await Promise.all([
     getFeaturedDepartments(),
     getFeaturedDoctors(),
     getFeaturedFacilities(),
+    getHospitalInfo(),
   ]);
+
+  const heroImageUrl = info?.hero_image_url ?? null;
 
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
@@ -44,37 +49,73 @@ export default async function HomePage({
   return (
     <main>
       {/* Section 1 — Hero */}
-      <section className="bg-white py-16 md:py-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-            {t('hero.headline')}
-          </h1>
-          <p className="text-lg text-slate-500 mt-4">
-            {t('hero.tagline')}
-          </p>
-          <div className="mt-6 flex justify-center">
-            <PMJAYBadge />
-          </div>
-          <div className="mt-8">
-            <Link href="/appointment">
-              <Button
-                size="lg"
-                className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
+      {heroImageUrl && heroImageUrl.length > 0 ? (
+        <section className="relative py-16 md:py-24 px-4 overflow-hidden">
+          <Image src={heroImageUrl} alt="" fill sizes="100vw" className="object-cover object-center -z-10" priority />
+          <div className="absolute inset-0 bg-white/70 -z-10" />
+          <div className="relative max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
+              {t('hero.headline')}
+            </h1>
+            <p className="text-lg text-slate-500 mt-4">
+              {t('hero.tagline')}
+            </p>
+            <div className="mt-6 flex justify-center">
+              <PMJAYBadge />
+            </div>
+            <div className="mt-8">
+              <Link href="/appointment">
+                <Button
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
+                >
+                  {t('hero.cta')}
+                </Button>
+              </Link>
+            </div>
+            <div className="mt-4">
+              <Link
+                href="/services"
+                className="text-blue-800 underline text-sm"
               >
-                {t('hero.cta')}
-              </Button>
-            </Link>
+                {t('hero.secondaryLink')}
+              </Link>
+            </div>
           </div>
-          <div className="mt-4">
-            <Link
-              href="/services"
-              className="text-blue-800 underline text-sm"
-            >
-              {t('hero.secondaryLink')}
-            </Link>
+        </section>
+      ) : (
+        <section className="bg-white py-16 md:py-24 px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
+              {t('hero.headline')}
+            </h1>
+            <p className="text-lg text-slate-500 mt-4">
+              {t('hero.tagline')}
+            </p>
+            <div className="mt-6 flex justify-center">
+              <PMJAYBadge />
+            </div>
+            <div className="mt-8">
+              <Link href="/appointment">
+                <Button
+                  size="lg"
+                  className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
+                >
+                  {t('hero.cta')}
+                </Button>
+              </Link>
+            </div>
+            <div className="mt-4">
+              <Link
+                href="/services"
+                className="text-blue-800 underline text-sm"
+              >
+                {t('hero.secondaryLink')}
+              </Link>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Section 2 — Trust Signals Band */}
       <section className="bg-blue-800 py-8">
@@ -117,6 +158,7 @@ export default async function HomePage({
                 key={dept.id}
                 name={dept.name}
                 description={dept.description}
+                imageUrl={dept.image_url}
               />
             ))}
           </div>
@@ -138,6 +180,7 @@ export default async function HomePage({
                 initials={(doctor.full_name ?? '').trim().split(/\s+/).filter(Boolean).map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
                 specialty={doctor.specialization}
                 bookLabel={tDoc('bookAppointment')}
+                photoUrl={doctor.photo_url}
               />
             ))}
           </div>
@@ -162,6 +205,7 @@ export default async function HomePage({
                 key={facility.id}
                 name={facility.name}
                 description={facility.description}
+                imageUrl={facility.image_url}
               />
             ))}
           </div>
