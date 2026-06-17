@@ -90,6 +90,14 @@
 - [ ] **PAY-03**: Payment history per staff member is viewable
 - [ ] **PAY-04**: Monthly payroll total (sum of all salaries) is displayed as a summary card
 
+
+### Media Infrastructure
+
+- [ ] **MEDIA-01**: SQL migration adds hero_image_url column to hospital_info, creates media Storage bucket (public read), and applies RLS write policy for admin roles
+- [ ] **MEDIA-02**: Admin can upload images for doctors, departments, and facilities via inline file inputs on existing CRUD edit forms; upload is disabled on create forms
+- [ ] **MEDIA-03**: Public site renders doctor photos, department images, and facility images via next/image with existing fallbacks preserved when no image is uploaded
+- [ ] **MEDIA-04**: Admin can upload a hero background image for the homepage via a dedicated portal Media section; homepage renders it via next/image with a plain background fallback
+
 ### Analytics Dashboard
 
 - [ ] **ANA-01**: Portal analytics page embeds Google Analytics (GA4 script tag) for website traffic data

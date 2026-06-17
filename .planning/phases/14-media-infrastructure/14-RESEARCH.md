@@ -446,22 +446,25 @@ export function DoctorCard({ name, initials, specialty, bookLabel, photoUrl }: D
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Facilities `image_url` column**
    - What we know: The CMS migration defines `facilities` without `image_url`; `FacilitiesClient.tsx` may have a URL field
    - What's unclear: Whether the column was added in a later migration
    - Recommendation: Planner should check existing migrations / db schema and add the column in Phase 14 migration if absent
+   - **RESOLVED:** Plan 01 migration adds `image_url text` to `facilities` with `IF NOT EXISTS` guard
 
 2. **Orphan cleanup on entity delete**
    - What we know: Delete actions currently only remove the DB row
    - What's unclear: How important this is for MVP
    - Recommendation: Add Storage cleanup to delete actions; acceptable to defer as a post-MVP polish task
+   - **RESOLVED:** Deferred to post-MVP. `deleteImageAction` handles only explicit image removal triggered by the user; entity deletes do not auto-clean Storage objects.
 
 3. **Create-form image upload timing**
    - What we know: The create flow (new entity) can't pre-know the entity UUID
    - What's unclear: Whether to (a) upload-on-submit with a single combined action, or (b) require users to add image after creation via edit
    - Recommendation: Option (b) — keep create simple, image is optional; upload via edit. Consistent with current form design.
+   - **RESOLVED:** Upload is disabled on create forms (no entityId available). File input is enabled only in edit mode (per D-06 intent). Create forms show a "save first, then upload" hint.
 
 ---
 
