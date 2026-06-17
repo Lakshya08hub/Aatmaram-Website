@@ -25,7 +25,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 11: Gemini Chat** - Widget on public site, hospital info knowledge base
 - [x] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3) (completed 2026-06-14)
 - [ ] **Phase 13: Design System Foundation** - 8pt spacing system, dark mode, motion library (framer-motion), shared empty-state component — cross-cutting primitives for the UI overhaul
-- [ ] **Phase 14: Media Infrastructure** - Supabase Storage bucket + Super Admin image upload UI + optimized image rendering, so all photos (hero, doctors, facilities, testimonials) are client-managed
+- [x] **Phase 14: Media Infrastructure** - Supabase Storage bucket + Super Admin image upload UI + optimized image rendering, so all photos (hero, doctors, facilities, testimonials) are client-managed (completed 2026-06-17)
 - [ ] **Phase 15: Public Site Engagement Overhaul** - Full-bleed hero, testimonials/social-proof strip, PM-JAY explainer, prominent bilingual toggle, scroll/hover motion across all public pages
 - [ ] **Phase 16: Portal UX Upgrade** - Analytics dashboard with live charts, kanban appointment queue, inline table editing, dark mode + empty states applied portal-wide
 
@@ -305,8 +305,8 @@ Plans:
   2. Portal forms for doctors, departments, and facilities include an image upload control that stores the file and saves its public URL to the record
   3. Uploaded images render through `next/image` with correct sizing, lazy loading, and a fallback for records without an image
   4. Super Admin can upload site-level images (hero background, testimonials avatars) from a dedicated portal media section
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 6 plans (waves 1-5) — complete
+**Status**: Complete 2026-06-17
 
 ### Phase 15: Public Site Engagement Overhaul
 **Goal**: Every public page is visually engaging — a full-bleed hero, social proof, a PM-JAY explainer, a prominent language toggle, and motion throughout — using client-managed media and the Phase 13 primitives
