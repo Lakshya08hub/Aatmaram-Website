@@ -400,6 +400,121 @@ function revalidateHospitalInfo(): void {
   revalidatePath('/hi/contact');
 }
 
+// ---------------------------------------------------------------------------
+// Testimonial actions (Phase 15, Plan 03)
+// ---------------------------------------------------------------------------
+
+/**
+ * Revalidates both locale homepages so testimonial changes appear on the
+ * homepage strip immediately.
+ */
+function revalidateTestimonials(): void {
+  revalidatePath('/en');
+  revalidatePath('/hi');
+}
+
+export async function createTestimonialAction(input: {
+  patient_name: string;
+  quote: string;
+  designation?: string;
+  is_active: boolean;
+  sort_order: number;
+}): Promise<{ error?: string }> {
+  try {
+    await requireCmsRole();
+    const { error } = await createAdminClient().from('testimonials').insert({
+      patient_name: input.patient_name,
+      quote: input.quote,
+      designation: input.designation || null,
+      is_active: input.is_active,
+      sort_order: input.sort_order,
+    });
+
+    if (error) throw new Error(error.message);
+
+    revalidateTestimonials();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function updateTestimonialAction(
+  id: string,
+  input: {
+    patient_name: string;
+    quote: string;
+    designation?: string;
+    is_active: boolean;
+    sort_order: number;
+  }
+): Promise<{ error?: string }> {
+  try {
+    await requireCmsRole();
+    const { error } = await createAdminClient()
+      .from('testimonials')
+      .update({
+        patient_name: input.patient_name,
+        quote: input.quote,
+        designation: input.designation || null,
+        is_active: input.is_active,
+        sort_order: input.sort_order,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateTestimonials();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function deleteTestimonialAction(
+  id: string
+): Promise<{ error?: string }> {
+  try {
+    await requireCmsRole();
+    const { error } = await createAdminClient()
+      .from('testimonials')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateTestimonials();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+export async function toggleTestimonialActiveAction(
+  id: string,
+  is_active: boolean
+): Promise<{ error?: string }> {
+  try {
+    await requireCmsRole();
+    const { error } = await createAdminClient()
+      .from('testimonials')
+      .update({ is_active, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) throw new Error(error.message);
+
+    revalidateTestimonials();
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Hospital Info actions (CMS-03)
+// ---------------------------------------------------------------------------
+
 export async function updateHospitalInfoAction(
   id: string,
   input: Partial<{
