@@ -5,16 +5,20 @@ import { Link } from '@/i18n/navigation';
 import { BedDouble, Users, Stethoscope, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PMJAYBadge } from '@/components/public/PMJAYBadge';
+import { PMJAYExplainer } from '@/components/public/PMJAYExplainer';
 import { DepartmentCard } from '@/components/public/DepartmentCard';
 import { DoctorCard } from '@/components/public/DoctorCard';
 import { FacilityCard } from '@/components/public/FacilityCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
 import { FadeIn } from '@/components/motion/fade-in';
+import { HoverLift } from '@/components/motion/hover-lift';
 import { CountUp } from '@/components/motion/count-up';
+import { Card, CardContent } from '@/components/ui/card';
 import { getFeaturedDepartments } from '@/lib/db/departments';
 import { getFeaturedDoctors } from '@/lib/db/doctors';
 import { getFeaturedFacilities } from '@/lib/db/facilities';
 import { getHospitalInfo } from '@/lib/db/hospital-info';
+import { getActiveTestimonials } from '@/lib/db/testimonials';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,11 +36,12 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [departments, doctors, facilities, info] = await Promise.all([
+  const [departments, doctors, facilities, info, testimonials] = await Promise.all([
     getFeaturedDepartments(),
     getFeaturedDoctors(),
     getFeaturedFacilities(),
     getHospitalInfo(),
+    getActiveTestimonials(),
   ]);
 
   const heroImageUrl = info?.hero_image_url ?? null;
@@ -45,6 +50,8 @@ export default async function HomePage({
   const tCommon = await getTranslations('common');
   const tDept = await getTranslations('departments');
   const tDoc = await getTranslations('doctors');
+  const tPmjay = await getTranslations('pmjay');
+  const tTestimonials = await getTranslations('testimonials');
 
   return (
     <main>
@@ -145,6 +152,20 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* Section 2.5 — PM-JAY Explainer */}
+      <FadeIn>
+        <PMJAYExplainer
+          heading={tPmjay('heading')}
+          fact1Heading={tPmjay('fact1Heading')}
+          fact1Body={tPmjay('fact1Body')}
+          fact2Heading={tPmjay('fact2Heading')}
+          fact2Body={tPmjay('fact2Body')}
+          fact3Heading={tPmjay('fact3Heading')}
+          fact3Body={tPmjay('fact3Body')}
+          cta={tPmjay('cta')}
+        />
+      </FadeIn>
+
       {/* Section 3 — Departments Preview */}
       <section className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
@@ -212,8 +233,46 @@ export default async function HomePage({
         </div>
       </section>
 
+      {/* Section 5.5 — Testimonials Strip */}
+      {testimonials.length > 0 && (
+        <section className="py-16 md:py-24 px-4 bg-slate-50">
+          <div className="max-w-7xl mx-auto">
+            <SectionHeading
+              title={tTestimonials('heading')}
+              subtitle={tTestimonials('subtitle')}
+            />
+            <FadeIn>
+              <div className="mt-8 flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-visible">
+                {testimonials.map((testimonial) => (
+                  <HoverLift key={testimonial.id} className="min-w-[280px] md:min-w-0">
+                    <Card className="h-full">
+                      <CardContent className="p-6">
+                        <p className="text-slate-700 italic">
+                          &ldquo;{testimonial.quote}&rdquo;
+                        </p>
+                        <div className="mt-4">
+                          <p className="font-semibold text-slate-900 text-sm">
+                            {testimonial.patient_name}
+                          </p>
+                          {testimonial.designation && (
+                            <p className="text-slate-500 text-xs mt-0.5">
+                              {testimonial.designation}
+                            </p>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </HoverLift>
+                ))}
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+      )}
+
       {/* Section 6 — Appointment CTA Band */}
       <section className="bg-blue-50 py-16 md:py-24 px-4">
+        <FadeIn>
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-xl font-semibold text-slate-900">
             {t('sections.appointmentCta')}
@@ -232,6 +291,7 @@ export default async function HomePage({
             </Link>
           </div>
         </div>
+        </FadeIn>
       </section>
     </main>
   );
