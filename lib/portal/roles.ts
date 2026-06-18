@@ -2,25 +2,29 @@
 // Single source of truth for role definitions and role-to-section access mapping.
 // D-07: role → sections mapping (Phase 4 — Auth + Roles)
 
+import type { LucideIcon } from 'lucide-react';
+import { LayoutDashboard, CalendarClock, Users, UserCog, FileText, Settings, Image, BarChart2, Wallet } from 'lucide-react';
+
 export type StaffRole = 'super_admin' | 'admin' | 'doctor' | 'receptionist';
 
 export interface SectionConfig {
   key: string;
   label: string;
   href: string;
+  icon?: LucideIcon;
 }
 
 /** Ordered list of all portal sections (used to build sidebar navigation). */
 export const ALL_SECTIONS: SectionConfig[] = [
-  { key: 'dashboard',     label: 'Dashboard',     href: '/dashboard' },
-  { key: 'content',       label: 'Content',       href: '/content' },
-  { key: 'media',         label: 'Media',         href: '/media' },
-  { key: 'staff',         label: 'Staff',         href: '/staff' },
-  { key: 'appointments',  label: 'Appointments',  href: '/appointments' },
-  { key: 'patients',      label: 'Patients',      href: '/patients' },
-  { key: 'payroll',       label: 'Payroll',       href: '/payroll' },
-  { key: 'analytics',     label: 'Analytics',     href: '/analytics' },
-  { key: 'settings',      label: 'Settings',      href: '/settings' },
+  { key: 'dashboard',     label: 'Dashboard',     href: '/dashboard',     icon: LayoutDashboard },
+  { key: 'content',       label: 'Content',       href: '/content',       icon: FileText },
+  { key: 'media',         label: 'Media',         href: '/media',         icon: Image },
+  { key: 'staff',         label: 'Staff',         href: '/staff',         icon: UserCog },
+  { key: 'appointments',  label: 'Appointments',  href: '/appointments',  icon: CalendarClock },
+  { key: 'patients',      label: 'Patients',      href: '/patients',      icon: Users },
+  { key: 'payroll',       label: 'Payroll',       href: '/payroll',       icon: Wallet },
+  { key: 'analytics',     label: 'Analytics',     href: '/analytics',     icon: BarChart2 },
+  { key: 'settings',      label: 'Settings',      href: '/settings',      icon: Settings },
 ];
 
 /**
