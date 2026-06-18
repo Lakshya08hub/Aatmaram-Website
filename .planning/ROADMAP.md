@@ -341,7 +341,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 16-01-PLAN.md — Install shadcn chart, add updateAppointmentNotesAction, extend SectionConfig with icons
+- [x] 16-01-PLAN.md — Install shadcn chart, add updateAppointmentNotesAction, extend SectionConfig with icons
 - [ ] 16-02-PLAN.md — Replace dashboard with live chart dashboard (DashboardCharts + RSC queries)
 - [ ] 16-03-PLAN.md — Kanban board replacing tabbed appointments view (KanbanBoard + KanbanColumn + KanbanCard)
 - [ ] 16-04-PLAN.md — InlineEditCell component integrated into all four portal table sections
@@ -372,4 +372,4 @@ Plans:
 | 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
 | 14. Media Infrastructure | 0/6 | Planning complete | - |
 | 15. Public Site Engagement Overhaul | 5/5 | Complete | 2026-06-18 |
-| 16. Portal UX Upgrade | 0/TBD | Not started | - |
+| 16. Portal UX Upgrade | 1/5 | In Progress|  |
