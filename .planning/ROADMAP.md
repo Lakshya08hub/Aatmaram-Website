@@ -337,8 +337,15 @@ Plans:
   2. The appointment request queue offers a kanban view (Pending → Contacted → Confirmed → Completed/Cancelled) where staff move a request by dragging or a one-click status action
   3. Common edits (name, status, featured order, notes) can be done inline in the table without opening a dialog
   4. Dark mode and the shared empty-state component from Phase 13 are applied across all portal sections
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 16-01-PLAN.md — Install shadcn chart, add updateAppointmentNotesAction, extend SectionConfig with icons
+- [ ] 16-02-PLAN.md — Replace dashboard with live chart dashboard (DashboardCharts + RSC queries)
+- [ ] 16-03-PLAN.md — Kanban board replacing tabbed appointments view (KanbanBoard + KanbanColumn + KanbanCard)
+- [ ] 16-04-PLAN.md — InlineEditCell component integrated into all four portal table sections
+- [ ] 16-05-PLAN.md — Dark mode audit, EmptyState on all tables, collapsible sidebar, overflow-x-auto wrappers
 
 ---
 
