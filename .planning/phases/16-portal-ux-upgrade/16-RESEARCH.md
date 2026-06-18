@@ -462,19 +462,19 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Does `SectionConfig` need icons added to `lib/portal/roles.ts`?**
+1. **Does `SectionConfig` need icons added to `lib/portal/roles.ts`?** — RESOLVED
    - What we know: Current `SectionConfig` has only `key`, `label`, `href`. Collapsed sidebar needs icons.
    - What's unclear: Whether extending the interface breaks type checking elsewhere.
    - Recommendation: Add `icon?: LucideIcon` as optional field. Default to a generic circle icon if not set. This is a safe extension.
 
-2. **Is shadcn Tooltip already installed?**
+2. **Is shadcn Tooltip already installed?** — RESOLVED
    - What we know: Sidebar uses no tooltips currently. Tooltip is a separate shadcn component.
    - What's unclear: Whether it was installed in a prior phase.
    - Recommendation: Plan Wave 0 to run `npx shadcn@latest add tooltip` if not present. Check `components/ui/tooltip.tsx`.
 
-3. **Does `appointment_requests` table have a `notes` column?**
+3. **Does `appointment_requests` table have a `notes` column?** — RESOLVED
    - What we know: `updateAppointmentStatusAction` already passes `notes` to the Supabase update call. Strong signal the column exists.
    - What's unclear: Whether it was added in an earlier migration.
    - Recommendation: Treat as confirmed based on existing action; if Supabase throws on the write, the column needs a migration (ALTER TABLE ADD COLUMN notes text).
