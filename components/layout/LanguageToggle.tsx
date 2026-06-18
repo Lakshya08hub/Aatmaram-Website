@@ -56,39 +56,14 @@ export function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'drawer'
 
   // variant === 'nav' (default, desktop on navy background)
   return (
-    <div
-      className="flex items-center gap-1 text-sm font-medium"
+    <button
+      className="bg-white text-blue-900 font-bold px-3 py-1 rounded-full text-sm min-h-[44px] flex items-center gap-1"
+      onClick={handleSwitch}
       aria-label={ariaLabel}
     >
-      {locale === 'hi' ? (
-        <span className="text-white">HI</span>
-      ) : (
-        <span
-          className="text-white/50 cursor-pointer hover:text-white/80 transition-colors"
-          onClick={handleSwitch}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleSwitch()}
-          aria-label="हिंदी में देखें"
-        >
-          HI
-        </span>
-      )}
-      <span className="text-white/30">|</span>
-      {locale === 'en' ? (
-        <span className="text-white">EN</span>
-      ) : (
-        <span
-          className="text-white/50 cursor-pointer hover:text-white/80 transition-colors"
-          onClick={handleSwitch}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => e.key === 'Enter' && handleSwitch()}
-          aria-label="Switch to English"
-        >
-          EN
-        </span>
-      )}
-    </div>
+      <span className={locale === 'hi' ? 'opacity-100' : 'opacity-50'}>HI</span>
+      <span className="opacity-40">|</span>
+      <span className={locale === 'en' ? 'opacity-100' : 'opacity-50'}>EN</span>
+    </button>
   );
 }
