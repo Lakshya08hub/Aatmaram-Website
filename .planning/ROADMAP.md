@@ -26,7 +26,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 12: Homepage Content Curation** - Replace hardcoded homepage sections with Supabase-sourced, admin-curated content; featured toggles for departments (max 8) and doctors (max 3) (completed 2026-06-14)
 - [ ] **Phase 13: Design System Foundation** - 8pt spacing system, dark mode, motion library (framer-motion), shared empty-state component — cross-cutting primitives for the UI overhaul
 - [x] **Phase 14: Media Infrastructure** - Supabase Storage bucket + Super Admin image upload UI + optimized image rendering, so all photos (hero, doctors, facilities, testimonials) are client-managed (completed 2026-06-17)
-- [ ] **Phase 15: Public Site Engagement Overhaul** - Full-bleed hero, testimonials/social-proof strip, PM-JAY explainer, prominent bilingual toggle, scroll/hover motion across all public pages
+- [x] **Phase 15: Public Site Engagement Overhaul** - Full-bleed hero, testimonials/social-proof strip, PM-JAY explainer, prominent bilingual toggle, scroll/hover motion across all public pages (completed 2026-06-18)
 - [ ] **Phase 16: Portal UX Upgrade** - Analytics dashboard with live charts, kanban appointment queue, inline table editing, dark mode + empty states applied portal-wide
 
 ---
@@ -364,5 +364,5 @@ Plans:
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
 | 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
 | 14. Media Infrastructure | 0/6 | Planning complete | - |
-| 15. Public Site Engagement Overhaul | 3/5 | In Progress|  |
+| 15. Public Site Engagement Overhaul | 5/5 | Complete | 2026-06-18 |
 | 16. Portal UX Upgrade | 0/TBD | Not started | - |
