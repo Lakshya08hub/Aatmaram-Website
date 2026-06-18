@@ -53,6 +53,7 @@ export default async function ContentLayout({
     { label: 'Doctors', href: '/content/doctors' },
     { label: 'Facilities', href: '/content/facilities' },
     { label: 'Hospital Info', href: '/content/hospital-info' },
+    { label: 'Testimonials', href: '/content/testimonials' },
   ];
 
   return (
