@@ -37,6 +37,9 @@ export function MobileNav() {
       />
       <SheetContent side="right" className="w-72 bg-white p-0">
         <nav className="flex flex-col h-full">
+          <div className="px-4 pt-6 pb-2 border-b border-slate-100">
+            <LanguageToggle variant="drawer" />
+          </div>
           <ul className="flex flex-col gap-1 p-4 pt-8 flex-1">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -54,9 +57,6 @@ export function MobileNav() {
             ))}
           </ul>
           <div className="p-4 border-t border-slate-100">
-            <div className="flex justify-center">
-              <LanguageToggle variant="drawer" />
-            </div>
             <SheetClose
               render={
                 <Link
