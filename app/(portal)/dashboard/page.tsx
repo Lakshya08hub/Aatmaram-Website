@@ -1,56 +1,56 @@
 // app/(portal)/dashboard/page.tsx
-// Role-aware dashboard landing page (D-10: greeting varies by role).
-// Auth is already enforced by the portal layout — this page only needs the role for display.
+// Server Component — aggregates appointment, patient, and staff data for the dashboard.
+// Auth is enforced by the portal layout; no auth check needed here.
 
-import { createClient } from '@/lib/supabase/server';
-import { StaffRole } from '@/lib/portal/roles';
+import { createClient } from '@/lib/supabase/server'
+import { DashboardCharts } from '@/components/portal/DashboardCharts'
 
-const ROLE_LABELS: Record<StaffRole, string> = {
-  super_admin: 'Super Admin',
-  admin: 'Admin',
-  doctor: 'Doctor',
-  receptionist: 'Receptionist',
-};
-
-const ROLE_DESCRIPTION: Record<StaffRole, string> = {
-  super_admin: 'You have full access to all portal sections.',
-  admin: 'You can manage staff, appointments, patients, payroll, and analytics.',
-  doctor: 'You have access to your patient records.',
-  receptionist: 'You can manage appointments and patient intake.',
-};
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
-  // Role already validated by layout; this fetch is just for display context.
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user!.id)
-    .single();
+  let apptData: { created_at: string }[] = []
+  let patientData: { created_at: string }[] = []
+  let staffCount = 0
 
-  const role = (profile?.role ?? 'receptionist') as StaffRole;
+  try {
+    const { data } = await supabase
+      .from('appointment_requests')
+      .select('created_at')
+      .gte('created_at', thirtyDaysAgo)
+    apptData = data ?? []
+  } catch {
+    apptData = []
+  }
+
+  try {
+    const { data } = await supabase
+      .from('patients')
+      .select('created_at')
+      .gte('created_at', thirtyDaysAgo)
+    patientData = data ?? []
+  } catch {
+    patientData = []
+  }
+
+  try {
+    const { count } = await supabase
+      .from('profiles')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_active', true)
+    staffCount = count ?? 0
+  } catch {
+    staffCount = 0
+  }
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-      <p className="mt-1 text-sm text-slate-500">
-        Signed in as{' '}
-        <span className="font-semibold text-slate-700">{ROLE_LABELS[role]}</span>
-      </p>
-
-      <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-700">Welcome back</h2>
-        <p className="mt-2 text-sm text-slate-500">{ROLE_DESCRIPTION[role]}</p>
-      </div>
-
-      <p className="mt-8 text-xs text-slate-400">
-        Atmaram Child Care &amp; Critical Care — Staff Portal
-      </p>
-    </div>
-  );
+    <DashboardCharts
+      appointments={apptData}
+      patients={patientData}
+      staffCount={staffCount}
+    />
+  )
 }
