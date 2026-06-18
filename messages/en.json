@@ -196,5 +196,20 @@
       "phone": "Enter a valid 10-digit Indian mobile number.",
       "pastDate": "Please select a date from today onwards."
     }
+  },
+  "pmjay": {
+    "heading": "Ayushman Bharat PM-JAY — Free Treatment for Eligible Families",
+    "fact1Heading": "What is PM-JAY?",
+    "fact1Body": "Pradhan Mantri Jan Arogya Yojana provides cashless treatment up to ₹5 lakh per family per year at empanelled hospitals like ours.",
+    "fact2Heading": "Who Qualifies?",
+    "fact2Body": "Families listed in SECC data, ration card holders, and those with annual income below ₹5 lakh are eligible for free treatment.",
+    "fact3Heading": "How to Avail?",
+    "fact3Body": "Bring your Aadhaar card and ration card. Our team will verify your eligibility on-site and arrange cashless treatment immediately.",
+    "cta": "Check Eligibility / Book Free Consultation"
+  },
+  "testimonials": {
+    "heading": "What Our Patients Say",
+    "subtitle": "Trusted by families across Kanpur and surrounding districts",
+    "emptyState": "Patient testimonials coming soon."
   }
 }
