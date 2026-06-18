@@ -105,6 +105,14 @@
 - [ ] **ANA-03**: Portal shows staff summary: total count by role, current month payroll total
 - [ ] **ANA-04**: Portal shows patient volume: new patients per week/month
 
+### Public Site — Engagement (Phase 15)
+
+- [ ] **PUBUI-01**: DB-sourced testimonials strip on homepage with portal CRUD (add/edit/delete/toggle active)
+- [ ] **PUBUI-02**: PM-JAY explainer section with 3 key facts and CTA, placed between trust band and departments preview on homepage
+- [ ] **PUBUI-03**: Language toggle as first item in mobile hamburger menu (above nav links list), per D-06
+- [ ] **PUBUI-04**: Desktop LanguageToggle restyled to white pill (bg-white text-blue-900 font-bold px-3 py-1 rounded-full) for contrast against navy header, per D-07
+- [ ] **PUBUI-05**: FadeIn applied to PM-JAY section, testimonials strip, and Section 6 appointment CTA band; HoverLift on testimonial cards, per D-10
+
 ---
 
 ## v2 Requirements
@@ -161,10 +169,12 @@
 | APMT-01 to APMT-03 | Phase 7 | Pending |
 | PAY-01 to PAY-04 | Phase 9 | Pending |
 | ANA-01 to ANA-04 | Phase 10 | Pending |
+| MEDIA-01 to MEDIA-04 | Phase 14 | Pending |
+| PUBUI-01 to PUBUI-05 | Phase 15 | Pending |
 
 **Coverage:**
-- v1 requirements: 49 total
-- Mapped to phases: 49
+- v1 requirements: 54 total
+- Mapped to phases: 54
 - Unmapped: 0 ✓
 
 ---
