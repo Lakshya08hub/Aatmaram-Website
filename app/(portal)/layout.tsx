@@ -5,7 +5,7 @@
 // T-04-03 mitigation: getUser() re-validates with Auth server; unauthenticated → redirect('/login').
 // T-04-05 mitigation: inactive account → signOut() + redirect('/login') (D-05).
 // T-04-08 mitigation: getUser() used (NOT getSession()) — acceptance gate greps for 0 getSession.
-// D-09: layout is outside [locale] segment — renders its own <html lang="en"><body> shell.
+// D-09: layout is outside [locale] segment — html/body shell is in app/layout.tsx (root).
 // D-11: /login lives at app/login/ (outside this layout) so no redirect loop occurs.
 
 import { redirect } from 'next/navigation';
@@ -44,21 +44,17 @@ export default async function PortalLayout({
   }
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <div className="flex min-h-screen">
-            <PortalSidebar role={profile.role} />
-            <main className="flex-1 bg-background text-foreground">{children}</main>
-          </div>
-          <Toaster />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      <div className="flex min-h-screen">
+        <PortalSidebar role={profile.role} />
+        <main className="flex-1 bg-background text-foreground">{children}</main>
+      </div>
+      <Toaster />
+    </ThemeProvider>
   );
 }

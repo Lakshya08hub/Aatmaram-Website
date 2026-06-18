@@ -11,7 +11,9 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Root layout is minimal — html/body/lang are provided by [locale]/layout.tsx.
-  // This file is required by Next.js for the not-found route and metadata export.
-  return children;
+  return (
+    <html suppressHydrationWarning>
+      <body>{children}</body>
+    </html>
+  );
 }
