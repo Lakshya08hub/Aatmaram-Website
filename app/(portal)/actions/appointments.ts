@@ -51,3 +51,23 @@ export async function updateAppointmentStatusAction(
     return { error: err instanceof Error ? err.message : 'Unknown error' }
   }
 }
+
+export async function updateAppointmentNotesAction(
+  id: string,
+  notes: string
+): Promise<{ error?: string }> {
+  try {
+    await requireAppointmentRole()
+
+    const { error } = await createAdminClient()
+      .from('appointment_requests')
+      .update({ notes })
+      .eq('id', id)
+
+    if (error) throw new Error(error.message)
+
+    return {}
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' }
+  }
+}
