@@ -318,8 +318,15 @@ Plans:
   3. A PM-JAY explainer section tells eligible patients what Ayushman Bharat means for them with a clear "check eligibility / contact" CTA
   4. The EN/HI language toggle is prominent in the header and obvious to a first-time Hindi-speaking visitor
   5. Scroll-in and hover motion (from Phase 13 primitives) is applied across the hero, trust band (count-up), and card grids without harming performance or accessibility (`prefers-reduced-motion` respected)
-**Plans**: TBD
+**Plans**: 5 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 15-01-PLAN.md — REQUIREMENTS.md additions + testimonials migration SQL + i18n pmjay/testimonials namespaces
+- [ ] 15-02-PLAN.md — Human checkpoint: apply testimonials migration via Supabase dashboard [has checkpoint]
+- [ ] 15-03-PLAN.md — DB module + server actions + portal testimonials CRUD page + sub-nav tab
+- [ ] 15-04-PLAN.md — PMJAYExplainer component + homepage integration (testimonials strip + PM-JAY + motion wrappers)
+- [ ] 15-05-PLAN.md — LanguageToggle desktop restyle (white pill) + MobileNav language toggle reposition
 
 ### Phase 16: Portal UX Upgrade
 **Goal**: The portal feels like a management product, not a set of CRUD tables — a real dashboard, a kanban appointment queue, inline editing, and the Phase 13 dark mode / empty states applied throughout
