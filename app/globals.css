@@ -154,3 +154,17 @@
     @apply font-sans;
   }
 }
+
+/* Kanban board scroll-hint animation — one-shot nudge to indicate horizontal scrollability */
+@keyframes scroll-hint {
+  0%   { transform: translateX(0); }
+  30%  { transform: translateX(-60px); }
+  60%  { transform: translateX(-60px); }
+  100% { transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .kanban-scroll-hint {
+    animation: scroll-hint 1.2s both;
+  }
+}
