@@ -50,15 +50,15 @@ Exceptions: Sidebar icon-only rail is 48px wide (non-grid value — fixed layout
 | Role | Size | Weight | Line Height |
 |------|------|--------|-------------|
 | Body | 14px | 400 | 1.5 |
-| Label | 12px | 500 | 1.4 |
+| Label | 12px | 400 | 1.4 |
 | Heading | 20px | 600 | 1.2 |
-| Display | 28px | 700 | 1.15 |
+| Display | 28px | 600 | 1.15 |
 
 Notes:
 - Body 14px is correct for dense portal data tables (not public-site 16px).
-- Label 12px at weight 500 applies to column headers, badge text, and stat card subtitles.
+- Label 12px at weight 400 applies to column headers, badge text, and stat card subtitles.
 - Heading 20px at weight 600 applies to page titles and kanban column headers.
-- Display 28px at weight 700 applies to dashboard metric card numbers only.
+- Display 28px at weight 600 applies to dashboard metric card numbers only.
 
 ---
 
@@ -117,6 +117,15 @@ New components to build (not install):
 - `components/portal/KanbanCard.tsx` — Individual appointment card
 - `components/portal/DashboardCharts.tsx` — Client wrapper for 4 metric cards
 - `components/portal/InlineEditCell.tsx` — Reusable click-to-edit table cell
+
+---
+
+## Visual Focal Points
+
+| Screen | Primary Visual Anchor |
+|--------|-----------------------|
+| Dashboard | The 4 metric stat cards are the primary visual anchor — they sit above the charts in a 2×2 grid and carry the highest-contrast numbers on the page. |
+| Kanban | The column header badges (count + status color) draw the eye first — they immediately communicate workload per stage before the user reads any card detail. |
 
 ---
 
