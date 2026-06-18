@@ -107,11 +107,11 @@
 
 ### Public Site — Engagement (Phase 15)
 
-- [ ] **PUBUI-01**: DB-sourced testimonials strip on homepage with portal CRUD (add/edit/delete/toggle active)
-- [ ] **PUBUI-02**: PM-JAY explainer section with 3 key facts and CTA, placed between trust band and departments preview on homepage
-- [ ] **PUBUI-03**: Language toggle as first item in mobile hamburger menu (above nav links list), per D-06
-- [ ] **PUBUI-04**: Desktop LanguageToggle restyled to white pill (bg-white text-blue-900 font-bold px-3 py-1 rounded-full) for contrast against navy header, per D-07
-- [ ] **PUBUI-05**: FadeIn applied to PM-JAY section, testimonials strip, and Section 6 appointment CTA band; HoverLift on testimonial cards, per D-10
+- [x] **PUBUI-01**: DB-sourced testimonials strip on homepage with portal CRUD (add/edit/delete/toggle active)
+- [x] **PUBUI-02**: PM-JAY explainer section with 3 key facts and CTA, placed between trust band and departments preview on homepage
+- [x] **PUBUI-03**: Language toggle as first item in mobile hamburger menu (above nav links list), per D-06
+- [x] **PUBUI-04**: Desktop LanguageToggle restyled to white pill (bg-white text-blue-900 font-bold px-3 py-1 rounded-full) for contrast against navy header, per D-07
+- [x] **PUBUI-05**: FadeIn applied to PM-JAY section, testimonials strip, and Section 6 appointment CTA band; HoverLift on testimonial cards, per D-10
 
 ---
 

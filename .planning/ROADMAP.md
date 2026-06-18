@@ -322,7 +322,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 15-01-PLAN.md — REQUIREMENTS.md additions + testimonials migration SQL + i18n pmjay/testimonials namespaces
+- [x] 15-01-PLAN.md — REQUIREMENTS.md additions + testimonials migration SQL + i18n pmjay/testimonials namespaces
 - [ ] 15-02-PLAN.md — Human checkpoint: apply testimonials migration via Supabase dashboard [has checkpoint]
 - [ ] 15-03-PLAN.md — DB module + server actions + portal testimonials CRUD page + sub-nav tab
 - [ ] 15-04-PLAN.md — PMJAYExplainer component + homepage integration (testimonials strip + PM-JAY + motion wrappers)
@@ -364,5 +364,5 @@ Plans:
 | 12. Homepage Content Curation | 4/4 | Complete   | 2026-06-14 |
 | 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
 | 14. Media Infrastructure | 0/6 | Planning complete | - |
-| 15. Public Site Engagement Overhaul | 0/TBD | Not started | - |
+| 15. Public Site Engagement Overhaul | 1/5 | In Progress|  |
 | 16. Portal UX Upgrade | 0/TBD | Not started | - |
