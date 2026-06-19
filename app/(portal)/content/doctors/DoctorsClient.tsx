@@ -236,13 +236,13 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Doctors</h1>
+        <h1 className="text-xl font-semibold text-foreground">Doctors</h1>
         <Button onClick={openAddSheet}>Add Doctor</Button>
       </div>
 
       {/* Fetch error banner */}
       {fetchError && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Could not load doctors. Check your connection and refresh.
         </div>
       )}
@@ -252,15 +252,15 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
         <EmptyState
           icon={Stethoscope}
           title="No doctors yet"
-          description="Add your first doctor to display it on the public site."
-          action={<Button onClick={openAddSheet}>Add Doctor</Button>}
+          description="Add the first doctor profile using the button above."
         />
       )}
 
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <p className="px-4 pt-3 text-sm text-slate-500">{featuredCount} of 3 featured</p>
+        <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} of 3 featured</p>
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -288,13 +288,13 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                         }}
                       />
                     </TableCell>
-                    <TableCell className="text-slate-500">{doctor.specialization}</TableCell>
+                    <TableCell className="text-muted-foreground">{doctor.specialization}</TableCell>
                     <TableCell>
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
                           doctor.is_active
                             ? 'bg-green-50 text-green-700'
-                            : 'bg-slate-100 text-slate-500'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {doctor.is_active ? 'Active' : 'Inactive'}
@@ -371,6 +371,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
               })}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 
@@ -386,7 +387,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
           <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-5">
             {/* Full Name */}
             <div className="space-y-1">
-              <label htmlFor="doc-full-name" className="text-sm font-medium text-slate-700">
+              <label htmlFor="doc-full-name" className="text-sm font-medium text-foreground">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <Input
@@ -401,7 +402,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
             {/* Specialization */}
             <div className="space-y-1">
-              <label htmlFor="doc-specialization" className="text-sm font-medium text-slate-700">
+              <label htmlFor="doc-specialization" className="text-sm font-medium text-foreground">
                 Specialization <span className="text-red-500">*</span>
               </label>
               <Input
@@ -416,7 +417,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
             {/* Qualification */}
             <div className="space-y-1">
-              <label htmlFor="doc-qualification" className="text-sm font-medium text-slate-700">
+              <label htmlFor="doc-qualification" className="text-sm font-medium text-foreground">
                 Qualification <span className="text-red-500">*</span>
               </label>
               <Input
@@ -431,11 +432,11 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
             {/* Photo Upload */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
-                Photo <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="text-sm font-medium text-foreground">
+                Photo <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               {watch('photo_url') && (
-                <div className="relative w-20 h-20 rounded-full overflow-hidden border border-slate-200">
+                <div className="relative w-20 h-20 rounded-full overflow-hidden border border-border">
                   <Image src={watch('photo_url')!} alt="Preview" fill className="object-cover" />
                 </div>
               )}
@@ -443,7 +444,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploadingImage || !editingDoctor}
-                className="block text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                className="block text-sm text-muted-foreground file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-muted file:text-foreground hover:file:bg-muted/80"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file || !editingDoctor) return;
@@ -465,10 +466,10 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                 }}
               />
               {!editingDoctor && (
-                <p className="text-xs text-slate-400">Save the doctor record first, then upload a photo.</p>
+                <p className="text-xs text-muted-foreground">Save the doctor record first, then upload a photo.</p>
               )}
               {uploadingImage && (
-                <p className="text-xs text-slate-500 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Uploading…
                 </p>
@@ -477,8 +478,8 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
             {/* Bio */}
             <div className="space-y-1">
-              <label htmlFor="doc-bio" className="text-sm font-medium text-slate-700">
-                Bio <span className="text-slate-400 font-normal">(optional, max 600 chars)</span>
+              <label htmlFor="doc-bio" className="text-sm font-medium text-foreground">
+                Bio <span className="text-muted-foreground font-normal">(optional, max 600 chars)</span>
               </label>
               <Textarea
                 id="doc-bio"
@@ -493,8 +494,8 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
 
             {/* Availability Days */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                Availability Days <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="text-sm font-medium text-foreground">
+                Availability Days <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               <div className="flex flex-wrap gap-2">
                 {DAYS.map((day) => (
@@ -526,7 +527,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                   />
                 )}
               />
-              <label htmlFor="doc-is-active" className="text-sm font-medium text-slate-700 cursor-pointer">
+              <label htmlFor="doc-is-active" className="text-sm font-medium text-foreground cursor-pointer">
                 Show on public site
               </label>
             </div>

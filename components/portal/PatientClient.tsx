@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useActionState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { Pencil, Loader2 } from 'lucide-react';
+import { Pencil, Loader2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { PatientRecord } from '@/lib/db/patient_records';
@@ -20,6 +20,7 @@ import {
 import { InlineEditCell } from '@/components/portal/InlineEditCell';
 
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
@@ -86,8 +87,8 @@ function todayISO(): string {
 function ReadOnlyField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="space-y-1">
-      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">{label}</p>
-      <p className="text-sm text-slate-700">{value || '—'}</p>
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{label}</p>
+      <p className="text-sm text-foreground">{value || '—'}</p>
     </div>
   );
 }
@@ -147,7 +148,7 @@ function ReceptionistSheetForm({
     >
       {/* Patient Name */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">
+        <label className="text-sm font-semibold text-foreground">
           Patient Name <span className="text-red-500">*</span>
         </label>
         <Input
@@ -160,7 +161,7 @@ function ReceptionistSheetForm({
 
       {/* Age */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">
+        <label className="text-sm font-semibold text-foreground">
           Age <span className="text-red-500">*</span>
         </label>
         <Input
@@ -176,7 +177,7 @@ function ReceptionistSheetForm({
 
       {/* Phone */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">
+        <label className="text-sm font-semibold text-foreground">
           Phone <span className="text-red-500">*</span>
         </label>
         <Input
@@ -189,7 +190,7 @@ function ReceptionistSheetForm({
 
       {/* Reason */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">
+        <label className="text-sm font-semibold text-foreground">
           Reason for Visit <span className="text-red-500">*</span>
         </label>
         <Input
@@ -202,7 +203,7 @@ function ReceptionistSheetForm({
 
       {/* Assigned Doctor */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">Assigned Doctor</label>
+        <label className="text-sm font-semibold text-foreground">Assigned Doctor</label>
         {/* Hidden input carries the value for FormData */}
         <input type="hidden" name="assigned_doctor_id" value={assignedDoctor} />
         <Select
@@ -229,7 +230,7 @@ function ReceptionistSheetForm({
 
       {/* Visit Date */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">
+        <label className="text-sm font-semibold text-foreground">
           Visit Date <span className="text-red-500">*</span>
         </label>
         <Input
@@ -243,7 +244,7 @@ function ReceptionistSheetForm({
       {/* Clinical Notes — admin/super_admin editable; receptionist read-only (edit mode only) */}
       {isEdit && role !== 'receptionist' && (
         <div className="space-y-1">
-          <label className="text-sm font-semibold text-slate-700">Clinical Notes</label>
+          <label className="text-sm font-semibold text-foreground">Clinical Notes</label>
           <Textarea
             name="clinical_notes"
             placeholder="Medications prescribed, treatment notes, follow-up instructions…"
@@ -320,7 +321,7 @@ function DoctorSheetForm({
       className="space-y-4 pt-4"
     >
       {/* Read-only patient info */}
-      <div className="space-y-3 rounded-md border border-slate-100 bg-slate-50 px-4 py-3">
+      <div className="space-y-3 rounded-md border border-border bg-muted/50 px-4 py-3">
         <ReadOnlyField label="Patient Name" value={editingRecord.patient_name} />
         <ReadOnlyField label="Age" value={String(editingRecord.age)} />
         <ReadOnlyField label="Phone" value={editingRecord.phone} />
@@ -337,7 +338,7 @@ function DoctorSheetForm({
 
       {/* Clinical Notes textarea */}
       <div className="space-y-1">
-        <label className="text-sm font-semibold text-slate-700">Clinical Notes</label>
+        <label className="text-sm font-semibold text-foreground">Clinical Notes</label>
         <Textarea
           name="clinical_notes"
           placeholder="Medications prescribed, treatment notes, follow-up instructions…"
@@ -345,7 +346,7 @@ function DoctorSheetForm({
           className="resize-none"
           defaultValue={editingRecord.clinical_notes ?? ''}
         />
-        <p className="text-xs text-slate-400">
+        <p className="text-xs text-muted-foreground">
           Only you can edit this field. Changes save immediately on Submit.
         </p>
       </div>
@@ -432,7 +433,7 @@ export default function PatientClient({
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Patient Records</h1>
+        <h1 className="text-xl font-semibold text-foreground">Patient Records</h1>
         {!isDoctor && (
           <Button onClick={openAdd}>Add Patient</Button>
         )}
@@ -440,7 +441,7 @@ export default function PatientClient({
 
       {/* Fetch error banner */}
       {fetchError && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Could not load patient records. Check your connection and refresh.
         </div>
       )}
@@ -459,29 +460,30 @@ export default function PatientClient({
 
           {/* Empty state — no records at all */}
           {records.length === 0 && (
-            <div className="mt-8 flex flex-col items-center gap-2 text-center">
-              {isDoctor ? (
-                <p className="text-sm text-slate-500">No patients assigned to you yet.</p>
-              ) : (
-                <>
-                  <p className="text-sm text-slate-500">No patient records yet.</p>
-                  <p className="text-xs text-slate-400">Add a new patient record to get started.</p>
-                </>
-              )}
-            </div>
+            <EmptyState
+              icon={UserPlus}
+              title="No patient records yet"
+              description={
+                isDoctor
+                  ? 'No patients have been assigned to you yet.'
+                  : 'Create the first patient record using the button above.'
+              }
+              className="mt-8"
+            />
           )}
 
           {/* Empty state — search miss */}
           {records.length > 0 && filteredRecords.length === 0 && search !== '' && (
             <div className="mt-8 flex flex-col items-center gap-2 text-center">
-              <p className="text-sm text-slate-500">No records match your search.</p>
-              <p className="text-xs text-slate-400">Try a different name or phone number.</p>
+              <p className="text-sm text-muted-foreground">No records match your search.</p>
+              <p className="text-xs text-muted-foreground">Try a different name or phone number.</p>
             </div>
           )}
 
           {/* Table */}
           {filteredRecords.length > 0 && (
-            <div className="mt-4 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+            <div className="mt-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -516,7 +518,7 @@ export default function PatientClient({
                       <TableCell>
                         <Badge variant="outline">{record.age}</Badge>
                       </TableCell>
-                      <TableCell className="text-slate-500">
+                      <TableCell className="text-muted-foreground">
                         {isDoctor ? (
                           record.phone
                         ) : (
@@ -531,22 +533,22 @@ export default function PatientClient({
                           />
                         )}
                       </TableCell>
-                      <TableCell className="text-slate-500">
+                      <TableCell className="text-muted-foreground">
                         {truncate(record.reason, 40)}
                       </TableCell>
-                      <TableCell className="text-slate-500">
+                      <TableCell className="text-muted-foreground">
                         {record.assigned_doctor_name ?? (
-                          <span className="text-slate-400">Unassigned</span>
+                          <span className="text-muted-foreground">Unassigned</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-slate-500">
+                      <TableCell className="text-muted-foreground">
                         {formatDate(record.visit_date)}
                       </TableCell>
                       <TableCell>
                         {record.clinical_notes ? (
                           <Badge variant="secondary">Added</Badge>
                         ) : (
-                          <span className="text-slate-400">—</span>
+                          <span className="text-muted-foreground">—</span>
                         )}
                       </TableCell>
                       <TableCell className="text-right">
@@ -568,6 +570,7 @@ export default function PatientClient({
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </div>
           )}
         </>

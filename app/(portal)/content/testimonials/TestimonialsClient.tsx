@@ -198,13 +198,13 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Testimonials</h1>
+        <h1 className="text-xl font-semibold text-foreground">Testimonials</h1>
         <Button onClick={openAddDialog}>Add Testimonial</Button>
       </div>
 
       {/* Fetch error banner */}
       {fetchError && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Could not load testimonials. Check your connection and refresh.
         </div>
       )}
@@ -213,15 +213,15 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
       {!fetchError && initialData.length === 0 && (
         <EmptyState
           icon={MessageSquareQuote}
-          title="No testimonials yet"
-          description="Add your first testimonial to display it on the homepage."
-          action={<Button onClick={openAddDialog}>Add Testimonial</Button>}
+          title="Nothing here yet"
+          description="Add the first entry using the button above."
         />
       )}
 
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+        <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -253,12 +253,12 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
                       }}
                     />
                   </TableCell>
-                  <TableCell className="text-slate-500">
+                  <TableCell className="text-muted-foreground">
                     {testimonial.quote.length > 60
                       ? testimonial.quote.slice(0, 60) + '…'
                       : testimonial.quote}
                   </TableCell>
-                  <TableCell className="text-slate-500">
+                  <TableCell className="text-muted-foreground">
                     {testimonial.designation ?? '—'}
                   </TableCell>
                   <TableCell>
@@ -306,6 +306,7 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
               ))}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 
@@ -320,7 +321,7 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
             <div className="space-y-1">
-              <label htmlFor="patient-name" className="text-sm font-medium text-slate-700">
+              <label htmlFor="patient-name" className="text-sm font-medium text-foreground">
                 Patient Name <span className="text-red-500">*</span>
               </label>
               <Input
@@ -334,7 +335,7 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="quote" className="text-sm font-medium text-slate-700">
+              <label htmlFor="quote" className="text-sm font-medium text-foreground">
                 Quote <span className="text-red-500">*</span>
               </label>
               <Textarea
@@ -349,8 +350,8 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="designation" className="text-sm font-medium text-slate-700">
-                Designation <span className="text-slate-400 font-normal">(optional)</span>
+              <label htmlFor="designation" className="text-sm font-medium text-foreground">
+                Designation <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               <Input
                 id="designation"
@@ -368,13 +369,13 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
                 checked={watch('is_active')}
                 onCheckedChange={(checked) => setValue('is_active', checked)}
               />
-              <label htmlFor="is-active" className="text-sm font-medium text-slate-700 cursor-pointer">
+              <label htmlFor="is-active" className="text-sm font-medium text-foreground cursor-pointer">
                 Active (visible on homepage)
               </label>
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="sort-order" className="text-sm font-medium text-slate-700">
+              <label htmlFor="sort-order" className="text-sm font-medium text-foreground">
                 Sort Order
               </label>
               <Input

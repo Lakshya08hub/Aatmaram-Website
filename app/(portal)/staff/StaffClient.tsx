@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Pencil, Trash2, Loader2, UserCheck, UserX } from 'lucide-react';
+import { Pencil, Trash2, Loader2, UserCheck, UserX, Users } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { StaffMember } from '@/lib/db/staff';
@@ -24,6 +24,7 @@ import {
 import { updateDoctorStaffLinkAction } from '@/app/(portal)/actions/staff';
 
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -356,14 +357,14 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
             }}
           />
         </TableCell>
-        <TableCell className="text-slate-500">{staff.email}</TableCell>
+        <TableCell className="text-muted-foreground">{staff.email}</TableCell>
         <TableCell>
           <Badge variant={ROLE_VARIANT[staff.role] ?? 'outline'}>
             {ROLE_LABEL[staff.role] ?? staff.role}
           </Badge>
         </TableCell>
-        <TableCell className="text-slate-500">{staff.phone ?? '—'}</TableCell>
-        <TableCell className="text-slate-500">
+        <TableCell className="text-muted-foreground">{staff.phone ?? '—'}</TableCell>
+        <TableCell className="text-muted-foreground">
           {staff.join_date ? new Date(staff.join_date).toLocaleDateString('en-IN') : '—'}
         </TableCell>
         <TableCell>
@@ -422,14 +423,18 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   function StaffTable({ rows }: { rows: StaffMember[] }) {
     if (rows.length === 0) {
       return (
-        <div className="mt-8 flex flex-col items-center gap-2 text-center">
-          <p className="text-sm text-slate-500">No staff members in this category.</p>
-        </div>
+        <EmptyState
+          icon={Users}
+          title="No staff members yet"
+          description="Add staff members to give them portal access."
+          className="mt-8"
+        />
       );
     }
 
     return (
-      <div className="mt-4 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
+      <div className="mt-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -448,6 +453,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
     );
   }
@@ -470,13 +476,13 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Staff Management</h1>
+        <h1 className="text-xl font-semibold text-foreground">Staff Management</h1>
         <Button onClick={openAddDialog}>Add Staff</Button>
       </div>
 
       {/* Fetch error banner */}
       {fetchError && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Could not load staff list. Check your connection and refresh.
         </div>
       )}
@@ -488,7 +494,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
             <TabsTrigger value="active">
               Active
               {activeStaff.length > 0 && (
-                <span className="ml-2 rounded-full bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">
+                <span className="ml-2 rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
                   {activeStaff.length}
                 </span>
               )}
@@ -528,7 +534,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
           <form onSubmit={addForm.handleSubmit(onAddSubmit)} className="space-y-4 pt-2">
             {/* Full Name */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <Input placeholder="Dr. Ravi Sharma" {...addForm.register('full_name')} />
@@ -539,7 +545,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Email */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Email <span className="text-red-500">*</span>
               </label>
               <Input type="email" placeholder="staff@hospital.com" {...addForm.register('email')} />
@@ -550,7 +556,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Temp Password */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Temporary Password <span className="text-red-500">*</span>
               </label>
               <Input type="password" placeholder="Min. 8 characters" {...addForm.register('temp_password')} />
@@ -561,7 +567,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Role */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Role <span className="text-red-500">*</span>
               </label>
               <Select
@@ -584,19 +590,19 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Phone */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Phone</label>
+              <label className="text-sm font-medium text-foreground">Phone</label>
               <Input placeholder="+91 98765 43210" {...addForm.register('phone')} />
             </div>
 
             {/* Salary */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Salary (monthly, INR)</label>
+              <label className="text-sm font-medium text-foreground">Salary (monthly, INR)</label>
               <Input type="number" placeholder="30000" {...addForm.register('salary')} />
             </div>
 
             {/* Join Date */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Join Date</label>
+              <label className="text-sm font-medium text-foreground">Join Date</label>
               <Input type="date" {...addForm.register('join_date')} />
             </div>
 
@@ -631,7 +637,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
           <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4 pt-4">
             {/* Full Name */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Full Name <span className="text-red-500">*</span>
               </label>
               <Input {...editForm.register('full_name')} />
@@ -642,7 +648,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Role */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-foreground">
                 Role <span className="text-red-500">*</span>
               </label>
               <Select
@@ -665,26 +671,26 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
             {/* Phone */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Phone</label>
+              <label className="text-sm font-medium text-foreground">Phone</label>
               <Input placeholder="+91 98765 43210" {...editForm.register('phone')} />
             </div>
 
             {/* Salary */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Salary (monthly, INR)</label>
+              <label className="text-sm font-medium text-foreground">Salary (monthly, INR)</label>
               <Input type="number" {...editForm.register('salary')} />
             </div>
 
             {/* Join Date */}
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">Join Date</label>
+              <label className="text-sm font-medium text-foreground">Join Date</label>
               <Input type="date" {...editForm.register('join_date')} />
             </div>
 
             {/* Doctor Profile Link — shown only when editing a doctor-role staff */}
             {editingStaff && (editingStaff.role === 'doctor' || editForm.watch('role') === 'doctor') && (
               <div className="space-y-1">
-                <label className="text-sm font-medium text-slate-700">Doctor Profile</label>
+                <label className="text-sm font-medium text-foreground">Doctor Profile</label>
                 {(() => {
                   const watchedId = editForm.watch('doctor_id') ?? '';
                   const selectedDoc = doctors.find((d) => d.id === watchedId);
@@ -712,7 +718,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
                     </Select>
                   );
                 })()}
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-muted-foreground">
                   Links this login to a doctor record on the public site.
                 </p>
               </div>

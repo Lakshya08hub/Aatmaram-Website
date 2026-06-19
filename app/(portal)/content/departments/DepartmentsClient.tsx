@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Pencil, Trash2, Loader2, Building2 } from 'lucide-react';
+import { Pencil, Trash2, Loader2, LayoutGrid } from 'lucide-react';
 import { toast } from 'sonner';
 import Image from 'next/image';
 
@@ -196,13 +196,13 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Departments</h1>
+        <h1 className="text-xl font-semibold text-foreground">Departments</h1>
         <Button onClick={openAddDialog}>Add Department</Button>
       </div>
 
       {/* Fetch error banner */}
       {fetchError && (
-        <div className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-4 rounded-md border border-destructive bg-destructive/10 px-4 py-3 text-sm text-destructive">
           Could not load departments. Check your connection and refresh.
         </div>
       )}
@@ -210,17 +210,17 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
       {/* Empty state */}
       {!fetchError && initialData.length === 0 && (
         <EmptyState
-          icon={Building2}
-          title="No departments yet"
-          description="Add your first department to display it on the public site."
-          action={<Button onClick={openAddDialog}>Add Department</Button>}
+          icon={LayoutGrid}
+          title="Nothing here yet"
+          description="Add the first entry using the button above."
         />
       )}
 
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <p className="px-4 pt-3 text-sm text-slate-500">{featuredCount} of 8 featured</p>
+        <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} of 8 featured</p>
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -247,7 +247,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
                         }}
                       />
                     </TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="text-muted-foreground">
                       {dept.description.length > 60
                         ? dept.description.slice(0, 60) + '…'
                         : dept.description}
@@ -323,6 +323,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
               })}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 
@@ -337,7 +338,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
             <div className="space-y-1">
-              <label htmlFor="dept-name" className="text-sm font-medium text-slate-700">
+              <label htmlFor="dept-name" className="text-sm font-medium text-foreground">
                 Name <span className="text-red-500">*</span>
               </label>
               <Input
@@ -351,7 +352,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="dept-description" className="text-sm font-medium text-slate-700">
+              <label htmlFor="dept-description" className="text-sm font-medium text-foreground">
                 Description <span className="text-red-500">*</span>
               </label>
               <Textarea
@@ -366,11 +367,11 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
-                Image <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="text-sm font-medium text-foreground">
+                Image <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               {watch('image_url') && (
-                <div className="relative w-20 h-20 overflow-hidden rounded border border-slate-200">
+                <div className="relative w-20 h-20 overflow-hidden rounded border border-border">
                   <Image src={watch('image_url')!} alt="Preview" fill className="object-cover" />
                 </div>
               )}
@@ -378,7 +379,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploadingImage || !editingDepartment}
-                className="block text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                className="block text-sm text-muted-foreground file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-muted file:text-foreground hover:file:bg-muted/80"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file || !editingDepartment) return;
@@ -400,10 +401,10 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
                 }}
               />
               {!editingDepartment && (
-                <p className="text-xs text-slate-400">Save the department first, then upload an image.</p>
+                <p className="text-xs text-muted-foreground">Save the department first, then upload an image.</p>
               )}
               {uploadingImage && (
-                <p className="text-xs text-slate-500 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Uploading…
                 </p>
