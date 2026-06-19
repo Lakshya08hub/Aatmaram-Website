@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { LanguageToggle } from './LanguageToggle';
 import { Menu } from 'lucide-react';
@@ -12,16 +13,17 @@ import {
 } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'About Us', href: '/about' },
-  { label: 'Departments', href: '/departments' },
-  { label: 'Our Doctors', href: '/doctors' },
-  { label: 'Services', href: '/services' },
-  { label: 'Contact', href: '/contact' },
+const navHrefs = [
+  { key: 'home' as const, href: '/' },
+  { key: 'about' as const, href: '/about' },
+  { key: 'departments' as const, href: '/departments' },
+  { key: 'doctors' as const, href: '/doctors' },
+  { key: 'services' as const, href: '/services' },
+  { key: 'contact' as const, href: '/contact' },
 ];
 
 export function MobileNav() {
+  const tNav = useTranslations('nav');
   return (
     <Sheet>
       <SheetTrigger
@@ -41,7 +43,7 @@ export function MobileNav() {
             <LanguageToggle variant="drawer" />
           </div>
           <ul className="flex flex-col gap-1 p-4 pt-8 flex-1">
-            {navLinks.map((link) => (
+            {navHrefs.map((link) => (
               <li key={link.href}>
                 <SheetClose
                   render={
@@ -51,7 +53,7 @@ export function MobileNav() {
                     />
                   }
                 >
-                  {link.label}
+                  {tNav(link.key)}
                 </SheetClose>
               </li>
             ))}
@@ -68,7 +70,7 @@ export function MobileNav() {
                 />
               }
             >
-              Book Appointment
+              {tNav('cta')}
             </SheetClose>
           </div>
         </nav>

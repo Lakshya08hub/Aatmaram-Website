@@ -220,9 +220,8 @@ export default async function HomePage({
       {/* Section 5 — Facilities Preview */}
       <section className="py-16 md:py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          {/* TODO: use t('facilities.heading') once translation key is added to messages files */}
           <SectionHeading
-            title="Our Facilities"
+            title={t('sections.facilities')}
           />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
             {facilities.map((facility) => (
