@@ -41,3 +41,11 @@ export const ROLE_SECTIONS: Record<StaffRole, string[]> = {
   receptionist: ['dashboard', 'appointments', 'patients'],
   doctor:       ['dashboard', 'patients'],
 };
+
+/**
+ * Returns true if the given role may access the given section key.
+ * Use this in page RSCs to enforce server-side section-level authorization (CR-005).
+ */
+export function canAccessSection(role: StaffRole, sectionKey: string): boolean {
+  return ROLE_SECTIONS[role]?.includes(sectionKey) ?? false;
+}

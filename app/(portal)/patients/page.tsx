@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { getPatientRecords, getActiveDoctorsForDropdown, PatientRecord } from '@/lib/db/patient_records';
 import PatientClient from '@/components/portal/PatientClient';
-import { StaffRole } from '@/lib/portal/roles';
+import { StaffRole, canAccessSection } from '@/lib/portal/roles';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,6 +26,10 @@ export default async function PatientsPage() {
     .single();
 
   const role = (profile?.role ?? 'receptionist') as StaffRole;
+
+  if (!canAccessSection(role, 'patients')) {
+    redirect('/dashboard');
+  }
 
   let records: PatientRecord[] = [];
   let doctors: { id: string; full_name: string }[] = [];
