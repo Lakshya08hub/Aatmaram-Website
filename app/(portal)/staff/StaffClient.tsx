@@ -601,8 +601,8 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
                 Role <span className="text-red-500">*</span>
               </label>
               <Select
-                defaultValue={addForm.getValues('role')}
-                onValueChange={(val) => addForm.setValue('role', val as 'admin' | 'doctor' | 'receptionist')}
+                value={addForm.watch('role')}
+                onValueChange={(val) => addForm.setValue('role', val as 'admin' | 'doctor' | 'receptionist', { shouldValidate: true })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
@@ -682,8 +682,8 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
                 Role <span className="text-red-500">*</span>
               </label>
               <Select
-                defaultValue={editForm.getValues('role')}
-                onValueChange={(val) => editForm.setValue('role', val as 'admin' | 'doctor' | 'receptionist')}
+                value={editForm.watch('role')}
+                onValueChange={(val) => editForm.setValue('role', val as 'admin' | 'doctor' | 'receptionist', { shouldValidate: true })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select role" />
