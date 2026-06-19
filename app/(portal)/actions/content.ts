@@ -383,7 +383,7 @@ export async function setFeaturedOrder(
     assertAllowedTable(table);
     await requireCmsRole();
 
-    if (isNaN(order) || order < 0) return {};
+    if (isNaN(order) || order < 0) return { error: 'Invalid order value' };
 
     const { error } = await createAdminClient()
       .from(table)
