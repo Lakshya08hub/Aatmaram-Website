@@ -332,6 +332,14 @@ function revalidateHomepages(): void {
  * Toggle is_featured for a record in departments, doctors, or facilities.
  * Enforces max caps: departments <= 8, doctors <= 3.
  * T-12-05: requireCmsRole() guards all writes.
+ *
+ * NOTE (WR-006): The featured-count cap check below is non-atomic. A race
+ * condition exists where two concurrent requests can both read a count below
+ * the cap and both succeed, exceeding the limit. For v1 (single-hospital,
+ * low-traffic portal) this is acceptable. To fix properly, replace the
+ * read-check-write pattern with a Postgres function or a DB-level constraint
+ * (e.g. a partial unique index or a CHECK trigger).
+ * TODO: make atomic with a DB function or trigger before multi-tenant use.
  */
 export async function toggleFeatured(
   table: FeaturedTable,
