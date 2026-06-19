@@ -292,7 +292,8 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
                           if (e.target.value === '') return;
                           const val = Number(e.target.value);
                           if (isNaN(val) || val === (dept.featured_order ?? 0)) return;
-                          await setFeaturedOrder('departments', dept.id, val);
+                          const result = await setFeaturedOrder('departments', dept.id, val);
+                          if (result?.error) toast.error('Could not save order');
                         }}
                       />
                     </TableCell>

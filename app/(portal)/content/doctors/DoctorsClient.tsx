@@ -340,7 +340,8 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                           if (e.target.value === '') return;
                           const val = Number(e.target.value);
                           if (isNaN(val) || val === (doctor.featured_order ?? 0)) return;
-                          await setFeaturedOrder('doctors', doctor.id, val);
+                          const result = await setFeaturedOrder('doctors', doctor.id, val);
+                          if (result?.error) toast.error('Could not save order');
                         }}
                       />
                     </TableCell>
