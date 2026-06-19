@@ -6,7 +6,7 @@ import { AppointmentRequest } from '@/lib/db/appointment_requests'
 import { updateAppointmentStatusAction } from '@/app/(portal)/actions/appointments'
 import { KanbanColumn } from './KanbanColumn'
 
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled' | 'completed'
+type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
 interface Props {
   appointments: AppointmentRequest[]
@@ -18,15 +18,10 @@ export function KanbanBoard({ appointments }: Props) {
   const pending   = appointments.filter((a) => a.status === 'pending')
   const contacted = appointments.filter((a) => a.status === 'contacted')
   const confirmed = appointments.filter((a) => a.status === 'confirmed')
-  const cancelled = appointments.filter(
-    (a) => a.status === 'cancelled' || (a.status as string) === 'completed'
-  )
+  const cancelled = appointments.filter((a) => a.status === 'cancelled')
 
   async function handleAdvance(id: string, nextStatus: AppointmentStatus) {
-    const result = await updateAppointmentStatusAction(
-      id,
-      nextStatus as 'pending' | 'contacted' | 'confirmed' | 'cancelled'
-    )
+    const result = await updateAppointmentStatusAction(id, nextStatus)
     if (result.error) {
       toast.error('Status update failed — please try again.')
     } else {

@@ -21,15 +21,14 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 
-// Extends the DB status type to include 'completed' used in advance transitions
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled' | 'completed'
+// DB-valid appointment statuses — 'confirmed' is the terminal success state (CR-003)
+type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
 const ADVANCE_MAP: Record<string, { next: AppointmentStatus; label: string } | null> = {
   pending:   { next: 'contacted', label: 'Mark Contacted' },
   contacted: { next: 'confirmed', label: 'Mark Confirmed' },
-  confirmed: { next: 'completed', label: 'Mark Completed' },
+  confirmed: null,  // confirmed is terminal — no further advance (CR-003)
   cancelled: null,
-  completed: null,
 }
 
 const STATUS_BADGE_CONFIG: Record<string, { className: string; label: string }> = {
@@ -37,7 +36,6 @@ const STATUS_BADGE_CONFIG: Record<string, { className: string; label: string }> 
   contacted: { className: 'bg-blue-100 text-blue-800 font-semibold dark:bg-blue-900 dark:text-blue-200', label: 'Contacted' },
   confirmed: { className: 'bg-green-100 text-green-800 font-semibold dark:bg-green-900 dark:text-green-200', label: 'Confirmed' },
   cancelled: { className: 'bg-red-100 text-red-800 font-semibold dark:bg-red-900 dark:text-red-200', label: 'Cancelled' },
-  completed: { className: 'bg-red-100 text-red-800 font-semibold dark:bg-red-900 dark:text-red-200', label: 'Completed' },
 }
 
 interface Props {
