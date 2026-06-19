@@ -4,9 +4,8 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { AppointmentRequest } from '@/lib/db/appointment_requests'
 import { updateAppointmentStatusAction } from '@/app/(portal)/actions/appointments'
+import type { AppointmentStatus } from '@/app/(portal)/actions/appointments'
 import { KanbanColumn } from './KanbanColumn'
-
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
 interface Props {
   appointments: AppointmentRequest[]

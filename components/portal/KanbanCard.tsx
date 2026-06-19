@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { ChevronRight } from 'lucide-react'
 import { AppointmentRequest } from '@/lib/db/appointment_requests'
 import { updateAppointmentStatusAction, updateAppointmentNotesAction } from '@/app/(portal)/actions/appointments'
+import type { AppointmentStatus } from '@/app/(portal)/actions/appointments'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,9 +21,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-
-// DB-valid appointment statuses — 'confirmed' is the terminal success state (CR-003)
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
 const ADVANCE_MAP: Record<string, { next: AppointmentStatus; label: string } | null> = {
   pending:   { next: 'contacted', label: 'Mark Contacted' },

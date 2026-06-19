@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { StaffRole } from '@/lib/portal/roles'
 
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
+export type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
 const APPOINTMENT_ROLES: StaffRole[] = ['super_admin', 'admin', 'receptionist']
 

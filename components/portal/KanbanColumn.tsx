@@ -3,10 +3,9 @@
 import type { LucideIcon } from 'lucide-react'
 import { CalendarX, Phone, CheckCircle, XCircle } from 'lucide-react'
 import { AppointmentRequest } from '@/lib/db/appointment_requests'
+import type { AppointmentStatus } from '@/app/(portal)/actions/appointments'
 import { EmptyState } from '@/components/ui/empty-state'
 import { KanbanCard } from './KanbanCard'
-
-type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled' | 'completed'
 
 const COLUMN_HEADER_COLORS: Record<string, string> = {
   pending:   'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200',
