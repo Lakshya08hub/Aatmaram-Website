@@ -382,6 +382,9 @@ export default function PatientClient({
   records,
   doctors,
   role,
+  // currentUserId is not used for client-side filtering — doctor record scoping is enforced
+  // server-side in getPatientRecords() (lib/db/patient_records.ts) by filtering on
+  // assigned_doctor_id before records are passed here. Prop kept for future audit use. (WR-007)
   currentUserId: _currentUserId,
   fetchError = false,
 }: PatientClientProps) {
