@@ -39,6 +39,9 @@ export async function updateAppointmentStatusAction(
   try {
     await requireAppointmentRole()
 
+    // Admin client is used intentionally here to bypass RLS — this is a single-hospital,
+    // single-branch v1 portal where all appointment managers share a unified view.
+    // If multi-tenancy is added in future, replace with a user-scoped client + branch filter.
     const { error } = await createAdminClient()
       .from('appointment_requests')
       .update({ status, notes: notes ?? null })
