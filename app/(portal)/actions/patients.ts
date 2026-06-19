@@ -247,10 +247,18 @@ export async function updateClinicalNotesAction(
   }
 }
 
+// Field length limits for inline edits (CR-006)
+const FIELD_MAX: Record<string, number> = {
+  patient_name: 120,
+  phone: 20,
+  clinical_notes: 5000,
+};
+
 /**
  * Inline-edit action: update a single patient field directly from a table cell.
  * Available to: super_admin, admin, receptionist.
  * Security: requirePatientWriteRole() enforced; only whitelisted fields accepted.
+ * clinical_notes is blocked for receptionist role (CR-002).
  */
 export async function updatePatientInlineAction(
   id: string,
@@ -258,7 +266,18 @@ export async function updatePatientInlineAction(
   value: string
 ): Promise<{ error?: string }> {
   try {
-    await requirePatientWriteRole();
+    const { role } = await requirePatientWriteRole();
+
+    // clinical_notes is admin/doctor-only via inline edit; receptionists must not write it (CR-002)
+    if (field === 'clinical_notes' && role === 'receptionist') {
+      return { error: 'Forbidden' };
+    }
+
+    // Validate field lengths before writing to DB (CR-006)
+    if (FIELD_MAX[field] && value.length > FIELD_MAX[field]) {
+      return { error: `${field} is too long` };
+    }
+
     const adminClient = createAdminClient();
 
     // Validate non-empty for required fields (T-16-09)
