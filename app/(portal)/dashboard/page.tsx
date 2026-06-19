@@ -28,7 +28,7 @@ export default async function DashboardPage() {
 
   try {
     const { data } = await supabase
-      .from('patients')
+      .from('patient_records')   // was 'patients' — CR-004
       .select('created_at')
       .gte('created_at', thirtyDaysAgo)
     patientData = data ?? []
