@@ -1,34 +1,12 @@
 'use server'
 
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { StaffRole } from '@/lib/portal/roles'
+import { requireRole } from '@/lib/portal/auth'
 
 export type AppointmentStatus = 'pending' | 'contacted' | 'confirmed' | 'cancelled'
 
-const APPOINTMENT_ROLES: StaffRole[] = ['super_admin', 'admin', 'receptionist']
-
 async function requireAppointmentRole() {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect('/login')
-
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single()
-
-  if (error || !profile || !APPOINTMENT_ROLES.includes(profile.role as StaffRole)) {
-    throw new Error('Forbidden')
-  }
-
-  return supabase
+  return requireRole(['super_admin', 'admin', 'receptionist'])
 }
 
 export async function updateAppointmentStatusAction(

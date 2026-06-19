@@ -5,11 +5,9 @@
 //   requirePatientWriteRole() — super_admin, admin, receptionist only (doctors cannot create/update records)
 //   requireDoctorRole()       — doctor only (can update clinical_notes on assigned records)
 
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { StaffRole } from '@/lib/portal/roles';
+import { requireRole } from '@/lib/portal/auth';
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -33,34 +31,12 @@ const doctorNotesSchema = z.object({
 // Auth helpers
 // ---------------------------------------------------------------------------
 
-const PATIENT_WRITE_ROLES: StaffRole[] = ['super_admin', 'admin', 'receptionist'];
-
 /**
  * Verifies the caller has a write role (not doctor).
  * Redirects to /login if unauthenticated; throws Error('Forbidden') if role is 'doctor'.
  */
 async function requirePatientWriteRole() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single();
-
-  if (error || !profile || !PATIENT_WRITE_ROLES.includes(profile.role as StaffRole)) {
-    throw new Error('Forbidden');
-  }
-
-  return { user, role: profile.role as StaffRole, supabase };
+  return requireRole(['super_admin', 'admin', 'receptionist']);
 }
 
 /**
@@ -68,27 +44,7 @@ async function requirePatientWriteRole() {
  * Redirects to /login if unauthenticated; throws Error('Forbidden') if role is not 'doctor'.
  */
 async function requireDoctorRole() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single();
-
-  if (error || !profile || (profile.role as StaffRole) !== 'doctor') {
-    throw new Error('Forbidden');
-  }
-
-  return { user, role: profile.role as StaffRole };
+  return requireRole(['doctor']);
 }
 
 // ---------------------------------------------------------------------------
