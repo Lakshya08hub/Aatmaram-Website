@@ -6,9 +6,21 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { StaffRole } from '@/lib/portal/roles';
+
+// ---------------------------------------------------------------------------
+// Validation schemas (CR-001)
+// ---------------------------------------------------------------------------
+
+const testimonialSchema = z.object({
+  patient_name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+  quote: z.string().min(10, 'Quote must be at least 10 characters').max(1000, 'Quote must be at most 1000 characters'),
+  designation: z.string().max(100, 'Designation must be at most 100 characters').optional(),
+  sort_order: z.coerce.number().int().min(0).max(999),
+});
 
 const CMS_ROLES: StaffRole[] = ['super_admin', 'admin'];
 
@@ -422,6 +434,12 @@ export async function createTestimonialAction(input: {
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = testimonialSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const { error } = await createAdminClient().from('testimonials').insert({
       patient_name: input.patient_name,
       quote: input.quote,
@@ -451,6 +469,12 @@ export async function updateTestimonialAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = testimonialSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const { error } = await createAdminClient()
       .from('testimonials')
       .update({
