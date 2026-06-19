@@ -13,13 +13,13 @@ export default async function TestimonialsPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect('/login');
 
-  const { data: profile } = await supabase
+  const { data: profile, error } = await supabase
     .from('profiles')
     .select('role')
     .eq('user_id', user.id)
     .single();
 
-  if (!profile || !canAccessSection(profile.role as StaffRole, 'content')) {
+  if (error || !profile || !canAccessSection(profile.role as StaffRole, 'content')) {
     redirect('/dashboard');
   }
 
