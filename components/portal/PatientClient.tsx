@@ -15,7 +15,9 @@ import {
   createPatientAction,
   updatePatientAction,
   updateClinicalNotesAction,
+  updatePatientInlineAction,
 } from '@/app/(portal)/actions/patients';
+import { InlineEditCell } from '@/components/portal/InlineEditCell';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -496,11 +498,39 @@ export default function PatientClient({
                 <TableBody>
                   {filteredRecords.map((record) => (
                     <TableRow key={record.id}>
-                      <TableCell className="font-medium">{record.patient_name}</TableCell>
+                      <TableCell className="font-medium">
+                        {isDoctor ? (
+                          record.patient_name
+                        ) : (
+                          <InlineEditCell
+                            value={record.patient_name}
+                            onSave={async (v) => {
+                              if (v.trim() === '') return { error: 'Field cannot be empty' };
+                              const r = await updatePatientInlineAction(record.id, 'patient_name', v);
+                              if (!r.error) router.refresh();
+                              return r;
+                            }}
+                          />
+                        )}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline">{record.age}</Badge>
                       </TableCell>
-                      <TableCell className="text-slate-500">{record.phone}</TableCell>
+                      <TableCell className="text-slate-500">
+                        {isDoctor ? (
+                          record.phone
+                        ) : (
+                          <InlineEditCell
+                            value={record.phone}
+                            onSave={async (v) => {
+                              if (v.trim() === '') return { error: 'Field cannot be empty' };
+                              const r = await updatePatientInlineAction(record.id, 'phone', v);
+                              if (!r.error) router.refresh();
+                              return r;
+                            }}
+                          />
+                        )}
+                      </TableCell>
                       <TableCell className="text-slate-500">
                         {truncate(record.reason, 40)}
                       </TableCell>

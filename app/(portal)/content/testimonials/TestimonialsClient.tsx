@@ -14,6 +14,7 @@ import { Pencil, Trash2, Loader2, MessageSquareQuote } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Testimonial } from '@/lib/db/testimonials';
+import { InlineEditCell } from '@/components/portal/InlineEditCell';
 import {
   createTestimonialAction,
   updateTestimonialAction,
@@ -235,7 +236,23 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
             <TableBody>
               {initialData.map((testimonial) => (
                 <TableRow key={testimonial.id}>
-                  <TableCell className="font-medium">{testimonial.patient_name}</TableCell>
+                  <TableCell className="font-medium">
+                    <InlineEditCell
+                      value={testimonial.patient_name}
+                      onSave={async (v) => {
+                        if (v.trim() === '') return { error: 'Field cannot be empty' };
+                        const r = await updateTestimonialAction(testimonial.id, {
+                          patient_name: v,
+                          quote: testimonial.quote,
+                          designation: testimonial.designation ?? undefined,
+                          is_active: testimonial.is_active,
+                          sort_order: testimonial.sort_order,
+                        });
+                        if (!r.error) router.refresh();
+                        return r;
+                      }}
+                    />
+                  </TableCell>
                   <TableCell className="text-slate-500">
                     {testimonial.quote.length > 60
                       ? testimonial.quote.slice(0, 60) + '…'

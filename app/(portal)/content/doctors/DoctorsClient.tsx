@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 
 import { Doctor } from '@/lib/db/doctors';
+import { InlineEditCell } from '@/components/portal/InlineEditCell';
 import {
   createDoctorAction,
   updateDoctorAction,
@@ -276,7 +277,17 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                 const fs = featuredState[doctor.id] ?? { isFeatured: doctor.is_featured ?? false, order: doctor.featured_order ?? 0 };
                 return (
                   <TableRow key={doctor.id}>
-                    <TableCell className="font-medium">{doctor.full_name}</TableCell>
+                    <TableCell className="font-medium">
+                      <InlineEditCell
+                        value={doctor.full_name}
+                        onSave={async (v) => {
+                          if (v.trim() === '') return { error: 'Field cannot be empty' };
+                          const r = await updateDoctorAction(doctor.id, { full_name: v });
+                          if (!r.error) router.refresh();
+                          return r;
+                        }}
+                      />
+                    </TableCell>
                     <TableCell className="text-slate-500">{doctor.specialization}</TableCell>
                     <TableCell>
                       <span

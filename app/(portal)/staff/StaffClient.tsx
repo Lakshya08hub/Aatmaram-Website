@@ -13,6 +13,7 @@ import { Pencil, Trash2, Loader2, UserCheck, UserX } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { StaffMember } from '@/lib/db/staff';
+import { InlineEditCell } from '@/components/portal/InlineEditCell';
 import { Doctor } from '@/lib/db/doctors';
 import {
   createStaffAction,
@@ -344,7 +345,17 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
 
     return (
       <TableRow key={staff.id}>
-        <TableCell className="font-medium">{staff.full_name ?? '—'}</TableCell>
+        <TableCell className="font-medium">
+          <InlineEditCell
+            value={staff.full_name ?? ''}
+            onSave={async (v) => {
+              if (v.trim() === '') return { error: 'Field cannot be empty' };
+              const r = await updateStaffAction(staff.id, { full_name: v });
+              if (!r.error) router.refresh();
+              return r;
+            }}
+          />
+        </TableCell>
         <TableCell className="text-slate-500">{staff.email}</TableCell>
         <TableCell>
           <Badge variant={ROLE_VARIANT[staff.role] ?? 'outline'}>

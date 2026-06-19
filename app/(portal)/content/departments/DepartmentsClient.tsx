@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import Image from 'next/image';
 
 import { Department } from '@/lib/db/departments';
+import { InlineEditCell } from '@/components/portal/InlineEditCell';
 import {
   createDepartmentAction,
   updateDepartmentAction,
@@ -235,7 +236,17 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
                 const fs = featuredState[dept.id] ?? { isFeatured: dept.is_featured ?? false, order: dept.featured_order ?? 0 };
                 return (
                   <TableRow key={dept.id}>
-                    <TableCell className="font-medium">{dept.name}</TableCell>
+                    <TableCell className="font-medium">
+                      <InlineEditCell
+                        value={dept.name}
+                        onSave={async (v) => {
+                          if (v.trim() === '') return { error: 'Field cannot be empty' };
+                          const r = await updateDepartmentAction(dept.id, { name: v });
+                          if (!r.error) router.refresh();
+                          return r;
+                        }}
+                      />
+                    </TableCell>
                     <TableCell className="text-slate-500">
                       {dept.description.length > 60
                         ? dept.description.slice(0, 60) + '…'
