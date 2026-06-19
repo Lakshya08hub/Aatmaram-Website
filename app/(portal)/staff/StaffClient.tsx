@@ -111,6 +111,132 @@ interface Props {
 }
 
 // ---------------------------------------------------------------------------
+// Module-scope sub-components (lifted from StaffClient body to prevent
+// remount on every parent render — WR-05)
+// ---------------------------------------------------------------------------
+
+interface StaffRowProps {
+  staff: StaffMember;
+  togglingId: string | null;
+  onEdit: (staff: StaffMember) => void;
+  onToggle: (staff: StaffMember) => void;
+  onDelete: (staff: StaffMember) => void;
+  onInlineSave: (staffId: string, value: string) => Promise<{ error?: string }>;
+}
+
+function StaffRow({ staff, togglingId, onEdit, onToggle, onDelete, onInlineSave }: StaffRowProps) {
+  const isToggling = togglingId === staff.id;
+
+  return (
+    <TableRow key={staff.id}>
+      <TableCell className="font-medium">
+        <InlineEditCell
+          value={staff.full_name ?? ''}
+          onSave={(v) => onInlineSave(staff.id, v)}
+        />
+      </TableCell>
+      <TableCell className="text-muted-foreground">{staff.email}</TableCell>
+      <TableCell>
+        <Badge variant={ROLE_VARIANT[staff.role] ?? 'outline'}>
+          {ROLE_LABEL[staff.role] ?? staff.role}
+        </Badge>
+      </TableCell>
+      <TableCell className="text-muted-foreground">{staff.phone ?? '—'}</TableCell>
+      <TableCell className="text-muted-foreground">
+        {staff.join_date ? new Date(staff.join_date).toLocaleDateString('en-IN') : '—'}
+      </TableCell>
+      <TableCell>
+        {staff.is_active ? (
+          <Badge variant="default" className="bg-green-600 hover:bg-green-700">Active</Badge>
+        ) : (
+          <Badge variant="secondary" className="bg-amber-100 text-amber-700">Pending</Badge>
+        )}
+      </TableCell>
+      <TableCell className="text-right">
+        <div className="flex justify-end gap-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label={`Edit ${staff.full_name}`}
+            onClick={() => onEdit(staff)}
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            aria-label={staff.is_active ? 'Deactivate' : 'Activate'}
+            onClick={() => onToggle(staff)}
+            disabled={isToggling}
+          >
+            {isToggling ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : staff.is_active ? (
+              <UserX className="h-4 w-4 text-amber-600" />
+            ) : (
+              <UserCheck className="h-4 w-4 text-green-600" />
+            )}
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+            aria-label={`Delete ${staff.full_name}`}
+            onClick={() => onDelete(staff)}
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      </TableCell>
+    </TableRow>
+  );
+}
+
+interface StaffTableProps extends Omit<StaffRowProps, 'staff'> {
+  rows: StaffMember[];
+}
+
+function StaffTable({ rows, ...rowCallbacks }: StaffTableProps) {
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        icon={Users}
+        title="No staff members yet"
+        description="Add staff members to give them portal access."
+        className="mt-8"
+      />
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+      <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Role</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Join Date</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((staff) => (
+            <StaffRow key={staff.id} staff={staff} {...rowCallbacks} />
+          ))}
+        </TableBody>
+      </Table>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Role badge helper
 // ---------------------------------------------------------------------------
 
@@ -338,124 +464,14 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   const pendingStaff = initialStaff.filter((s) => !s.is_active);
 
   // ---------------------------------------------------------------------------
-  // Staff table row renderer
+  // Inline save handler for StaffRow (passed as stable callback)
   // ---------------------------------------------------------------------------
 
-  function StaffRow({ staff }: { staff: StaffMember }) {
-    const isToggling = togglingId === staff.id;
-
-    return (
-      <TableRow key={staff.id}>
-        <TableCell className="font-medium">
-          <InlineEditCell
-            value={staff.full_name ?? ''}
-            onSave={async (v) => {
-              if (v.trim() === '') return { error: 'Field cannot be empty' };
-              const r = await updateStaffAction(staff.id, { full_name: v });
-              if (!r.error) router.refresh();
-              return r;
-            }}
-          />
-        </TableCell>
-        <TableCell className="text-muted-foreground">{staff.email}</TableCell>
-        <TableCell>
-          <Badge variant={ROLE_VARIANT[staff.role] ?? 'outline'}>
-            {ROLE_LABEL[staff.role] ?? staff.role}
-          </Badge>
-        </TableCell>
-        <TableCell className="text-muted-foreground">{staff.phone ?? '—'}</TableCell>
-        <TableCell className="text-muted-foreground">
-          {staff.join_date ? new Date(staff.join_date).toLocaleDateString('en-IN') : '—'}
-        </TableCell>
-        <TableCell>
-          {staff.is_active ? (
-            <Badge variant="default" className="bg-green-600 hover:bg-green-700">Active</Badge>
-          ) : (
-            <Badge variant="secondary" className="bg-amber-100 text-amber-700">Pending</Badge>
-          )}
-        </TableCell>
-        <TableCell className="text-right">
-          <div className="flex justify-end gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              aria-label={`Edit ${staff.full_name}`}
-              onClick={() => openEditSheet(staff)}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              aria-label={staff.is_active ? 'Deactivate' : 'Activate'}
-              onClick={() => handleToggleActive(staff)}
-              disabled={isToggling}
-            >
-              {isToggling ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : staff.is_active ? (
-                <UserX className="h-4 w-4 text-amber-600" />
-              ) : (
-                <UserCheck className="h-4 w-4 text-green-600" />
-              )}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
-              aria-label={`Delete ${staff.full_name}`}
-              onClick={() => setDeleteTarget(staff)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </TableCell>
-      </TableRow>
-    );
-  }
-
-  // ---------------------------------------------------------------------------
-  // Staff table
-  // ---------------------------------------------------------------------------
-
-  function StaffTable({ rows }: { rows: StaffMember[] }) {
-    if (rows.length === 0) {
-      return (
-        <EmptyState
-          icon={Users}
-          title="No staff members yet"
-          description="Add staff members to give them portal access."
-          className="mt-8"
-        />
-      );
-    }
-
-    return (
-      <div className="mt-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Phone</TableHead>
-              <TableHead>Join Date</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {rows.map((staff) => (
-              <StaffRow key={staff.id} staff={staff} />
-            ))}
-          </TableBody>
-        </Table>
-        </div>
-      </div>
-    );
+  async function handleInlineSave(staffId: string, value: string): Promise<{ error?: string }> {
+    if (value.trim() === '') return { error: 'Field cannot be empty' };
+    const r = await updateStaffAction(staffId, { full_name: value });
+    if (!r.error) router.refresh();
+    return r;
   }
 
   // ---------------------------------------------------------------------------
@@ -510,14 +526,28 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
           </TabsList>
 
           <TabsContent value="active">
-            <StaffTable rows={activeStaff} />
+            <StaffTable
+              rows={activeStaff}
+              togglingId={togglingId}
+              onEdit={openEditSheet}
+              onToggle={handleToggleActive}
+              onDelete={setDeleteTarget}
+              onInlineSave={handleInlineSave}
+            />
           </TabsContent>
 
           <TabsContent value="pending">
             <div className="mt-2 rounded-md border border-amber-100 bg-amber-50 px-4 py-2 text-sm text-amber-700">
               These accounts are awaiting activation. Click the activate button to grant access, or delete to reject.
             </div>
-            <StaffTable rows={pendingStaff} />
+            <StaffTable
+              rows={pendingStaff}
+              togglingId={togglingId}
+              onEdit={openEditSheet}
+              onToggle={handleToggleActive}
+              onDelete={setDeleteTarget}
+              onInlineSave={handleInlineSave}
+            />
           </TabsContent>
         </Tabs>
       )}
