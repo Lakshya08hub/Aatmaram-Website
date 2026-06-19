@@ -50,6 +50,7 @@ export function InlineEditCell({ value, onSave, className }: InlineEditCellProps
   }, []);
 
   async function handleSave() {
+    if (ringState === 'saving') return  // WR-001: prevent double-save on blur+enter
     if (localValue === value) {
       setEditing(false);
       return;

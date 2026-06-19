@@ -446,7 +446,7 @@ export default function PatientClient({
         </div>
       )}
 
-      {!fetchError && (
+      {!fetchError ? (
         <>
           {/* Search input */}
           <div className="mt-4">
@@ -484,7 +484,7 @@ export default function PatientClient({
           {filteredRecords.length > 0 && (
             <div className="mt-4 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
-              <Table>
+                <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead>Patient</TableHead>
@@ -569,12 +569,12 @@ export default function PatientClient({
                     </TableRow>
                   ))}
                 </TableBody>
-              </Table>
+                </Table>
               </div>
             </div>
           )}
         </>
-      )}
+      ) : null}
 
       {/* Sheet */}
       <Sheet open={sheetOpen} onOpenChange={(open) => { if (!open) closeSheet(); }}>
@@ -593,6 +593,7 @@ export default function PatientClient({
 
           {sheetOpen && !isDoctor && (
             <ReceptionistSheetForm
+              key={editingRecord?.id ?? 'new'}
               editingRecord={editingRecord}
               doctors={doctors}
               role={role}
