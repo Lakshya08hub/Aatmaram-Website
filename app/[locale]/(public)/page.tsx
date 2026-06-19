@@ -22,6 +22,10 @@ import { getActiveTestimonials } from '@/lib/db/testimonials';
 
 export const dynamic = 'force-dynamic';
 
+async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try { return await fn(); } catch { return fallback; }
+}
+
 export const metadata: Metadata = {
   title: 'Atmaram Child Care and Critical Care — Kanpur',
   description:
@@ -37,11 +41,11 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const [departments, doctors, facilities, info, testimonials] = await Promise.all([
-    getFeaturedDepartments(),
-    getFeaturedDoctors(),
-    getFeaturedFacilities(),
-    getHospitalInfo(),
-    getActiveTestimonials(),
+    safeFetch(getFeaturedDepartments, []),
+    safeFetch(getFeaturedDoctors, []),
+    safeFetch(getFeaturedFacilities, []),
+    safeFetch(getHospitalInfo, null),
+    safeFetch(getActiveTestimonials, []),
   ]);
 
   const heroImageUrl = info?.hero_image_url ?? null;
