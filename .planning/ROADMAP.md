@@ -27,7 +27,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 13: Design System Foundation** - 8pt spacing system, dark mode, motion library (framer-motion), shared empty-state component — cross-cutting primitives for the UI overhaul
 - [x] **Phase 14: Media Infrastructure** - Supabase Storage bucket + Super Admin image upload UI + optimized image rendering, so all photos (hero, doctors, facilities, testimonials) are client-managed (completed 2026-06-17)
 - [x] **Phase 15: Public Site Engagement Overhaul** - Full-bleed hero, testimonials/social-proof strip, PM-JAY explainer, prominent bilingual toggle, scroll/hover motion across all public pages (completed 2026-06-18)
-- [ ] **Phase 16: Portal UX Upgrade** - Analytics dashboard with live charts, kanban appointment queue, inline table editing, dark mode + empty states applied portal-wide
+- [x] **Phase 16: Portal UX Upgrade** - Analytics dashboard with live charts, kanban appointment queue, inline table editing, dark mode + empty states applied portal-wide (completed 2026-06-19)
 
 ---
 
@@ -345,7 +345,7 @@ Plans:
 - [x] 16-02-PLAN.md — Replace dashboard with live chart dashboard (DashboardCharts + RSC queries)
 - [x] 16-03-PLAN.md — Kanban board replacing tabbed appointments view (KanbanBoard + KanbanColumn + KanbanCard)
 - [x] 16-04-PLAN.md — InlineEditCell component integrated into all four portal table sections
-- [ ] 16-05-PLAN.md — Dark mode audit, EmptyState on all tables, collapsible sidebar, overflow-x-auto wrappers
+- [x] 16-05-PLAN.md — Dark mode audit, EmptyState on all tables, collapsible sidebar, overflow-x-auto wrappers
 
 ---
 
@@ -372,4 +372,4 @@ Plans:
 | 13. Design System Foundation | 5/5 | Executed (UAT pending) | - |
 | 14. Media Infrastructure | 0/6 | Planning complete | - |
 | 15. Public Site Engagement Overhaul | 5/5 | Complete | 2026-06-18 |
-| 16. Portal UX Upgrade | 4/5 | In Progress|  |
+| 16. Portal UX Upgrade | 5/5 | Complete   | 2026-06-19 |
