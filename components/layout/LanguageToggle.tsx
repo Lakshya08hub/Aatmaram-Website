@@ -24,31 +24,27 @@ export function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'drawer'
         {locale === 'hi' ? (
           <span className="text-slate-700">HI</span>
         ) : (
-          <span
+          <button
+            type="button"
             className="text-slate-400 cursor-pointer hover:text-slate-600 transition-colors"
             onClick={handleSwitch}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && handleSwitch()}
             aria-label="हिंदी में देखें"
           >
             HI
-          </span>
+          </button>
         )}
         <span className="text-slate-300">|</span>
         {locale === 'en' ? (
           <span className="text-slate-700">EN</span>
         ) : (
-          <span
+          <button
+            type="button"
             className="text-slate-400 cursor-pointer hover:text-slate-600 transition-colors"
             onClick={handleSwitch}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(e) => e.key === 'Enter' && handleSwitch()}
             aria-label="Switch to English"
           >
             EN
-          </span>
+          </button>
         )}
       </div>
     );
