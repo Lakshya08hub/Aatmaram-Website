@@ -246,3 +246,35 @@ export async function updateClinicalNotesAction(
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
+
+/**
+ * Inline-edit action: update a single patient field directly from a table cell.
+ * Available to: super_admin, admin, receptionist.
+ * Security: requirePatientWriteRole() enforced; only whitelisted fields accepted.
+ */
+export async function updatePatientInlineAction(
+  id: string,
+  field: 'patient_name' | 'phone' | 'clinical_notes',
+  value: string
+): Promise<{ error?: string }> {
+  try {
+    await requirePatientWriteRole();
+    const adminClient = createAdminClient();
+
+    // Validate non-empty for required fields (T-16-09)
+    if ((field === 'patient_name' || field === 'phone') && value.trim() === '') {
+      return { error: 'Field cannot be empty' };
+    }
+
+    const { error } = await adminClient
+      .from('patient_records')
+      .update({ [field]: value })
+      .eq('id', id);
+
+    if (error) return { error: error.message };
+
+    return {};
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Unknown error' };
+  }
+}
