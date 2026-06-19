@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { ChevronRight } from 'lucide-react'
 import { AppointmentRequest } from '@/lib/db/appointment_requests'
@@ -40,10 +39,10 @@ interface Props {
   appointment: AppointmentRequest
   onAdvance: (id: string, nextStatus: AppointmentStatus) => Promise<void>
   onCancel: (id: string) => Promise<void>
+  onNotesChange?: () => void
 }
 
-export function KanbanCard({ appointment, onAdvance, onCancel }: Props) {
-  const router = useRouter()
+export function KanbanCard({ appointment, onAdvance, onCancel, onNotesChange }: Props) {
   const [localNotes, setLocalNotes] = useState(appointment.notes ?? '')
   const [isSavingNotes, setIsSavingNotes] = useState(false)
 
@@ -60,7 +59,7 @@ export function KanbanCard({ appointment, onAdvance, onCancel }: Props) {
       if (result.error) {
         toast.error('Could not save notes — please try again.')
       } else {
-        router.refresh()
+        onNotesChange?.()
       }
     } catch {
       toast.error('Could not save notes — please try again.')

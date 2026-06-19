@@ -47,6 +47,7 @@ export function KanbanBoard({ appointments }: Props) {
           appointments={pending}
           onAdvance={handleAdvance}
           onCancel={handleCancel}
+          onNotesChange={router.refresh}
         />
         <KanbanColumn
           status="contacted"
@@ -54,6 +55,7 @@ export function KanbanBoard({ appointments }: Props) {
           appointments={contacted}
           onAdvance={handleAdvance}
           onCancel={handleCancel}
+          onNotesChange={router.refresh}
         />
         <KanbanColumn
           status="confirmed"
@@ -61,6 +63,7 @@ export function KanbanBoard({ appointments }: Props) {
           appointments={confirmed}
           onAdvance={handleAdvance}
           onCancel={handleCancel}
+          onNotesChange={router.refresh}
         />
         <KanbanColumn
           status="cancelled"
@@ -68,6 +71,7 @@ export function KanbanBoard({ appointments }: Props) {
           appointments={cancelled}
           onAdvance={handleAdvance}
           onCancel={handleCancel}
+          onNotesChange={router.refresh}
         />
       </div>
     </div>

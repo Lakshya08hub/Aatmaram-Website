@@ -43,9 +43,10 @@ interface Props {
   appointments: AppointmentRequest[]
   onAdvance: (id: string, nextStatus: AppointmentStatus) => Promise<void>
   onCancel: (id: string) => Promise<void>
+  onNotesChange?: () => void
 }
 
-export function KanbanColumn({ status, label, appointments, onAdvance, onCancel }: Props) {
+export function KanbanColumn({ status, label, appointments, onAdvance, onCancel, onNotesChange }: Props) {
   const headerColor = COLUMN_HEADER_COLORS[status] ?? COLUMN_HEADER_COLORS['pending']
   const emptyState = EMPTY_STATE_CONFIG[status] ?? EMPTY_STATE_CONFIG['cancelled']
 
@@ -75,6 +76,7 @@ export function KanbanColumn({ status, label, appointments, onAdvance, onCancel 
               appointment={a}
               onAdvance={onAdvance}
               onCancel={onCancel}
+              onNotesChange={onNotesChange}
             />
           ))}
         </div>
