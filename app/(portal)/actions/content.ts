@@ -88,15 +88,22 @@ export async function createDepartmentAction(input: {
   }
 }
 
+const DEPARTMENT_ALLOWED_FIELDS = ['name', 'description', 'image_url'] as const;
+
 export async function updateDepartmentAction(
   id: string,
   input: Partial<{ name: string; description: string; image_url: string }>
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+    const cleaned = Object.fromEntries(
+      Object.entries(input).filter(
+        ([k, v]) => DEPARTMENT_ALLOWED_FIELDS.includes(k as typeof DEPARTMENT_ALLOWED_FIELDS[number]) && v !== ''
+      )
+    );
     const { error } = await createAdminClient()
       .from('departments')
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...cleaned, updated_at: new Date().toISOString() })
       .eq('id', id);
 
     if (error) throw new Error(error.message);
@@ -170,6 +177,8 @@ export async function createDoctorAction(input: {
   }
 }
 
+const DOCTOR_ALLOWED_FIELDS = ['full_name', 'specialization', 'qualification', 'photo_url', 'bio', 'availability_days', 'is_active'] as const;
+
 export async function updateDoctorAction(
   id: string,
   input: Partial<{
@@ -184,9 +193,14 @@ export async function updateDoctorAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+    const cleaned = Object.fromEntries(
+      Object.entries(input).filter(
+        ([k, v]) => DOCTOR_ALLOWED_FIELDS.includes(k as typeof DOCTOR_ALLOWED_FIELDS[number]) && v !== ''
+      )
+    );
     const { error } = await createAdminClient()
       .from('doctors')
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...cleaned, updated_at: new Date().toISOString() })
       .eq('id', id);
 
     if (error) throw new Error(error.message);

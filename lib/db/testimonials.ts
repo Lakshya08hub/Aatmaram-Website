@@ -24,7 +24,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
 
   const { data, error } = await supabase
     .from('testimonials')
-    .select('*')
+    .select('id, patient_name, quote, designation, is_active, sort_order, created_at, updated_at')
     .order('sort_order', { ascending: true })
     .order('created_at', { ascending: true });
 
@@ -44,7 +44,7 @@ export async function getActiveTestimonials(): Promise<Testimonial[]> {
 
   const { data, error } = await supabase
     .from('testimonials')
-    .select('*')
+    .select('id, patient_name, quote, designation, is_active, sort_order, created_at, updated_at')
     .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
