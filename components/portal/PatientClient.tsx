@@ -130,7 +130,7 @@ function ReceptionistSheetForm({
       setSubmitted(false);
       onSuccess();
     }
-  }, [state, isPending, submitted]);
+  }, [state, isPending, submitted, isEdit, onSuccess]);
 
   const [assignedDoctor, setAssignedDoctor] = useState<string>(
     editingRecord !== null && editingRecord.assigned_doctor_id !== null
@@ -310,7 +310,7 @@ function DoctorSheetForm({
       setSubmitted(false);
       onSuccess();
     }
-  }, [state, isPending, submitted]);
+  }, [state, isPending, submitted, onSuccess]);
 
   return (
     <form

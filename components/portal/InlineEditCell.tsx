@@ -4,7 +4,7 @@
 // Renders a span in view mode; activates an Input on click.
 // Ring states: blue (active), green (success flash 600ms), red (error).
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, memo } from 'react';
 import { Pencil } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -27,7 +27,7 @@ type RingState = 'idle' | 'saving' | 'success' | 'error';
 // Component
 // ---------------------------------------------------------------------------
 
-export function InlineEditCell({ value, onSave, className }: InlineEditCellProps) {
+export const InlineEditCell = memo(function InlineEditCell({ value, onSave, className }: InlineEditCellProps) {
   const [editing, setEditing] = useState(false);
   const [localValue, setLocalValue] = useState(value);
   const [ringState, setRingState] = useState<RingState>('idle');
@@ -113,4 +113,4 @@ export function InlineEditCell({ value, onSave, className }: InlineEditCellProps
       <Pencil className="h-3 w-3 text-muted-foreground ml-1 inline opacity-0 group-hover:opacity-100" />
     </div>
   );
-}
+});
