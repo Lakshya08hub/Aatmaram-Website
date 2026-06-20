@@ -29,7 +29,11 @@ export default async function AnalyticsPage() {
     redirect('/dashboard');
   }
 
-  const now = new Date();
+  // Derive IST "now" explicitly so date boundaries are correct for IST (UTC+5:30)
+  // regardless of the server timezone (commonly UTC in cloud deployments).
+  const nowUTC = new Date();
+  const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
+  const now = new Date(nowUTC.getTime() + IST_OFFSET_MS);
   const currentMonth = toFirstOfMonth(now);
 
   const [appointmentStats, staff, payrollTotal, patientStats] = await Promise.all([
