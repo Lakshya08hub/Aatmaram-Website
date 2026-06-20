@@ -334,7 +334,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <input
+                      <Input
                         type="number"
                         min="0"
                         max="99"

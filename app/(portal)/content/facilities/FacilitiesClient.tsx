@@ -294,7 +294,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <input
+                      <Input
                         type="number"
                         min="0"
                         max="99"
