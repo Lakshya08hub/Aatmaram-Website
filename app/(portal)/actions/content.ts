@@ -437,7 +437,7 @@ export async function toggleFeatured(
       }
     }
 
-    const { error } = await admin.from(table).update({ is_featured: value }).eq('id', id);
+    const { error } = await admin.from(table).update({ is_featured: value, updated_at: new Date().toISOString() }).eq('id', id);
     if (error) throw new Error(error.message);
 
     revalidatePath('/portal/content/' + table);
@@ -471,7 +471,7 @@ export async function setFeaturedOrder(
 
     const { error } = await createAdminClient()
       .from(table)
-      .update({ featured_order: order })
+      .update({ featured_order: order, updated_at: new Date().toISOString() })
       .eq('id', id);
     if (error) throw new Error(error.message);
 
