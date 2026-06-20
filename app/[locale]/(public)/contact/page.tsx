@@ -35,7 +35,9 @@ export default async function ContactPage({ params }: PageProps) {
   const address = [addressLine1, addressLine2].filter(Boolean).join(', ');
   const phone = hospitalInfo?.emergency_number ?? '';
   const opdTimings = hospitalInfo?.opd_timings ?? '';
-  const mapsEmbedUrl = hospitalInfo?.maps_embed_url ?? '';
+  const rawMapsUrl = hospitalInfo?.maps_embed_url ?? '';
+  const GMAPS_EMBED_RE = /^https:\/\/www\.google\.com\/maps\/embed\?/;
+  const mapsEmbedUrl = GMAPS_EMBED_RE.test(rawMapsUrl) ? rawMapsUrl : '';
 
   return (
     <main>
