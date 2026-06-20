@@ -1,39 +1,14 @@
 import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
-import { StaffRole } from '@/lib/portal/roles';
+import { requireRole } from '@/lib/portal/auth';
 import { getActiveStaffWithPaymentStatus, getMonthlyPayrollTotal } from '@/lib/db/payroll';
 import { getAppointmentStats, getPatientVolumeStats } from '@/lib/db/analytics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const ADMIN_ROLES: StaffRole[] = ['super_admin', 'admin'];
-
 function toFirstOfMonth(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   return `${y}-${m}-01`;
-}
-
-async function requireAdminRole() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data: profile, error } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single();
-
-  if (error || !profile || !ADMIN_ROLES.includes(profile.role as StaffRole)) {
-    redirect('/dashboard');
-  }
 }
 
 const APPOINTMENT_STATUSES: {
@@ -48,7 +23,11 @@ const APPOINTMENT_STATUSES: {
 ];
 
 export default async function AnalyticsPage() {
-  await requireAdminRole();
+  try {
+    await requireRole(['super_admin', 'admin']);
+  } catch {
+    redirect('/dashboard');
+  }
 
   const now = new Date();
   const currentMonth = toFirstOfMonth(now);
