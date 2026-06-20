@@ -1,5 +1,5 @@
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { GeistSans } from 'geist/font/sans';
 import Script from 'next/script';
@@ -19,6 +19,10 @@ export default async function LocaleLayout({
     notFound();
   }
 
+  // Must be called before any locale-dependent server calls (getMessages, etc.)
+  // so that static rendering uses the correct locale from async context.
+  setRequestLocale(locale);
+
   const messages = await getMessages();
 
   // Validate GA4 ID format before injection to prevent XSS via env var misconfiguration.
@@ -27,32 +31,34 @@ export default async function LocaleLayout({
   const validGaId = /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : null;
 
   return (
-    <NextIntlClientProvider messages={messages}>
-      <div className={GeistSans.variable}>
-        {children}
-        <Toaster />
-      </div>
-      {/* GA4 — review DPDP Act consent obligations before launch */}
-      {validGaId && (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${validGaId}`}
-            strategy="afterInteractive"
-          />
-          <Script
-            id="ga4-init"
-            strategy="afterInteractive"
-            dangerouslySetInnerHTML={{
-              __html: `
+    <html lang={locale} suppressHydrationWarning>
+      <body className={GeistSans.variable}>
+        <NextIntlClientProvider messages={messages}>
+          {children}
+          <Toaster />
+        </NextIntlClientProvider>
+        {/* GA4 — review DPDP Act consent obligations before launch */}
+        {validGaId && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${validGaId}`}
+              strategy="afterInteractive"
+            />
+            <Script
+              id="ga4-init"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
                 gtag('config', '${validGaId}');
               `,
-            }}
-          />
-        </>
-      )}
-    </NextIntlClientProvider>
+              }}
+            />
+          </>
+        )}
+      </body>
+    </html>
   );
 }

@@ -6,14 +6,12 @@ export const metadata: Metadata = {
   description: 'Super-specialty hospital in Kanpur — Ayushman Bharat PM-JAY empanelled'
 };
 
+// Root layout is a minimal shell. <html> and <body> are rendered by
+// app/[locale]/layout.tsx so that lang={locale} can be set correctly.
 export default function RootLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <html suppressHydrationWarning>
-      <body>{children}</body>
-    </html>
-  );
+  return children;
 }
