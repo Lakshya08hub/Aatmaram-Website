@@ -54,7 +54,8 @@ export async function getFeaturedDepartments(): Promise<Department[]> {
     .select(DEPARTMENT_COLUMNS)
     .eq('is_featured', true)
     .order('featured_order', { ascending: true })
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true })
+    .limit(FEATURED_DEPARTMENTS_LIMIT);
 
   if (featuredErr) throw new Error(featuredErr.message);
   if (featured && featured.length > 0) return featured as Department[];
