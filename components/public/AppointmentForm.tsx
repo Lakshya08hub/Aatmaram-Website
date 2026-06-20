@@ -57,12 +57,12 @@ const appointmentSchema = z.object({
     .string()
     .regex(/^[6-9]\d{9}$/, 'Enter a valid 10-digit Indian mobile number.'),
   preferredDoctor: z.string().min(1, 'This field is required.'),
-  preferredDate: z.string().refine(
-    (val) =>
-      !val ||
-      new Date(val) >= new Date(new Date().toISOString().split('T')[0]),
-    'Please select a date from today onwards.'
-  ),
+  preferredDate: z.string()
+    .min(1, 'Please select a date.')
+    .refine(
+      (val) => new Date(val) >= new Date(new Date().toISOString().split('T')[0]),
+      'Please select a date from today onwards.'
+    ),
   preferredTime: z.enum(['morning', 'afternoon', 'evening']),
   reason: z.string().min(10, 'This field is required.'),
 })
