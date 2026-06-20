@@ -15,12 +15,8 @@ export const metadata: Metadata = {
 };
 
 function getInitials(fullName: string): string {
-  return fullName
-    .split(' ')
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0].toUpperCase())
-    .join('');
+  const parts = fullName.trim().split(/\s+/).filter(Boolean).slice(0, 2);
+  return parts.length > 0 ? parts.map((p) => p[0].toUpperCase()).join('') : '?';
 }
 
 export default async function DoctorsPage({
