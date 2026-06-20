@@ -25,15 +25,16 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       aria-label="Toggle theme"
+      disabled={!mounted}
       className="min-h-[44px] min-w-[44px] text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent"
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {/* Until mounted, render a stable neutral icon to avoid hydration mismatch. */}
-      {mounted && isDark ? (
+      {/* Until mounted, render no icon to avoid hydration mismatch and misleading icon. */}
+      {mounted && (isDark ? (
         <Sun className="h-4 w-4" />
       ) : (
         <Moon className="h-4 w-4" />
-      )}
+      ))}
     </Button>
   )
 }
