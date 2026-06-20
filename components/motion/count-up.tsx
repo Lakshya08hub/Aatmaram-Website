@@ -38,27 +38,28 @@ export function CountUp({
   const count = useMotionValue(0)
   const rounded = useTransform(count, (latest) => Math.round(latest))
 
+  // WR-004: reset count to 0 before each animation so value prop changes
+  // restart from the beginning rather than animating from the last value.
   useEffect(() => {
     if (reduce || !inView) return
+    count.set(0)
     const controls = animate(count, value, { duration, ease: "easeOut" })
     return controls.stop
   }, [inView, reduce, count, value, duration])
 
+  // CR-002: both branches render a consistent <span> outer wrapper so React
+  // can hydrate without DOM shape mismatch between SSR and client.
   if (reduce) {
     return (
       <span ref={ref} className={className}>
-        {prefix}
-        {value}
-        {suffix}
+        {prefix}{value}{suffix}
       </span>
     )
   }
 
   return (
     <span ref={ref} className={className}>
-      {prefix}
-      <motion.span>{rounded}</motion.span>
-      {suffix}
+      {prefix}<motion.span>{rounded}</motion.span>{suffix}
     </span>
   )
 }
