@@ -23,6 +23,7 @@ const GREETING =
 
 const GAP = 24;
 const BTN = 56;
+const MAX_INPUT_LENGTH = 2000;
 
 function snapToCorner(x: number, y: number): Corner {
   const right = x > window.innerWidth / 2;
@@ -176,6 +177,16 @@ export function ChatWidget() {
   async function sendMessage(text: string) {
     if (text.trim() === '' || isStreaming) return;
     const userText = text.trim();
+
+    // WR-001: Client-side length guard with inline feedback
+    if (userText.length > MAX_INPUT_LENGTH) {
+      setMessages(prev => [...prev, {
+        role: 'assistant',
+        content: 'Your message is too long. Please keep it under 2000 characters.',
+      }]);
+      return;
+    }
+
     setInput('');
     const newMessages: Message[] = [...messages, { role: 'user', content: userText }];
     setMessages([...newMessages, { role: 'assistant', content: '' }]);
@@ -290,26 +301,32 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </CardContent>
 
-          <div className="border-t border-border p-3 bg-white flex gap-2 shrink-0">
-            <Input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
-              className="flex-1"
-              disabled={isStreaming}
-            />
-            <Button
-              size="icon"
-              onClick={() => sendMessage(input)}
-              disabled={!input.trim() || isStreaming}
-              aria-label="Send message"
-              className="shrink-0"
-              style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}
-            >
-              <SendHorizonal size={16} className="text-white" />
-            </Button>
+          <div className="border-t border-border p-3 bg-white flex flex-col gap-1 shrink-0">
+            {/* WR-001: Show character countdown when approaching limit */}
+            {input.length > 1800 && (
+              <p className="text-xs text-destructive text-right">{MAX_INPUT_LENGTH - input.length} characters remaining</p>
+            )}
+            <div className="flex gap-2">
+              <Input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
+                className="flex-1"
+                disabled={isStreaming}
+              />
+              <Button
+                size="icon"
+                onClick={() => sendMessage(input)}
+                disabled={!input.trim() || isStreaming}
+                aria-label="Send message"
+                className="shrink-0"
+                style={{ background: 'linear-gradient(135deg, #38bdf8, #818cf8)' }}
+              >
+                <SendHorizonal size={16} className="text-white" />
+              </Button>
+            </div>
           </div>
         </Card>
       )}
