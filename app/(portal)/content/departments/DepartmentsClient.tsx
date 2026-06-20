@@ -2,7 +2,7 @@
 // app/(portal)/content/departments/DepartmentsClient.tsx
 // Client Component — Departments CRUD: Table + Dialog (add/edit) + AlertDialog (delete).
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -78,17 +78,27 @@ interface Props {
   fetchError: boolean;
 }
 
+// WR-002: extract map builder so useState initialiser and useEffect share the same logic.
+function buildFeaturedMap(
+  items: Department[]
+): Record<string, { isFeatured: boolean; order: number }> {
+  return Object.fromEntries(
+    items.map((d) => [d.id, { isFeatured: d.is_featured ?? false, order: d.featured_order ?? 0 }])
+  );
+}
+
 export default function DepartmentsClient({ initialData, fetchError }: Props) {
   const router = useRouter();
 
   // Featured optimistic state: record id -> { isFeatured, order }
   const [featuredState, setFeaturedState] = useState<
     Record<string, { isFeatured: boolean; order: number }>
-  >(() =>
-    Object.fromEntries(
-      initialData.map((d) => [d.id, { isFeatured: d.is_featured ?? false, order: d.featured_order ?? 0 }])
-    )
-  );
+  >(() => buildFeaturedMap(initialData));
+
+  // WR-002: sync featuredState when initialData changes (e.g. after router.refresh()).
+  useEffect(() => {
+    setFeaturedState(buildFeaturedMap(initialData));
+  }, [initialData]);
 
   const featuredCount = Object.values(featuredState).filter((s) => s.isFeatured).length;
 
