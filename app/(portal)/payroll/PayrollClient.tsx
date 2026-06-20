@@ -67,37 +67,55 @@ export default function PayrollClient({ initialStaff, initialTotal, initialMonth
     setIsNavigating(false);
   }
 
-  function navigateMonth(dir: 'prev' | 'next') {
+  async function navigateMonth(dir: 'prev' | 'next') {
     const [y, m] = selectedMonth.split('-').map(Number);
     const d = new Date(y, m - 1 + (dir === 'next' ? 1 : -1), 1);
     const next = toFirstOfMonth(d);
     setSelectedMonth(next);
-    loadMonthData(next);
+    try {
+      await loadMonthData(next);
+    } catch {
+      // Revert month label if data load throws unexpectedly
+      setSelectedMonth(selectedMonth);
+      toast.error('Failed to load payroll data.');
+      setIsNavigating(false);
+    }
   }
 
   async function handleMarkAsPaid(row: StaffPayrollRow) {
     setPendingIds((prev) => new Set(prev).add(row.id));
-    const amountPaid = row.salary ?? 0;
-    const result = await markAsPaidAction({
-      profileId: row.id,
-      paymentMonth: selectedMonth,
-      amountPaid,
-    });
-    setPendingIds((prev) => {
-      const s = new Set(prev);
-      s.delete(row.id);
-      return s;
-    });
-    if (result.error) {
-      toast.error(result.error);
-      return;
+    try {
+      const amountPaid = row.salary ?? 0;
+      const result = await markAsPaidAction({
+        profileId: row.id,
+        paymentMonth: selectedMonth,
+        amountPaid,
+      });
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+      // Optimistic local update — avoids a full refetch skeleton flash
+      setStaff((prev) =>
+        prev.map((s) =>
+          s.id === row.id
+            ? { ...s, isPaid: true, amountPaid, paidAt: new Date().toISOString() }
+            : s
+        )
+      );
+      setTotal((prev) => prev + amountPaid);
+      if (row.salary === null) {
+        toast.success('Marked as ₹0. Update salary on the Staff page first.');
+      } else {
+        toast.success(`Marked as paid — ${formatINR(amountPaid)}`);
+      }
+    } finally {
+      setPendingIds((prev) => {
+        const s = new Set(prev);
+        s.delete(row.id);
+        return s;
+      });
     }
-    if (row.salary === null) {
-      toast.success('Marked as ₹0. Update salary on the Staff page first.');
-    } else {
-      toast.success(`Marked as paid — ${formatINR(amountPaid)}`);
-    }
-    loadMonthData(selectedMonth);
   }
 
   return (
