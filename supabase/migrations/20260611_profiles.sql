@@ -20,4 +20,17 @@ CREATE POLICY "profiles: own read"
   USING (auth.uid() = user_id);
 
 -- Service role (used in Phase 6 admin actions) bypasses RLS automatically.
--- No INSERT/UPDATE policy needed in Phase 4 — accounts created via Supabase dashboard.
+-- No INSERT policy needed in Phase 4 — accounts created via Supabase dashboard.
+
+-- WR-02: allow super_admin and admin to update any profile row (e.g. deactivate staff).
+-- Without this, a portal Server Action using the regular client gets a silent RLS denial
+-- (zero rows updated, no error) when trying to set is_active = false.
+CREATE POLICY "profiles: admin update"
+  ON profiles FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles p
+      WHERE p.user_id = auth.uid()
+        AND p.role IN ('super_admin', 'admin')
+    )
+  );
