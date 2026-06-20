@@ -112,6 +112,10 @@ export async function createDepartmentAction(input: {
 
 const DEPARTMENT_ALLOWED_FIELDS = ['name', 'description', 'image_url'] as const;
 
+// Required fields must not be empty strings; optional fields allow empty strings
+// so admins can intentionally clear them (WR-002).
+const DEPARTMENT_REQUIRED_FIELDS: ReadonlyArray<string> = ['name'];
+
 export async function updateDepartmentAction(
   id: string,
   input: Partial<{ name: string; description: string; image_url: string }>
@@ -119,9 +123,13 @@ export async function updateDepartmentAction(
   try {
     await requireCmsRole();
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(
-        ([k, v]) => DEPARTMENT_ALLOWED_FIELDS.includes(k as typeof DEPARTMENT_ALLOWED_FIELDS[number]) && v !== ''
-      )
+      Object.entries(input).filter(([k, v]) => {
+        if (!DEPARTMENT_ALLOWED_FIELDS.includes(k as typeof DEPARTMENT_ALLOWED_FIELDS[number])) return false;
+        if (v === undefined) return false;
+        // Required fields reject empty strings; optional fields (image_url, description) allow them.
+        if (DEPARTMENT_REQUIRED_FIELDS.includes(k) && v === '') return false;
+        return true;
+      })
     );
     const { error } = await createAdminClient()
       .from('departments')
