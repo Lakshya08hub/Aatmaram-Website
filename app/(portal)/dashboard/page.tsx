@@ -16,34 +16,37 @@ export default async function DashboardPage() {
   let patientData: { created_at: string }[] = []
   let staffCount = 0
 
-  try {
-    const { data } = await supabase
+  {
+    const { data, error } = await supabase
       .from('appointment_requests')
       .select('created_at')
       .gte('created_at', thirtyDaysAgo)
+    if (error) {
+      console.error('[dashboard] appointment_requests fetch error:', error.message)
+    }
     apptData = data ?? []
-  } catch {
-    apptData = []
   }
 
-  try {
-    const { data } = await supabase
+  {
+    const { data, error } = await supabase
       .from('patient_records')   // was 'patients' — CR-004
       .select('created_at')
       .gte('created_at', thirtyDaysAgo)
+    if (error) {
+      console.error('[dashboard] patient_records fetch error:', error.message)
+    }
     patientData = data ?? []
-  } catch {
-    patientData = []
   }
 
-  try {
-    const { count } = await supabase
+  {
+    const { count, error } = await supabase
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('is_active', true)
+    if (error) {
+      console.error('[dashboard] profiles fetch error:', error.message)
+    }
     staffCount = count ?? 0
-  } catch {
-    staffCount = 0
   }
 
   return (
