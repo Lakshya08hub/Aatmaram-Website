@@ -34,7 +34,38 @@ setInterval(() => {
   }
 }, 5 * 60_000)
 
+// --- CORS allowlist (CR-003) ---
+const ALLOWED_ORIGINS = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  'http://localhost:3000',
+].filter(Boolean) as string[]
+
+function isAllowedOrigin(origin: string | null): boolean {
+  if (!origin) return true  // same-origin server-to-server calls
+  return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))
+}
+
+export async function OPTIONS(request: Request) {
+  const origin = request.headers.get('origin')
+  if (!isAllowedOrigin(origin)) {
+    return new Response(null, { status: 403 })
+  }
+  return new Response(null, {
+    headers: {
+      'Access-Control-Allow-Origin': origin ?? '*',
+      'Access-Control-Allow-Methods': 'POST',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  })
+}
+
 export async function POST(request: NextRequest) {
+  // CR-003: Origin check
+  const origin = request.headers.get('origin')
+  if (!isAllowedOrigin(origin)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   // CR-001: Rate limiting
   const ip =
     request.headers.get('x-forwarded-for') ??
