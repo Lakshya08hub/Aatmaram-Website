@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 export interface AppointmentRequest {
   id: string
@@ -13,12 +13,15 @@ export interface AppointmentRequest {
   created_at: string
 }
 
-export async function getAppointmentRequests(): Promise<AppointmentRequest[]> {
-  const supabase = await createClient()
+// WR-03: use admin client for consistency with D-02 (RLS disabled on this table)
+// CR-04: default limit prevents unbounded query growth and Supabase timeout
+export async function getAppointmentRequests(limit = 300): Promise<AppointmentRequest[]> {
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from('appointment_requests')
     .select('*')
     .order('created_at', { ascending: false })
+    .limit(limit)
 
   if (error) throw new Error('Failed to fetch appointments: ' + error.message)
   return (data ?? []) as AppointmentRequest[]
