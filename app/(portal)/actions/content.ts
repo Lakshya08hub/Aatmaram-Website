@@ -25,6 +25,20 @@ const testimonialSchema = z.object({
 
 const CMS_ROLES: StaffRole[] = ['super_admin', 'admin'];
 
+const departmentCreateSchema = z.object({
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+  description: z.string().max(500, 'Description must be at most 500 characters').optional(),
+  image_url: z.string().max(500).optional(),
+});
+
+const doctorCreateSchema = z.object({
+  full_name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+  specialization: z.string().max(100, 'Specialization must be at most 100 characters').optional(),
+  bio: z.string().max(1000, 'Bio must be at most 1000 characters').optional(),
+  qualification: z.string().max(200, 'Qualification must be at most 200 characters').optional(),
+});
+
+
 /**
  * Revalidates the public departments pages for all locales so changes
  * are reflected on the public site immediately (CMS-04).
@@ -74,10 +88,16 @@ export async function createDepartmentAction(input: {
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = departmentCreateSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const { error } = await createAdminClient().from('departments').insert({
-      name: input.name,
-      description: input.description,
-      image_url: input.image_url || null,
+      name: parsed.data.name,
+      description: parsed.data.description || '',
+      image_url: parsed.data.image_url || null,
     });
 
     if (error) throw new Error(error.message);
@@ -162,12 +182,18 @@ export async function createDoctorAction(input: {
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = doctorCreateSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const { error } = await createAdminClient().from('doctors').insert({
       full_name: input.full_name,
       specialization: input.specialization,
       qualification: input.qualification,
       photo_url: input.photo_url || null,
-      bio: input.bio || null,
+      bio: parsed.data.bio || null,
       availability_days: input.availability_days ?? null,
       is_active: input.is_active ?? true,
     });
