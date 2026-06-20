@@ -15,7 +15,7 @@ const BUBBLE_STYLES = `
   .nidhi-bubble:hover { animation: none; }
 `;
 
-type Message = { role: 'user' | 'assistant'; content: string };
+type Message = { id: string; role: 'user' | 'assistant'; content: string };
 type Corner = 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
 
 const GREETING =
@@ -66,6 +66,9 @@ export function ChatWidget() {
   const inputRef = useRef<HTMLInputElement>(null);
   const bubbleRef = useRef<HTMLButtonElement>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
+
+  // WR-002: Stable index ref for the in-progress assistant placeholder
+  const assistantIndexRef = useRef<number>(-1);
 
   // Drag tracking via refs so rapid pointer moves do not cause React re-renders.
   const isDraggingRef = useRef(false);
@@ -169,7 +172,7 @@ export function ChatWidget() {
     } else {
       setIsOpen(true);
       if (messages.length === 0) {
-        setMessages([{ role: 'assistant', content: GREETING }]);
+        setMessages([{ id: crypto.randomUUID(), role: 'assistant', content: GREETING }]);
       }
     }
   }
@@ -188,8 +191,13 @@ export function ChatWidget() {
     }
 
     setInput('');
-    const newMessages: Message[] = [...messages, { role: 'user', content: userText }];
-    setMessages([...newMessages, { role: 'assistant', content: '' }]);
+    const newMessages: Message[] = [...messages, { id: crypto.randomUUID(), role: 'user', content: userText }];
+    // WR-002: Capture the assistant placeholder index at insertion time (stable ref)
+    setMessages((prev) => {
+      const next = [...newMessages, { id: crypto.randomUUID(), role: 'assistant' as const, content: '' }];
+      assistantIndexRef.current = next.length - 1;
+      return next;
+    });
     setIsStreaming(true);
     try {
       const res = await fetch('/api/chat', {
@@ -206,9 +214,10 @@ export function ChatWidget() {
         const chunk = decoder.decode(value, { stream: true });
         setMessages((prev) => {
           const updated = [...prev];
-          updated[updated.length - 1] = {
-            role: 'assistant',
-            content: updated[updated.length - 1].content + chunk,
+          const idx = assistantIndexRef.current;
+          updated[idx] = {
+            ...updated[idx],
+            content: updated[idx].content + chunk,
           };
           return updated;
         });
@@ -216,8 +225,9 @@ export function ChatWidget() {
     } catch {
       setMessages((prev) => {
         const updated = [...prev];
-        updated[updated.length - 1] = {
-          role: 'assistant',
+        const idx = assistantIndexRef.current;
+        updated[idx] = {
+          ...updated[idx],
           content: 'Something went wrong. Please try again, or call us.',
         };
         return updated;
@@ -277,7 +287,7 @@ export function ChatWidget() {
               const showTyping = isLastAssistant && isStreaming && msg.content === '';
               return (
                 <div
-                  key={idx}
+                  key={msg.id}
                   className={msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'}
                 >
                   {msg.role === 'user' ? (
