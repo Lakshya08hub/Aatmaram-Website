@@ -1,4 +1,6 @@
 'use client';
+
+const MAX_FEATURED_DOCTORS = 3
 // app/(portal)/content/doctors/DoctorsClient.tsx
 // Client Component — Doctors CRUD: Table + Sheet (add/edit) + AlertDialog (delete).
 // Uses Sheet (right side, sm:max-w-lg) instead of Dialog because of the longer doctor form.
@@ -269,7 +271,7 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
         <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
-          <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} of 3 featured</p>
+          <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} of {MAX_FEATURED_DOCTORS} featured</p>
           <div className="overflow-x-auto">
           <Table>
             <TableHeader>
