@@ -157,7 +157,7 @@
     },
     "phone": {
       "heading": "फ़ोन",
-      "value": "+91-XXXXXXXXXX (placeholder)"
+      "value": ""
     },
     "opd": {
       "heading": "OPD समय",
@@ -165,7 +165,7 @@
     },
     "emergency": {
       "heading": "24x7 आपातकाल",
-      "value": "+91-XXXXXXXXXX"
+      "value": ""
     },
     "map": {
       "placeholder": "मानचित्र लोड हो रहा है...",
