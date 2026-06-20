@@ -6,6 +6,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
@@ -84,6 +85,7 @@ export async function createDepartmentAction(input: {
     revalidateDepartments();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -111,6 +113,7 @@ export async function updateDepartmentAction(
     revalidateDepartments();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -130,6 +133,7 @@ export async function deleteDepartmentAction(
     revalidateDepartments();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -173,6 +177,7 @@ export async function createDoctorAction(input: {
     revalidateDoctors();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -217,6 +222,7 @@ export async function updateDoctorAction(
     revalidateDoctors();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -233,6 +239,7 @@ export async function deleteDoctorAction(
     revalidateDoctors();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -272,6 +279,7 @@ export async function createFacilityAction(input: {
     revalidateFacilities();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -300,6 +308,7 @@ export async function updateFacilityAction(
     revalidateFacilities();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -319,6 +328,7 @@ export async function deleteFacilityAction(
     revalidateFacilities();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -400,6 +410,7 @@ export async function toggleFeatured(
     revalidateHomepages();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -434,6 +445,7 @@ export async function setFeaturedOrder(
     revalidateHomepages();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -493,6 +505,7 @@ export async function createTestimonialAction(input: {
     revalidateTestimonials();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -533,6 +546,7 @@ export async function updateTestimonialAction(
     revalidateTestimonials();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -552,6 +566,7 @@ export async function deleteTestimonialAction(
     revalidateTestimonials();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -572,6 +587,7 @@ export async function toggleTestimonialActiveAction(
     revalidateTestimonials();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -622,6 +638,7 @@ export async function updateHospitalInfoAction(
     revalidateHospitalInfo();
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
