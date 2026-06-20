@@ -6,6 +6,7 @@
 //   requireDoctorRole()       — doctor only (can update clinical_notes on assigned records)
 
 import { z } from 'zod';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { requireRole } from '@/lib/portal/auth';
 
@@ -16,10 +17,13 @@ import { requireRole } from '@/lib/portal/auth';
 const receptionistPatientSchema = z.object({
   patient_name: z.string().min(2),
   age: z.coerce.number().int().min(0).max(150),
-  phone: z.string().min(7),
+  phone: z.string().min(7).regex(/^[+\d\s\-()]{7,20}$/, 'Invalid phone number'),
   reason: z.string().min(3),
   assigned_doctor_id: z.string().uuid().nullable().optional(),
-  visit_date: z.string(),
+  visit_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').refine(
+    (v) => !isNaN(Date.parse(v)),
+    'Invalid date'
+  ),
   clinical_notes: z.string().optional(),
 });
 
@@ -86,6 +90,7 @@ export async function createPatientAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -131,6 +136,7 @@ export async function updatePatientAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -138,8 +144,8 @@ export async function updatePatientAction(
 /**
  * Updates ONLY the clinical_notes field on a patient record.
  * Available to: doctor only.
- * Security: verifies the record's assigned_doctor_id matches the calling doctor's doctors.id
- * before writing — prevents doctors from updating records assigned to other doctors.
+ * Security: combines ownership check and write into a single conditional update
+ * to prevent TOCTOU race between SELECT and UPDATE (WR-03).
  */
 export async function updateClinicalNotesAction(
   id: string,
@@ -172,17 +178,6 @@ export async function updateClinicalNotesAction(
 
     const doctorId = doctorRow.id as string;
 
-    // Ownership check: the record must be assigned to this doctor
-    const { data: record } = await adminClient
-      .from('patient_records')
-      .select('assigned_doctor_id')
-      .eq('id', id)
-      .single();
-
-    if (!record || record.assigned_doctor_id !== doctorId) {
-      return { error: 'Forbidden' };
-    }
-
     // Validate clinical notes input
     const validation = doctorNotesSchema.safeParse(Object.fromEntries(formData));
 
@@ -190,15 +185,22 @@ export async function updateClinicalNotesAction(
       return { error: validation.error.issues[0].message };
     }
 
-    const { error } = await adminClient
+    // Atomic ownership check + write: single query prevents TOCTOU race (WR-03).
+    // If the record was reassigned to another doctor between auth and this write,
+    // the .eq('assigned_doctor_id', doctorId) filter returns no rows and data is null.
+    const { data, error } = await adminClient
       .from('patient_records')
       .update({ clinical_notes: validation.data.clinical_notes })
-      .eq('id', id);
+      .eq('id', id)
+      .eq('assigned_doctor_id', doctorId)
+      .select('id')
+      .single();
 
-    if (error) return { error: error.message };
+    if (error || !data) return { error: 'Forbidden' };
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -207,29 +209,25 @@ export async function updateClinicalNotesAction(
 const FIELD_MAX: Record<string, number> = {
   patient_name: 120,
   phone: 20,
-  clinical_notes: 5000,
 };
 
 /**
  * Inline-edit action: update a single patient field directly from a table cell.
  * Available to: super_admin, admin, receptionist.
  * Security: requirePatientWriteRole() enforced; only whitelisted fields accepted.
- * clinical_notes is blocked for receptionist role (CR-002).
+ * clinical_notes is excluded from this action — use updateClinicalNotesAction instead,
+ * which enforces doctor ownership. This prevents future role-widening from silently
+ * collapsing the clinical-notes ownership model (CR-03).
  */
 export async function updatePatientInlineAction(
   id: string,
-  field: 'patient_name' | 'phone' | 'clinical_notes',
+  field: 'patient_name' | 'phone',
   value: string
 ): Promise<{ error?: string }> {
   try {
-    const { role } = await requirePatientWriteRole();
+    await requirePatientWriteRole();
 
-    // clinical_notes is admin/doctor-only via inline edit; receptionists must not write it (CR-002)
-    if (field === 'clinical_notes' && role === 'receptionist') {
-      return { error: 'Forbidden' };
-    }
-
-    // Validate field lengths before writing to DB (CR-006)
+    // Validate field lengths before writing to DB
     if (FIELD_MAX[field] && value.length > FIELD_MAX[field]) {
       return { error: `${field} is too long` };
     }
@@ -250,6 +248,7 @@ export async function updatePatientInlineAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
