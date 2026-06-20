@@ -479,12 +479,13 @@ export async function createTestimonialAction(input: {
       return { error: parsed.error.issues[0].message };
     }
 
+    // WR-006: use parsed.data (not raw input) so Zod-coerced values are written to DB.
     const { error } = await createAdminClient().from('testimonials').insert({
-      patient_name: input.patient_name,
-      quote: input.quote,
-      designation: input.designation || null,
+      patient_name: parsed.data.patient_name,
+      quote: parsed.data.quote,
+      designation: parsed.data.designation || null,
       is_active: input.is_active,
-      sort_order: input.sort_order,
+      sort_order: parsed.data.sort_order,
     });
 
     if (error) throw new Error(error.message);
@@ -514,14 +515,15 @@ export async function updateTestimonialAction(
       return { error: parsed.error.issues[0].message };
     }
 
+    // WR-006: use parsed.data (not raw input) so Zod-coerced values are written to DB.
     const { error } = await createAdminClient()
       .from('testimonials')
       .update({
-        patient_name: input.patient_name,
-        quote: input.quote,
-        designation: input.designation || null,
+        patient_name: parsed.data.patient_name,
+        quote: parsed.data.quote,
+        designation: parsed.data.designation || null,
         is_active: input.is_active,
-        sort_order: input.sort_order,
+        sort_order: parsed.data.sort_order,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id);
