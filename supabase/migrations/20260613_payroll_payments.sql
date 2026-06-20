@@ -12,3 +12,29 @@ CREATE TABLE IF NOT EXISTS payroll_payments (
 );
 
 ALTER TABLE payroll_payments ENABLE ROW LEVEL SECURITY;
+
+-- Only super_admin / admin may read payroll records.
+-- The service-role admin client bypasses RLS entirely; these policies govern
+-- direct-client access and provide an explicit security contract.
+CREATE POLICY "admin_select_payroll"
+  ON payroll_payments FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.user_id = auth.uid()
+        AND profiles.role IN ('super_admin', 'admin')
+        AND profiles.is_active = TRUE
+    )
+  );
+
+-- Only super_admin / admin may insert payroll records.
+CREATE POLICY "admin_insert_payroll"
+  ON payroll_payments FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.user_id = auth.uid()
+        AND profiles.role IN ('super_admin', 'admin')
+        AND profiles.is_active = TRUE
+    )
+  );
