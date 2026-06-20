@@ -18,8 +18,13 @@ export async function requireRole(allowedRoles: StaffRole[]) {
 
   const {
     data: { user },
+    error: authError,
   } = await supabase.auth.getUser();
 
+  if (authError) {
+    // Log for observability; still redirect to login safely
+    console.error('[auth] getUser error:', authError.message);
+  }
   if (!user) redirect('/login');
 
   const { data: profile, error } = await supabase
