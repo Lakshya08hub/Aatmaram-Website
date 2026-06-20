@@ -15,6 +15,13 @@ export interface Department {
   updated_at: string;
 }
 
+// WR-004: explicit column list — excludes any future sensitive columns added to the table.
+const DEPARTMENT_COLUMNS =
+  'id, name, description, image_url, is_featured, featured_order, created_at, updated_at';
+
+// WR-001: cap for the fallback path so the entire table is never sent to the homepage.
+const FEATURED_DEPARTMENTS_LIMIT = 8;
+
 /**
  * Fetches all departments ordered by creation time (ascending).
  * Throws on Supabase error.
@@ -24,7 +31,7 @@ export async function getDepartments(): Promise<Department[]> {
 
   const { data, error } = await supabase
     .from('departments')
-    .select('*')
+    .select(DEPARTMENT_COLUMNS)
     .order('created_at', { ascending: true });
 
   if (error) {
@@ -36,16 +43,15 @@ export async function getDepartments(): Promise<Department[]> {
 
 /**
  * Returns featured departments for the homepage.
- * Single query ordered by is_featured DESC, featured_order ASC, created_at ASC.
- * If any row has is_featured = true, only those rows are returned (homepage curation).
- * Otherwise returns all departments (fallback so the homepage section is never empty).
+ * Step 1: fetch featured-only rows (is_featured = true).
+ * Step 2: if none exist, fall back to top N by featured_order (WR-001: row cap).
  */
 export async function getFeaturedDepartments(): Promise<Department[]> {
   const supabase = await createClient();
 
   const { data: featured, error: featuredErr } = await supabase
     .from('departments')
-    .select('*')
+    .select(DEPARTMENT_COLUMNS)
     .eq('is_featured', true)
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: true });
@@ -53,10 +59,12 @@ export async function getFeaturedDepartments(): Promise<Department[]> {
   if (featuredErr) throw new Error(featuredErr.message);
   if (featured && featured.length > 0) return featured as Department[];
 
+  // WR-001: add limit to fallback so the entire table is never dumped to the homepage.
   const { data: all, error: allErr } = await supabase
     .from('departments')
-    .select('*')
-    .order('created_at', { ascending: true });
+    .select(DEPARTMENT_COLUMNS)
+    .order('created_at', { ascending: true })
+    .limit(FEATURED_DEPARTMENTS_LIMIT);
 
   if (allErr) throw new Error(allErr.message);
   return (all ?? []) as Department[];
