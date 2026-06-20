@@ -267,15 +267,23 @@ export async function createFacilityAction(input: {
   }
 }
 
+const FACILITY_ALLOWED_FIELDS = ['name', 'description', 'category', 'image_url'] as const;
+
 export async function updateFacilityAction(
   id: string,
   input: Partial<{ name: string; description: string; category: FacilityCategory; image_url: string }>
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+    // CR-002: whitelist allowed fields to prevent id/created_at/updated_at injection.
+    const cleaned = Object.fromEntries(
+      Object.entries(input).filter(
+        ([k, v]) => FACILITY_ALLOWED_FIELDS.includes(k as typeof FACILITY_ALLOWED_FIELDS[number]) && v !== undefined
+      )
+    );
     const { error } = await createAdminClient()
       .from('facilities')
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...cleaned, updated_at: new Date().toISOString() })
       .eq('id', id);
 
     if (error) throw new Error(error.message);
@@ -561,6 +569,16 @@ export async function toggleTestimonialActiveAction(
 // Hospital Info actions (CMS-03)
 // ---------------------------------------------------------------------------
 
+const HOSPITAL_INFO_ALLOWED_FIELDS = [
+  'about_text',
+  'opd_timings',
+  'emergency_number',
+  'address_line1',
+  'address_line2',
+  'city',
+  'maps_embed_url',
+] as const;
+
 export async function updateHospitalInfoAction(
   id: string,
   input: Partial<{
@@ -575,9 +593,17 @@ export async function updateHospitalInfoAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+    // CR-002: whitelist allowed fields to prevent id/created_at/hero_image_url injection.
+    const cleaned = Object.fromEntries(
+      Object.entries(input).filter(
+        ([k, v]) =>
+          HOSPITAL_INFO_ALLOWED_FIELDS.includes(k as typeof HOSPITAL_INFO_ALLOWED_FIELDS[number]) &&
+          v !== undefined
+      )
+    );
     const { error } = await createAdminClient()
       .from('hospital_info')
-      .update({ ...input, updated_at: new Date().toISOString() })
+      .update({ ...cleaned, updated_at: new Date().toISOString() })
       .eq('id', id);
 
     if (error) throw new Error(error.message);
