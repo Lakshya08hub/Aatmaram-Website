@@ -56,6 +56,11 @@ export async function POST(request: NextRequest) {
       });
     }
 
+    // CR-002: Reject oversized message arrays before any iteration
+    if (messages.length > 50) {
+      return Response.json({ error: 'Too many messages' }, { status: 400 })
+    }
+
     for (const m of messages) {
       if (
         typeof m.role !== 'string' ||
