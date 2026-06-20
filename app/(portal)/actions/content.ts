@@ -179,6 +179,10 @@ export async function createDoctorAction(input: {
 
 const DOCTOR_ALLOWED_FIELDS = ['full_name', 'specialization', 'qualification', 'photo_url', 'bio', 'availability_days', 'is_active'] as const;
 
+// Required fields must not be empty strings; optional fields allow empty strings
+// so admins can intentionally clear them (WR-001).
+const DOCTOR_REQUIRED_FIELDS: ReadonlyArray<string> = ['full_name', 'specialization', 'qualification'];
+
 export async function updateDoctorAction(
   id: string,
   input: Partial<{
@@ -194,9 +198,14 @@ export async function updateDoctorAction(
   try {
     await requireCmsRole();
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(
-        ([k, v]) => DOCTOR_ALLOWED_FIELDS.includes(k as typeof DOCTOR_ALLOWED_FIELDS[number]) && v !== ''
-      )
+      Object.entries(input).filter(([k, v]) => {
+        if (!DOCTOR_ALLOWED_FIELDS.includes(k as typeof DOCTOR_ALLOWED_FIELDS[number])) return false;
+        if (v === undefined) return false;
+        // Required fields: reject empty strings; optional fields: allow empty strings
+        // so they can be intentionally cleared.
+        if (DOCTOR_REQUIRED_FIELDS.includes(k) && v === '') return false;
+        return true;
+      })
     );
     const { error } = await createAdminClient()
       .from('doctors')
