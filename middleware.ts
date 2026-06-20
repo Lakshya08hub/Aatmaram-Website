@@ -20,6 +20,7 @@ const PORTAL_PATHS = [
   '/login',
   '/dashboard',
   '/content',
+  '/media',
   '/staff',
   '/appointments',
   '/patients',
