@@ -21,28 +21,38 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  // Validate GA4 ID format before injection to prevent XSS via env var misconfiguration.
+  // GA4 measurement IDs are always in the form "G-XXXXXXXXXX".
+  const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? '';
+  const validGaId = /^G-[A-Z0-9]+$/.test(GA_ID) ? GA_ID : null;
+
   return (
     <NextIntlClientProvider messages={messages}>
       <div className={GeistSans.variable}>
         {children}
         <Toaster />
       </div>
-      <Script
-        src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}`}
-        strategy="afterInteractive"
-      />
-      <Script
-        id="ga4-init"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '${process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID}');
-          `,
-        }}
-      />
+      {/* GA4 — review DPDP Act consent obligations before launch */}
+      {validGaId && (
+        <>
+          <Script
+            src={`https://www.googletagmanager.com/gtag/js?id=${validGaId}`}
+            strategy="afterInteractive"
+          />
+          <Script
+            id="ga4-init"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${validGaId}');
+              `,
+            }}
+          />
+        </>
+      )}
     </NextIntlClientProvider>
   );
 }
