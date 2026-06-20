@@ -33,7 +33,8 @@ export async function getAppointmentStats(now: Date): Promise<AppointmentStats> 
   try {
     const { data, error } = await adminClient
       .from('appointment_requests')
-      .select('created_at, status, preferred_doctor');
+      .select('created_at, status, preferred_doctor')
+      .gte('created_at', startOfMonth.toISOString());
 
     if (error) {
       if (isMissingTable(error)) return ZERO_APPOINTMENT_STATS;
