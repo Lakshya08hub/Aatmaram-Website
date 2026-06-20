@@ -19,7 +19,6 @@ export function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'drawer'
     return (
       <div
         className="flex items-center justify-center gap-2 text-sm font-medium py-3 min-h-[44px]"
-        aria-label={ariaLabel}
       >
         {locale === 'hi' ? (
           <span className="text-slate-700">HI</span>
@@ -53,6 +52,7 @@ export function LanguageToggle({ variant = 'nav' }: { variant?: 'nav' | 'drawer'
   // variant === 'nav' (default, desktop on navy background)
   return (
     <button
+      type="button"
       className="bg-white text-blue-900 font-bold px-3 py-1 rounded-full text-sm min-h-[44px] flex items-center gap-1"
       onClick={handleSwitch}
       aria-label={ariaLabel}
