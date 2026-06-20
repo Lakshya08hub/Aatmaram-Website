@@ -205,6 +205,8 @@ export default function AppointmentsClient({ appointments, fetchError }: Props) 
   async function handleSaveStatus(id: string) {
     const rowState = rowStates.get(id)
     if (!rowState) return
+    // WR-05: snapshot previous state so we can revert on save failure
+    const prevState = { ...rowState }
     try {
       const result = await updateAppointmentStatusAction(
         id,
@@ -213,6 +215,7 @@ export default function AppointmentsClient({ appointments, fetchError }: Props) 
       )
       if (result.error) {
         toast.error(result.error)
+        updateRowState(id, prevState)   // revert optimistic change
       } else {
         toast.success('Status updated')
         updateRowState(id, { dirty: false })
@@ -220,6 +223,7 @@ export default function AppointmentsClient({ appointments, fetchError }: Props) 
       }
     } catch {
       toast.error('Failed to update. Try again.')
+      updateRowState(id, prevState)     // revert optimistic change
     }
   }
 
