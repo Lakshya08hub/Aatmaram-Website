@@ -222,7 +222,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
     <div className="p-8">
       {/* Page header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-800">Facilities</h1>
+        <h1 className="text-xl font-semibold text-foreground">Facilities</h1>
         <Button onClick={openAddDialog}>Add Facility</Button>
       </div>
 
@@ -245,8 +245,8 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
       {/* Table */}
       {!fetchError && initialData.length > 0 && (
-        <div className="mt-6 rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <p className="px-4 pt-3 text-sm text-slate-500">{featuredCount} featured</p>
+        <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+          <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} featured</p>
           <Table>
             <TableHeader>
               <TableRow>
@@ -264,7 +264,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                 return (
                   <TableRow key={facility.id}>
                     <TableCell className="font-medium">{facility.name}</TableCell>
-                    <TableCell className="text-slate-500">
+                    <TableCell className="text-muted-foreground">
                       {facility.description.length > 60
                         ? facility.description.slice(0, 60) + '…'
                         : facility.description}
@@ -361,7 +361,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 pt-2">
             <div className="space-y-1">
-              <label htmlFor="facility-name" className="text-sm font-medium text-slate-700">
+              <label htmlFor="facility-name" className="text-sm font-medium text-foreground">
                 Name <span className="text-red-500">*</span>
               </label>
               <Input
@@ -375,7 +375,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="facility-description" className="text-sm font-medium text-slate-700">
+              <label htmlFor="facility-description" className="text-sm font-medium text-foreground">
                 Description <span className="text-red-500">*</span>
               </label>
               <Textarea
@@ -390,7 +390,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label htmlFor="facility-category" className="text-sm font-medium text-slate-700">
+              <label htmlFor="facility-category" className="text-sm font-medium text-foreground">
                 Category <span className="text-red-500">*</span>
               </label>
               <Select
@@ -412,11 +412,11 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label className="text-sm font-medium text-slate-700">
-                Image <span className="text-slate-400 font-normal">(optional)</span>
+              <label className="text-sm font-medium text-foreground">
+                Image <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               {watch('image_url') && (
-                <div className="relative w-40 aspect-video overflow-hidden rounded border border-slate-200">
+                <div className="relative w-40 aspect-video overflow-hidden rounded border border-border">
                   <Image src={watch('image_url')!} alt="Preview" fill className="object-cover" />
                 </div>
               )}
@@ -424,7 +424,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                 type="file"
                 accept="image/jpeg,image/png,image/webp"
                 disabled={uploadingImage || !editingFacility}
-                className="block text-sm text-slate-500 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200"
+                className="block text-sm text-muted-foreground file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-sm file:bg-muted file:text-foreground hover:file:bg-muted"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file || !editingFacility) return;
@@ -446,10 +446,10 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                 }}
               />
               {!editingFacility && (
-                <p className="text-xs text-slate-400">Save the facility first, then upload an image.</p>
+                <p className="text-xs text-muted-foreground">Save the facility first, then upload an image.</p>
               )}
               {uploadingImage && (
-                <p className="text-xs text-slate-500 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Loader2 className="h-3 w-3 animate-spin" />
                   Uploading…
                 </p>
