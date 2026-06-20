@@ -4,6 +4,7 @@
 // requireAdminRole() guard applied to every action — mirrors requireCmsRole() pattern.
 
 import { redirect } from 'next/navigation';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 import { createClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { StaffRole } from '@/lib/portal/roles';
@@ -28,15 +29,20 @@ async function requireAdminRole() {
 
   const { data: profile, error } = await supabase
     .from('profiles')
-    .select('role')
+    .select('id, role, is_active')
     .eq('user_id', user.id)
     .single();
 
-  if (error || !profile || !ADMIN_ROLES.includes(profile.role as StaffRole)) {
+  if (
+    error ||
+    !profile ||
+    !profile.is_active ||
+    !ADMIN_ROLES.includes(profile.role as StaffRole)
+  ) {
     throw new Error('Forbidden');
   }
 
-  return supabase;
+  return { supabase, callerProfileId: profile.id as string, callerRole: profile.role as StaffRole };
 }
 
 // ---------------------------------------------------------------------------
@@ -73,10 +79,9 @@ export async function createStaffAction(input: {
       return { error: authError.message };
     }
 
-    const supabase = await createClient();
-
-    // Step 2: Insert profile row (is_active: false — pending state)
-    const { error: profileError } = await supabase.from('profiles').insert({
+    // Step 2: Insert profile row using adminClient (consistent with other admin writes;
+    // avoids session-client RLS fragility if the caller's JWT expires between steps).
+    const { error: profileError } = await adminClient.from('profiles').insert({
       user_id: authData.user.id,
       role: input.role,
       is_active: false,
@@ -87,13 +92,18 @@ export async function createStaffAction(input: {
     });
 
     if (profileError) {
-      // Rollback: remove the Auth account so no orphaned user remains
-      await adminClient.auth.admin.deleteUser(authData.user.id);
-      return { error: profileError.message };
+      // Rollback: attempt to remove the Auth account so no orphaned user remains.
+      // Check the rollback result — a failed rollback leaves a loginable user with no profile.
+      const { error: deleteError } = await adminClient.auth.admin.deleteUser(authData.user.id);
+      const rollbackNote = deleteError
+        ? ` (CRITICAL: Auth user ${authData.user.id} not deleted — manual cleanup required: ${deleteError.message})`
+        : '';
+      return { error: profileError.message + rollbackNote };
     }
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -113,8 +123,22 @@ export async function updateStaffAction(
   }>
 ): Promise<{ error?: string }> {
   try {
-    await requireAdminRole();
+    const { callerRole } = await requireAdminRole();
     const adminClient = createAdminClient();
+
+    // Prevent role escalation: fetch the target's current role before updating.
+    const { data: target } = await adminClient
+      .from('profiles')
+      .select('role')
+      .eq('id', id)
+      .single();
+
+    if (target?.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { error: 'Cannot modify a super_admin account' };
+    }
+    if (input.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { error: 'Cannot promote to super_admin' };
+    }
 
     const { error } = await adminClient
       .from('profiles')
@@ -125,6 +149,7 @@ export async function updateStaffAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -137,8 +162,24 @@ export async function toggleActiveAction(
   is_active: boolean
 ): Promise<{ error?: string }> {
   try {
-    await requireAdminRole();
+    const { callerProfileId, callerRole } = await requireAdminRole();
     const adminClient = createAdminClient();
+
+    // Prevent self-deactivation (would lock out the only active admin).
+    if (id === callerProfileId) {
+      return { error: 'Cannot deactivate your own account' };
+    }
+
+    // Only super_admin may deactivate another super_admin.
+    const { data: target } = await adminClient
+      .from('profiles')
+      .select('role')
+      .eq('id', id)
+      .single();
+
+    if (target?.role === 'super_admin' && callerRole !== 'super_admin') {
+      return { error: 'Cannot deactivate a super_admin account' };
+    }
 
     const { error } = await adminClient
       .from('profiles')
@@ -149,6 +190,7 @@ export async function toggleActiveAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -172,6 +214,19 @@ export async function updateDoctorStaffLinkAction(
 
     // Must use adminClient — doctors table RLS blocks session-role writes
     const adminClient = createAdminClient();
+
+    // Validate the doctor row exists before running the update.
+    // Supabase returns no error for a zero-row update, so we check explicitly.
+    const { data: doctor, error: fetchErr } = await adminClient
+      .from('doctors')
+      .select('id')
+      .eq('id', doctorId)
+      .single();
+
+    if (fetchErr || !doctor) {
+      return { error: 'Doctor record not found' };
+    }
+
     const { error } = await adminClient
       .from('doctors')
       .update({ staff_user_id: profileUserId })
@@ -181,6 +236,7 @@ export async function updateDoctorStaffLinkAction(
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
@@ -197,21 +253,27 @@ export async function deleteStaffAction(
     await requireAdminRole();
     const adminClient = createAdminClient();
 
-    // Delete profile row first (FK constraints cascade from Auth, but explicit is safer)
+    // Delete Auth user FIRST — a failed Auth delete leaves the profile intact (no zombie login).
+    // If profile delete then fails, the user is already locked out; log for manual cleanup.
+    const { error: authError } = await adminClient.auth.admin.deleteUser(user_id);
+
+    if (authError) throw new Error(authError.message);
+
+    // Remove profile row after Auth deletion succeeds
     const { error: profileError } = await adminClient
       .from('profiles')
       .delete()
       .eq('id', id);
 
-    if (profileError) throw new Error(profileError.message);
-
-    // Remove Auth account — prevents orphaned credentials
-    const { error: authError } = await adminClient.auth.admin.deleteUser(user_id);
-
-    if (authError) throw new Error(authError.message);
+    if (profileError) {
+      // Auth user is gone; profile is orphaned — log for manual DB cleanup.
+      console.error(`Orphaned profile ${id} after Auth delete — manual DB cleanup required`);
+      throw new Error(profileError.message);
+    }
 
     return {};
   } catch (err) {
+    if (isRedirectError(err)) throw err;
     return { error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }

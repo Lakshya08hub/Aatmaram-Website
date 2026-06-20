@@ -20,8 +20,8 @@ import {
   updateStaffAction,
   toggleActiveAction,
   deleteStaffAction,
+  updateDoctorStaffLinkAction,
 } from '@/app/(portal)/actions/staff';
-import { updateDoctorStaffLinkAction } from '@/app/(portal)/actions/staff';
 
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -391,7 +391,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
         const selectedDoctorId = values.doctor_id || undefined;
         const linkResult = await updateDoctorStaffLinkAction(
           selectedDoctorId ?? null,
-          selectedDoctorId ? editingStaff.id : null
+          selectedDoctorId ? editingStaff.user_id : null
         );
         if (linkResult.error) {
           toast.error(`Staff saved but doctor link failed: ${linkResult.error}`);
@@ -478,9 +478,9 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
   // Available doctors for linkage dropdown (unlinked OR linked to this staff)
   // ---------------------------------------------------------------------------
 
-  function availableDoctors(staffProfileId: string) {
+  function availableDoctors(staffUserId: string) {
     return doctors.filter(
-      (d) => d.staff_user_id === null || d.staff_user_id === staffProfileId
+      (d) => d.staff_user_id === null || d.staff_user_id === staffUserId
     );
   }
 
@@ -739,7 +739,7 @@ export default function StaffClient({ initialStaff, doctors, fetchError }: Props
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="">None</SelectItem>
-                        {availableDoctors(editingStaff.id).map((d) => (
+                        {availableDoctors(editingStaff.user_id).map((d) => (
                           <SelectItem key={d.id} value={d.id}>
                             {d.full_name} — {d.specialization}
                           </SelectItem>

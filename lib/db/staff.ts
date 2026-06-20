@@ -27,17 +27,20 @@ export interface StaffMember {
 export async function getStaffList(): Promise<StaffMember[]> {
   const adminClient = createAdminClient();
 
-  // Fetch all Auth users (provides email)
-  const { data: authData, error: authError } = await adminClient.auth.admin.listUsers({
-    perPage: 1000,
-  });
-  if (authError) {
-    throw new Error(`Failed to list Auth users: ${authError.message}`);
+  // Fetch all Auth users with pagination (listUsers caps at 1000 per page).
+  let page = 1;
+  const allUsers: { id: string; email?: string }[] = [];
+  while (true) {
+    const { data, error } = await adminClient.auth.admin.listUsers({ perPage: 1000, page });
+    if (error) throw new Error(`Failed to list Auth users: ${error.message}`);
+    allUsers.push(...data.users);
+    if (data.users.length < 1000) break;
+    page++;
   }
 
   // Build a lookup map: user_id → email
   const emailMap = new Map<string, string>(
-    authData.users.map((u) => [u.id, u.email ?? ''])
+    allUsers.map((u) => [u.id, u.email ?? ''])
   );
 
   // Fetch all profiles via admin client (bypasses RLS "own read" policy)
