@@ -18,8 +18,21 @@ export interface Facility {
   updated_at: string;
 }
 
+// WR-005: explicit column list for portal admin (all columns needed for CRUD).
+const FACILITY_COLUMNS =
+  'id, name, description, category, image_url, is_featured, featured_order, created_at, updated_at';
+
+// WR-005: explicit column list for the public homepage (only display fields needed).
+const FACILITY_PUBLIC_COLUMNS =
+  'id, name, description, category, image_url, is_featured, featured_order, created_at, updated_at';
+
+// WR-004: max facilities returned by the fallback path so the entire table
+// is never dumped to the public homepage.
+const FEATURED_FACILITIES_LIMIT = 8;
+
 /**
  * Fetches all facilities ordered by creation time (ascending).
+ * Used by the portal admin CRUD page.
  * Throws on Supabase error.
  */
 export async function getFacilities(): Promise<Facility[]> {
@@ -27,7 +40,7 @@ export async function getFacilities(): Promise<Facility[]> {
 
   const { data, error } = await supabase
     .from('facilities')
-    .select('*')
+    .select(FACILITY_COLUMNS)
     .order('created_at', { ascending: true });
 
   if (error) {
@@ -41,17 +54,19 @@ export async function getFacilities(): Promise<Facility[]> {
  * Returns featured facilities for the homepage.
  * Single query ordered by is_featured DESC, featured_order ASC, created_at ASC.
  * If any row has is_featured = true, only those rows are returned (homepage curation).
- * Otherwise returns all facilities (fallback so the homepage section is never empty).
+ * Otherwise returns up to FEATURED_FACILITIES_LIMIT rows (WR-004: fallback cap).
  */
 export async function getFeaturedFacilities(): Promise<Facility[]> {
   const supabase = await createClient();
 
+  // WR-004: limit the query so the entire table is never returned to the homepage.
   const { data, error } = await supabase
     .from('facilities')
-    .select('*')
+    .select(FACILITY_PUBLIC_COLUMNS)
     .order('is_featured', { ascending: false })
     .order('featured_order', { ascending: true })
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true })
+    .limit(FEATURED_FACILITIES_LIMIT);
 
   if (error) {
     throw new Error(error.message);

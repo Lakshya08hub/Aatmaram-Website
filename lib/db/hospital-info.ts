@@ -24,9 +24,13 @@ export interface HospitalInfo {
 export async function getHospitalInfo(): Promise<HospitalInfo | null> {
   const supabase = await createClient();
 
+  // WR-005: explicit column list instead of select('*') to avoid pulling
+  // unexpected columns if the schema evolves.
   const { data, error } = await supabase
     .from('hospital_info')
-    .select('*')
+    .select(
+      'id, about_text, opd_timings, emergency_number, address_line1, address_line2, city, maps_embed_url, hero_image_url, updated_at'
+    )
     .single();
 
   if (error) {

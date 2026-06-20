@@ -312,7 +312,11 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
                           if (e.target.value === '') return;
                           const val = Number(e.target.value);
                           if (isNaN(val) || val === (facility.featured_order ?? 0)) return;
-                          await setFeaturedOrder('facilities', facility.id, val);
+                          // WR-003: check result and surface errors to the user.
+                          const result = await setFeaturedOrder('facilities', facility.id, val);
+                          if (result?.error) {
+                            toast.error('Could not save order');
+                          }
                         }}
                       />
                     </TableCell>
