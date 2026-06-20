@@ -1,5 +1,7 @@
+import { requireRole } from '@/lib/portal/auth';
 import { getActiveStaffWithPaymentStatus, getMonthlyPayrollTotal } from '@/lib/db/payroll';
 import PayrollClient from './PayrollClient';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 
 function toFirstOfMonth(d: Date): string {
   const y = d.getFullYear();
@@ -8,6 +10,13 @@ function toFirstOfMonth(d: Date): string {
 }
 
 export default async function PayrollPage() {
+  try {
+    await requireRole(['super_admin', 'admin']);
+  } catch (err) {
+    if (isRedirectError(err)) throw err;
+    throw err; // re-throw Forbidden so error boundary / middleware handles it
+  }
+
   const currentMonth = toFirstOfMonth(new Date());
 
   const [staff, total] = await Promise.all([
