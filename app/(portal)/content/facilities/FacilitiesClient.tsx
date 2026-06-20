@@ -247,6 +247,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
       {!fetchError && initialData.length > 0 && (
         <div className="mt-6 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
           <p className="px-4 pt-3 text-sm text-muted-foreground">{featuredCount} featured</p>
+          <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -347,6 +348,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
               })}
             </TableBody>
           </Table>
+          </div>
         </div>
       )}
 
