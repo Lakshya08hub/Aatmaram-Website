@@ -32,10 +32,13 @@ const departmentCreateSchema = z.object({
 });
 
 const doctorCreateSchema = z.object({
-  full_name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
-  specialization: z.string().max(100, 'Specialization must be at most 100 characters').optional(),
-  bio: z.string().max(1000, 'Bio must be at most 1000 characters').optional(),
-  qualification: z.string().max(200, 'Qualification must be at most 200 characters').optional(),
+  full_name:         z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+  specialization:    z.string().min(1, 'Specialization is required').max(100, 'Specialization must be at most 100 characters'),
+  qualification:     z.string().min(1, 'Qualification is required').max(200, 'Qualification must be at most 200 characters'),
+  photo_url:         z.string().url('Photo URL must be a valid URL').max(500).optional(),
+  bio:               z.string().max(1000, 'Bio must be at most 1000 characters').optional(),
+  availability_days: z.array(z.string().max(20)).max(7).optional(),
+  is_active:         z.boolean().optional(),
 });
 
 
@@ -122,8 +125,14 @@ export async function updateDepartmentAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = departmentCreateSchema.partial().safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(([k, v]) => {
+      Object.entries(parsed.data).filter(([k, v]) => {
         if (!DEPARTMENT_ALLOWED_FIELDS.includes(k as typeof DEPARTMENT_ALLOWED_FIELDS[number])) return false;
         if (v === undefined) return false;
         // Required fields reject empty strings; optional fields (image_url, description) allow them.
@@ -197,13 +206,13 @@ export async function createDoctorAction(input: {
     }
 
     const { error } = await createAdminClient().from('doctors').insert({
-      full_name: input.full_name,
-      specialization: input.specialization,
-      qualification: input.qualification,
-      photo_url: input.photo_url || null,
-      bio: parsed.data.bio || null,
-      availability_days: input.availability_days ?? null,
-      is_active: input.is_active ?? true,
+      full_name:         parsed.data.full_name,
+      specialization:    parsed.data.specialization,
+      qualification:     parsed.data.qualification,
+      photo_url:         parsed.data.photo_url ?? null,
+      bio:               parsed.data.bio ?? null,
+      availability_days: parsed.data.availability_days ?? null,
+      is_active:         parsed.data.is_active ?? true,
     });
 
     if (error) throw new Error(error.message);
@@ -236,8 +245,14 @@ export async function updateDoctorAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsedUpdate = doctorCreateSchema.partial().safeParse(input);
+    if (!parsedUpdate.success) {
+      return { error: parsedUpdate.error.issues[0].message };
+    }
+
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(([k, v]) => {
+      Object.entries(parsedUpdate.data).filter(([k, v]) => {
         if (!DOCTOR_ALLOWED_FIELDS.includes(k as typeof DOCTOR_ALLOWED_FIELDS[number])) return false;
         if (v === undefined) return false;
         // Required fields: reject empty strings; optional fields: allow empty strings
@@ -284,6 +299,13 @@ export async function deleteDoctorAction(
 
 type FacilityCategory = 'OPD' | 'ICU' | 'Diagnostics' | 'Surgery' | 'Other';
 
+const facilityCreateSchema = z.object({
+  name:        z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
+  description: z.string().max(500, 'Description must be at most 500 characters'),
+  category:    z.enum(['OPD', 'ICU', 'Diagnostics', 'Surgery', 'Other'], { errorMap: () => ({ message: 'Invalid category' }) }),
+  image_url:   z.string().url('Image URL must be a valid URL').max(500).optional(),
+});
+
 /**
  * Revalidates the public services pages for all locales so facility changes
  * are reflected on the public site immediately (CMS-04).
@@ -301,11 +323,17 @@ export async function createFacilityAction(input: {
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = facilityCreateSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const { error } = await createAdminClient().from('facilities').insert({
-      name: input.name,
-      description: input.description,
-      category: input.category,
-      image_url: input.image_url || null,
+      name:        parsed.data.name,
+      description: parsed.data.description,
+      category:    parsed.data.category,
+      image_url:   parsed.data.image_url ?? null,
     });
 
     if (error) throw new Error(error.message);
@@ -640,6 +668,16 @@ const HOSPITAL_INFO_ALLOWED_FIELDS = [
   'maps_embed_url',
 ] as const;
 
+const hospitalInfoUpdateSchema = z.object({
+  about_text:       z.string().max(1200, 'About text must be at most 1200 characters').optional(),
+  opd_timings:      z.string().max(200, 'OPD timings must be at most 200 characters').optional(),
+  emergency_number: z.string().max(30, 'Emergency number must be at most 30 characters').optional(),
+  address_line1:    z.string().max(200, 'Address line 1 must be at most 200 characters').optional(),
+  address_line2:    z.string().max(200, 'Address line 2 must be at most 200 characters').optional(),
+  city:             z.string().max(100, 'City must be at most 100 characters').optional(),
+  maps_embed_url:   z.string().url('Maps URL must be a valid URL').max(500).or(z.literal('')).optional(),
+});
+
 export async function updateHospitalInfoAction(
   id: string,
   input: Partial<{
@@ -654,9 +692,15 @@ export async function updateHospitalInfoAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
+
+    const parsed = hospitalInfoUpdateSchema.safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     // CR-002: whitelist allowed fields to prevent id/created_at/hero_image_url injection.
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(
+      Object.entries(parsed.data).filter(
         ([k, v]) =>
           HOSPITAL_INFO_ALLOWED_FIELDS.includes(k as typeof HOSPITAL_INFO_ALLOWED_FIELDS[number]) &&
           v !== undefined
