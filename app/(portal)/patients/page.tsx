@@ -1,34 +1,23 @@
-import { redirect } from 'next/navigation';
-import { createClient } from '@/lib/supabase/server';
+import { isRedirectError } from 'next/dist/client/components/redirect';
 import { getPatientRecords, getActiveDoctorsForDropdown, PatientRecord } from '@/lib/db/patient_records';
 import PatientClient from '@/components/portal/PatientClient';
-import { StaffRole, canAccessSection } from '@/lib/portal/roles';
+import { requireRole } from '@/lib/portal/auth';
 
 export const dynamic = 'force-dynamic';
 
 export const metadata = { title: 'Patient Records | Atmaram Portal' };
 
 export default async function PatientsPage() {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect('/login');
-  }
-
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('user_id', user.id)
-    .single();
-
-  const role = (profile?.role ?? 'receptionist') as StaffRole;
-
-  if (!canAccessSection(role, 'patients')) {
-    redirect('/dashboard');
+  // requireRole redirects to /login if unauthenticated, throws Forbidden if role not allowed.
+  // Replaces manual createClient + getUser + profiles query pattern (WR-01).
+  // Missing profiles row now throws Forbidden instead of silently defaulting to receptionist (WR-02).
+  let user: Awaited<ReturnType<typeof requireRole>>['user'];
+  let role: Awaited<ReturnType<typeof requireRole>>['role'];
+  try {
+    ({ user, role } = await requireRole(['super_admin', 'admin', 'receptionist', 'doctor']));
+  } catch (err) {
+    if (isRedirectError(err)) throw err;
+    throw err; // Forbidden or unexpected — propagate
   }
 
   let records: PatientRecord[] = [];
