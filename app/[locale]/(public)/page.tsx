@@ -26,11 +26,21 @@ async function safeFetch<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try { return await fn(); } catch { return fallback; }
 }
 
-export const metadata: Metadata = {
-  title: 'Atmaram Child Care and Critical Care — Kanpur',
-  description:
-    'A 90-bed super-specialty hospital in Kanpur offering paediatrics, critical care, surgery and more. Ayushman Bharat PM-JAY empanelled.',
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'site' });
+  return {
+    title: `${t('title')} — Kanpur`,
+    description:
+      locale === 'hi'
+        ? '90-बेड सुपर-स्पेशलिटी अस्पताल, Kanpur। बाल रोग, गहन चिकित्सा, शल्य चिकित्सा। Ayushman Bharat PM-JAY सूचीबद्ध।'
+        : 'A 90-bed super-specialty hospital in Kanpur offering paediatrics, critical care, surgery and more. Ayushman Bharat PM-JAY empanelled.',
+  };
+}
 
 export default async function HomePage({
   params,
@@ -57,76 +67,51 @@ export default async function HomePage({
   const tPmjay = await getTranslations('pmjay');
   const tTestimonials = await getTranslations('testimonials');
 
+  const heroSectionClass =
+    heroImageUrl && heroImageUrl.length > 0
+      ? 'relative py-16 md:py-24 px-4 overflow-hidden'
+      : 'bg-white py-16 md:py-24 px-4';
+
   return (
     <main>
       {/* Section 1 — Hero */}
-      {heroImageUrl && heroImageUrl.length > 0 ? (
-        <section className="relative py-16 md:py-24 px-4 overflow-hidden">
-          <Image src={heroImageUrl} alt="" fill sizes="100vw" className="object-cover object-center -z-10" priority />
-          <div className="absolute inset-0 bg-white/70 -z-10" />
-          <div className="relative max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-              {t('hero.headline')}
-            </h1>
-            <p className="text-lg text-slate-500 mt-4">
-              {t('hero.tagline')}
-            </p>
-            <div className="mt-6 flex justify-center">
-              <PMJAYBadge />
-            </div>
-            <div className="mt-8">
-              <Link href="/appointment">
-                <Button
-                  size="lg"
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
-                >
-                  {t('hero.cta')}
-                </Button>
-              </Link>
-            </div>
-            <div className="mt-4">
-              <Link
-                href="/services"
-                className="text-blue-800 underline text-sm"
-              >
-                {t('hero.secondaryLink')}
-              </Link>
-            </div>
+      <section className={heroSectionClass}>
+        {heroImageUrl && heroImageUrl.length > 0 && (
+          <>
+            <Image src={heroImageUrl} alt="" fill sizes="100vw" className="object-cover object-center -z-10" priority />
+            <div className="absolute inset-0 bg-white/70 -z-10" />
+          </>
+        )}
+        <div className="relative max-w-4xl mx-auto text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
+            {t('hero.headline')}
+          </h1>
+          <p className="text-lg text-slate-500 mt-4">
+            {t('hero.tagline')}
+          </p>
+          <div className="mt-6 flex justify-center">
+            <PMJAYBadge />
           </div>
-        </section>
-      ) : (
-        <section className="bg-white py-16 md:py-24 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
-              {t('hero.headline')}
-            </h1>
-            <p className="text-lg text-slate-500 mt-4">
-              {t('hero.tagline')}
-            </p>
-            <div className="mt-6 flex justify-center">
-              <PMJAYBadge />
-            </div>
-            <div className="mt-8">
-              <Link href="/appointment">
-                <Button
-                  size="lg"
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
-                >
-                  {t('hero.cta')}
-                </Button>
-              </Link>
-            </div>
-            <div className="mt-4">
-              <Link
-                href="/services"
-                className="text-blue-800 underline text-sm"
+          <div className="mt-8">
+            <Link href="/appointment">
+              <Button
+                size="lg"
+                className="bg-green-600 hover:bg-green-700 text-white font-semibold min-h-[44px]"
               >
-                {t('hero.secondaryLink')}
-              </Link>
-            </div>
+                {t('hero.cta')}
+              </Button>
+            </Link>
           </div>
-        </section>
-      )}
+          <div className="mt-4">
+            <Link
+              href="/services"
+              className="text-blue-800 underline text-sm"
+            >
+              {t('hero.secondaryLink')}
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Section 2 — Trust Signals Band */}
       <section className="bg-blue-800 py-8">
