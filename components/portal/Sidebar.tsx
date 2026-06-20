@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import { ALL_SECTIONS, ROLE_SECTIONS, StaffRole } from '@/lib/portal/roles';
 import { signOutAction } from '@/app/(portal)/actions/auth';
 import { ThemeToggle } from '@/components/portal/theme-toggle';
@@ -79,12 +79,30 @@ export function PortalSidebar({ role }: { role: StaffRole }) {
             <ThemeToggle />
           </div>
         )}
-        {!collapsed && (
+        {collapsed ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <form action={signOutAction}>
+                  <button
+                    type="submit"
+                    aria-label="Sign out"
+                    className="flex items-center justify-center w-full p-2 rounded-md text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                  </button>
+                </form>
+              </TooltipTrigger>
+              <TooltipContent side="right">Sign out</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
           <form action={signOutAction}>
             <button
               type="submit"
-              className="w-full flex items-center px-3 py-2 rounded-md text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors text-left"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors text-left"
             >
+              <LogOut className="h-4 w-4 shrink-0" />
               Sign out
             </button>
           </form>
