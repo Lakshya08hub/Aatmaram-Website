@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ROLE_SECTIONS } from '@/lib/portal/roles'
-import { getAppointmentRequests, AppointmentRequest } from '@/lib/db/appointment_requests'
-import { KanbanBoard } from '@/components/portal/KanbanBoard'
+import { getAppointmentRequests } from '@/lib/db/appointment_requests'
+import AppointmentsClient from '@/components/portal/AppointmentsClient'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,21 +27,11 @@ export default async function AppointmentsPage() {
   try {
     appointments = await getAppointmentRequests()
   } catch (e) {
-    console.error('[AppointmentsPage] Failed to load appointment requests:', e)
+    console.error('[AppointmentsPage] fetch error:', e instanceof Error ? e.message : String(e))
     fetchError = true
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-semibold mb-6">Appointment Requests</h1>
-
-      {fetchError && (
-        <div className="mb-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-          Could not load appointment requests. Check your connection and refresh.
-        </div>
-      )}
-
-      <KanbanBoard appointments={appointments} />
-    </div>
+    <AppointmentsClient appointments={appointments} fetchError={fetchError} />
   )
 }
