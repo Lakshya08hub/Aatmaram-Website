@@ -18,15 +18,12 @@ export interface Facility {
   updated_at: string;
 }
 
-// WR-005: explicit column list for portal admin (all columns needed for CRUD).
+// WR-005: single explicit column list used for both portal admin and public homepage.
+// All columns are non-sensitive for the facilities table (no staff_user_id etc).
 const FACILITY_COLUMNS =
   'id, name, description, category, image_url, is_featured, featured_order, created_at, updated_at';
 
-// WR-005: explicit column list for the public homepage (only display fields needed).
-const FACILITY_PUBLIC_COLUMNS =
-  'id, name, description, category, image_url, is_featured, featured_order, created_at, updated_at';
-
-// WR-004: max facilities returned by the fallback path so the entire table
+// CR-002/WR-004: max facilities returned by any single query so the entire table
 // is never dumped to the public homepage.
 const FEATURED_FACILITIES_LIMIT = 8;
 
@@ -52,27 +49,34 @@ export async function getFacilities(): Promise<Facility[]> {
 
 /**
  * Returns featured facilities for the homepage.
- * Single query ordered by is_featured DESC, featured_order ASC, created_at ASC.
- * If any row has is_featured = true, only those rows are returned (homepage curation).
- * Otherwise returns up to FEATURED_FACILITIES_LIMIT rows (WR-004: fallback cap).
+ * CR-002: uses two-query pattern (matching getFeaturedDepartments) so unfeatured
+ * content is never silently shown when fewer than LIMIT rows have is_featured = true.
+ * Step 1: fetch featured-only rows.
+ * Step 2: if none exist, fall back to top N by featured_order (WR-004: row cap).
  */
 export async function getFeaturedFacilities(): Promise<Facility[]> {
   const supabase = await createClient();
 
-  // WR-004: limit the query so the entire table is never returned to the homepage.
-  const { data, error } = await supabase
+  // Step 1: try featured-only query
+  const { data: featured, error: featuredErr } = await supabase
     .from('facilities')
-    .select(FACILITY_PUBLIC_COLUMNS)
-    .order('is_featured', { ascending: false })
+    .select(FACILITY_COLUMNS)
+    .eq('is_featured', true)
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: true })
     .limit(FEATURED_FACILITIES_LIMIT);
 
-  if (error) {
-    throw new Error(error.message);
-  }
+  if (featuredErr) throw new Error(featuredErr.message);
+  if (featured && featured.length > 0) return featured as Facility[];
 
-  const rows = data as Facility[];
-  const hasFeatured = rows.some((row) => row.is_featured);
-  return hasFeatured ? rows.filter((row) => row.is_featured) : rows;
+  // Step 2: fallback — top N by featured_order (WR-001: cap prevents full table dump)
+  const { data: fallback, error: fallbackErr } = await supabase
+    .from('facilities')
+    .select(FACILITY_COLUMNS)
+    .order('featured_order', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(FEATURED_FACILITIES_LIMIT);
+
+  if (fallbackErr) throw new Error(fallbackErr.message);
+  return (fallback ?? []) as Facility[];
 }
