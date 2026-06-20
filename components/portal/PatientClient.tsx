@@ -4,7 +4,7 @@
 // Receptionist/Admin/Super Admin: full CRUD except clinical_notes.
 // Doctor: read-only view of assigned records + editable clinical_notes textarea.
 
-import { useState, useEffect, useActionState, useTransition } from 'react';
+import { useState, useEffect, useActionState, useTransition, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Pencil, Loader2, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
@@ -112,9 +112,13 @@ function ReceptionistSheetForm({
 }) {
   const isEdit = editingRecord !== null;
 
-  const boundAction = isEdit
-    ? updatePatientAction.bind(null, editingRecord!.id)
-    : createPatientAction;
+  // Memoize boundAction so useActionState receives a stable reference across renders.
+  // .bind() creates a new function on every call; passing a new reference to useActionState
+  // resets its internal state, which can drop pending state mid-submission (WR-05).
+  const boundAction = useMemo(
+    () => (isEdit ? updatePatientAction.bind(null, editingRecord!.id) : createPatientAction),
+    [isEdit, editingRecord?.id]
+  );
 
   const [state, formAction, isPending] = useActionState(boundAction, {});
   const [submitted, setSubmitted] = useState(false);
