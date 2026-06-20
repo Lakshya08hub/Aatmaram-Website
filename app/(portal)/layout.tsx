@@ -49,6 +49,7 @@ export default async function PortalLayout({
       defaultTheme="system"
       enableSystem
       disableTransitionOnChange
+      storageKey="portal-theme"
     >
       <div className="flex min-h-screen">
         <PortalSidebar role={profile.role} />
