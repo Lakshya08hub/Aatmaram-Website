@@ -3,6 +3,7 @@
 // Server Actions for Media Management (image upload / delete via Supabase Storage).
 // T-14-04 mitigation: requireCmsRole() is the first call in both actions.
 // T-14-05 mitigation: MIME allowlist (jpeg/png/webp only) checked before upload; path is server-controlled.
+// T-14-05a mitigation: magic-byte validation confirms file content matches declared MIME type (CR-001).
 // T-14-06 mitigation: 5 MB max enforced before arrayBuffer() conversion.
 // T-14-07 mitigation: Path is `{typed-folder}/{entityId}-{timestamp}.ext` — no user-controlled substring.
 
@@ -41,6 +42,25 @@ async function requireCmsRole() {
   }
 
   return supabase;
+}
+
+// ---------------------------------------------------------------------------
+// Magic-byte validation (CR-001)
+// Verifies that file bytes match the declared MIME type so a client cannot
+// spoof file.type and upload a non-image disguised as an image.
+// ---------------------------------------------------------------------------
+
+const ALLOWED_SIGNATURES: Record<string, number[][]> = {
+  'image/jpeg': [[0xFF, 0xD8, 0xFF]],
+  'image/png':  [[0x89, 0x50, 0x4E, 0x47]],
+  'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF....WEBP
+};
+
+function validateMagicBytes(buffer: ArrayBuffer, mimeType: string): boolean {
+  const bytes = new Uint8Array(buffer).slice(0, 8);
+  const sigs = ALLOWED_SIGNATURES[mimeType];
+  if (!sigs) return false;
+  return sigs.some((sig) => sig.every((b, i) => bytes[i] === b));
 }
 
 // ---------------------------------------------------------------------------
@@ -147,6 +167,12 @@ export async function uploadImageAction(
     // Step 5 — convert to bytes
     const bytes = await file.arrayBuffer();
 
+    // Step 5a — magic-byte validation (CR-001): confirms file content matches
+    // the declared MIME type; guards against spoofed file.type from the client.
+    if (!validateMagicBytes(bytes, file.type)) {
+      return { error: 'File content does not match the declared file type.' };
+    }
+
     // Step 6 — upload to Storage using service-role admin client (bypasses RLS)
     const admin = createAdminClient();
     const { error: uploadErr } = await admin.storage
@@ -181,14 +207,16 @@ export async function uploadImageAction(
 
 /**
  * Removes an image from Supabase Storage bucket 'media' and clears the
- * DB column.  If the stored URL is an external/legacy URL (not from our
- * Storage bucket), the Storage delete step is skipped and only the DB
- * column is cleared.
+ * DB column. Derives the Storage path from the DB record (not the caller-
+ * supplied URL) to prevent arbitrary bucket deletion (CR-003).
+ *
+ * If the DB-stored URL is external/legacy (not from our Storage bucket),
+ * the Storage delete step is skipped and only the DB column is cleared.
  *
  * @param entityId  - UUID of the entity being updated.
  * @param table     - Postgres table to update.
  * @param column    - URL column to clear (set to null).
- * @param storedUrl - Current value of the URL column (used to derive the Storage path).
+ * @param storedUrl - Current value of the URL column (verified against DB record).
  * @returns {} on success or { error } on failure.
  */
 export async function deleteImageAction(
@@ -203,34 +231,56 @@ export async function deleteImageAction(
 
     const admin = createAdminClient();
 
-    // Step 1 — extract the Storage object path from the public URL
-    // Public URLs follow the pattern: .../object/public/media/{path}
-    let storagePath: string | null = null;
-    try {
-      const urlObj = new URL(storedUrl);
-      const marker = '/object/public/media/';
-      const idx = urlObj.pathname.indexOf(marker);
-      if (idx !== -1) {
-        storagePath = urlObj.pathname.slice(idx + marker.length);
-      }
-    } catch {
-      // If the URL is malformed, skip Storage delete gracefully.
+    // Step 1 — CR-003: Fetch the canonical image URL from DB using the entity ID.
+    // This ensures we only delete the Storage object that belongs to this entity,
+    // ignoring the caller-supplied storedUrl for path derivation.
+    const { data: row, error: fetchErr } = await admin
+      .from(table)
+      .select(column)
+      .eq('id', entityId)
+      .single();
+
+    if (fetchErr || !row) {
+      return { error: 'Entity not found' };
     }
 
-    // Step 2 — remove from Storage only when path could be resolved
+    const canonicalUrl: string | null = (row as Record<string, string | null>)[column] ?? null;
+
+    // Verify the caller-supplied URL matches the DB record to detect misuse.
+    if (canonicalUrl && storedUrl && canonicalUrl !== storedUrl) {
+      return { error: 'URL mismatch: supplied URL does not match the stored record.' };
+    }
+
+    // Step 2 — extract the Storage object path from the DB-sourced URL.
+    // Public URLs follow the pattern: .../object/public/media/{path}
+    let storagePath: string | null = null;
+    if (canonicalUrl) {
+      try {
+        const urlObj = new URL(canonicalUrl);
+        const marker = '/object/public/media/';
+        const idx = urlObj.pathname.indexOf(marker);
+        if (idx !== -1) {
+          storagePath = urlObj.pathname.slice(idx + marker.length);
+        }
+      } catch {
+        // If the URL is malformed, skip Storage delete gracefully.
+      }
+    }
+
+    // Step 3 — remove from Storage only when path could be resolved
     if (storagePath) {
       const { error: storageErr } = await admin.storage.from('media').remove([storagePath]);
       if (storageErr) throw new Error(storageErr.message);
     }
 
-    // Step 3 — clear DB column
+    // Step 4 — clear DB column
     const { error: dbErr } = await admin
       .from(table)
       .update({ [column]: null })
       .eq('id', entityId);
     if (dbErr) throw new Error(dbErr.message);
 
-    // Step 4 — revalidate affected public + portal routes
+    // Step 5 — revalidate affected public + portal routes
     revalidateByTable(table);
 
     return {};
