@@ -61,6 +61,8 @@ export function ChatWidget() {
   const [corner, setCorner] = useState<Corner>('bottom-right');
   const [isDragging, setIsDragging] = useState(false);
   const [win, setWin] = useState({ w: 0, h: 0 });
+  // WR-003: Only announce completed assistant messages to screen readers (not every streaming token)
+  const [lastCompletedMessage, setLastCompletedMessage] = useState('');
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -234,6 +236,12 @@ export function ChatWidget() {
       });
     } finally {
       setIsStreaming(false);
+      // WR-003: Announce the completed message to screen readers
+      setMessages((prev) => {
+        const completed = prev[assistantIndexRef.current]?.content ?? '';
+        setLastCompletedMessage(completed);
+        return prev;
+      });
     }
   }
 
@@ -277,10 +285,14 @@ export function ChatWidget() {
             </Button>
           </div>
 
+          {/* WR-003: Hidden live region — only announces completed messages, not streaming tokens */}
+          <div aria-live="polite" aria-atomic="true" className="sr-only">
+            {lastCompletedMessage}
+          </div>
+
           <CardContent
             className="flex flex-col flex-1 overflow-y-auto p-4 gap-3"
             style={{ backgroundColor: '#F8FAFC' }}
-            aria-live="polite"
           >
             {messages.map((msg, idx) => {
               const isLastAssistant = msg.role === 'assistant' && idx === messages.length - 1;
