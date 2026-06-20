@@ -15,6 +15,11 @@ CREATE TABLE IF NOT EXISTS patient_records (
   updated_at          timestamptz   NOT NULL DEFAULT now()
 );
 
+-- Enable RLS: deny all access to anon/authenticated roles by default.
+-- All legitimate access goes through the service-role admin client (createAdminClient),
+-- which bypasses RLS. This mirrors the pattern used for payroll_payments.
+ALTER TABLE patient_records ENABLE ROW LEVEL SECURITY;
+
 -- Auto-update updated_at on row modification.
 -- Try moddatetime extension first; fall back to a local trigger function.
 DO $$
@@ -23,7 +28,7 @@ BEGIN
     SELECT 1 FROM pg_proc WHERE proname = 'moddatetime'
   ) THEN
     EXECUTE $t$
-      CREATE TRIGGER set_updated_at
+      CREATE OR REPLACE TRIGGER set_updated_at
         BEFORE UPDATE ON patient_records
         FOR EACH ROW
         EXECUTE FUNCTION moddatetime(updated_at);
@@ -40,7 +45,7 @@ BEGIN
     $t$;
 
     EXECUTE $t$
-      CREATE TRIGGER set_updated_at
+      CREATE OR REPLACE TRIGGER set_updated_at
         BEFORE UPDATE ON patient_records
         FOR EACH ROW
         EXECUTE FUNCTION update_patient_records_updated_at();
