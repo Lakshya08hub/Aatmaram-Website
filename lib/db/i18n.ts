@@ -3,7 +3,7 @@
  * otherwise returns the English fallback.
  * Usage: localize(dept.name, dept.name_hi, locale)
  */
-export function localize(en: string, hi: string | null | undefined, locale: string): string {
+export function localize(en: string | null | undefined, hi: string | null | undefined, locale: string): string {
   if (locale === 'hi' && hi && hi.trim().length > 0) return hi;
-  return en;
+  return en ?? '';
 }

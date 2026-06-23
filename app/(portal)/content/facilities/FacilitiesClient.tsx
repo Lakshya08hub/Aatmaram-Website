@@ -72,7 +72,7 @@ const facilitySchema = z.object({
   description: z
     .string()
     .min(1, 'Description is required')
-    .max(300, 'Description must be 300 characters or fewer'),
+    .max(500, 'Description must be 500 characters or fewer'),
   category: z.enum(['OPD', 'ICU', 'Diagnostics', 'Surgery', 'Other']),
   image_url: z.string().optional(),
   name_hi: z.string().max(80).optional(),

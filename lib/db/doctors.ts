@@ -25,13 +25,9 @@ export interface Doctor {
 }
 
 // WR-004: explicit column lists to avoid accidental exposure of sensitive columns.
-// Portal/admin CMS queries: all columns except staff_user_id (internal link, not needed in CMS UI).
+// Used for both CMS (portal) and public site queries.
+// staff_user_id is intentionally excluded from all queries.
 const DOCTOR_CMS_COLUMNS =
-  'id, full_name, full_name_hi, specialization, specialization_hi, qualification, qualification_hi, photo_url, bio, bio_hi, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
-
-// Public site queries: same as CMS minus is_featured/featured_order (not display-relevant) and created_at.
-// staff_user_id is excluded from all public queries.
-const DOCTOR_PUBLIC_COLUMNS =
   'id, full_name, full_name_hi, specialization, specialization_hi, qualification, qualification_hi, photo_url, bio, bio_hi, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
 
 // WR-001: cap for the fallback path so the entire table is never sent to the homepage.
@@ -62,7 +58,7 @@ export async function getFeaturedDoctors(): Promise<Doctor[]> {
 
   const { data: featured, error: featuredErr } = await supabase
     .from('doctors')
-    .select(DOCTOR_PUBLIC_COLUMNS)
+    .select(DOCTOR_CMS_COLUMNS)
     .eq('is_active', true)
     .eq('is_featured', true)
     .order('featured_order', { ascending: true })
@@ -75,7 +71,7 @@ export async function getFeaturedDoctors(): Promise<Doctor[]> {
   // WR-001: add limit to fallback so the entire table is never dumped to the homepage.
   const { data: fallback, error: fallbackErr } = await supabase
     .from('doctors')
-    .select(DOCTOR_PUBLIC_COLUMNS)
+    .select(DOCTOR_CMS_COLUMNS)
     .eq('is_active', true)
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: true })
@@ -94,7 +90,7 @@ export async function getActiveDoctors(): Promise<Doctor[]> {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from('doctors')
-    .select(DOCTOR_PUBLIC_COLUMNS)
+    .select(DOCTOR_CMS_COLUMNS)
     .eq('is_active', true)
     .order('created_at', { ascending: true });
 

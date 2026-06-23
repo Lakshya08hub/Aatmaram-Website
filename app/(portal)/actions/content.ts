@@ -20,6 +20,7 @@ const testimonialSchema = z.object({
   patient_name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
   quote: z.string().min(10, 'Quote must be at least 10 characters').max(1000, 'Quote must be at most 1000 characters'),
   designation: z.string().max(100, 'Designation must be at most 100 characters').optional(),
+  is_active: z.boolean(),
   sort_order: z.coerce.number().int().min(0).max(999),
   patient_name_hi: z.string().max(100).optional(),
   quote_hi: z.string().max(1000).optional(),
@@ -153,6 +154,12 @@ export async function updateDepartmentAction(
         return true;
       })
     );
+    // WR-02: normalize empty Hindi strings to null (consistent with create path)
+    for (const key of ['name_hi', 'description_hi'] as const) {
+      if (key in cleaned && cleaned[key] === '') {
+        (cleaned as Record<string, unknown>)[key] = null;
+      }
+    }
     const { error } = await createAdminClient()
       .from('departments')
       .update({ ...cleaned, updated_at: new Date().toISOString() })
@@ -286,6 +293,12 @@ export async function updateDoctorAction(
         return true;
       })
     );
+    // WR-02: normalize empty Hindi strings to null (consistent with create path)
+    for (const key of ['full_name_hi', 'specialization_hi', 'qualification_hi', 'bio_hi'] as const) {
+      if (key in cleaned && cleaned[key] === '') {
+        (cleaned as Record<string, unknown>)[key] = null;
+      }
+    }
     const { error } = await createAdminClient()
       .from('doctors')
       .update({ ...cleaned, updated_at: new Date().toISOString() })
@@ -385,12 +398,25 @@ export async function updateFacilityAction(
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
-    // CR-002: whitelist allowed fields to prevent id/created_at/updated_at injection.
+
+    const parsed = facilityCreateSchema.partial().safeParse(input);
+    if (!parsed.success) {
+      return { error: parsed.error.issues[0].message };
+    }
+
     const cleaned = Object.fromEntries(
-      Object.entries(input).filter(
+      Object.entries(parsed.data).filter(
         ([k, v]) => FACILITY_ALLOWED_FIELDS.includes(k as typeof FACILITY_ALLOWED_FIELDS[number]) && v !== undefined
       )
     );
+
+    // WR-02: normalize empty Hindi strings to null (consistent with create path)
+    for (const key of ['name_hi', 'description_hi'] as const) {
+      if (key in cleaned && cleaned[key] === '') {
+        (cleaned as Record<string, unknown>)[key] = null;
+      }
+    }
+
     const { error } = await createAdminClient()
       .from('facilities')
       .update({ ...cleaned, updated_at: new Date().toISOString() })
@@ -554,6 +580,8 @@ export async function setFeaturedOrder(
 function revalidateHospitalInfo(): void {
   revalidatePath('/en/contact');
   revalidatePath('/hi/contact');
+  revalidatePath('/en');
+  revalidatePath('/hi');
 }
 
 // ---------------------------------------------------------------------------
@@ -592,7 +620,7 @@ export async function createTestimonialAction(input: {
       patient_name: parsed.data.patient_name,
       quote: parsed.data.quote,
       designation: parsed.data.designation || null,
-      is_active: input.is_active,
+      is_active: parsed.data.is_active,
       sort_order: parsed.data.sort_order,
       patient_name_hi: parsed.data.patient_name_hi || null,
       quote_hi: parsed.data.quote_hi || null,
@@ -631,19 +659,21 @@ export async function updateTestimonialAction(
     }
 
     // WR-006: use parsed.data (not raw input) so Zod-coerced values are written to DB.
+    // WR-02: normalize empty Hindi strings to null (consistent with create path).
+    const testimonialCleaned = {
+      patient_name: parsed.data.patient_name,
+      quote: parsed.data.quote,
+      designation: parsed.data.designation || null,
+      is_active: parsed.data.is_active,
+      sort_order: parsed.data.sort_order,
+      patient_name_hi: parsed.data.patient_name_hi || null,
+      quote_hi: parsed.data.quote_hi || null,
+      designation_hi: parsed.data.designation_hi || null,
+      updated_at: new Date().toISOString(),
+    };
     const { error } = await createAdminClient()
       .from('testimonials')
-      .update({
-        patient_name: parsed.data.patient_name,
-        quote: parsed.data.quote,
-        designation: parsed.data.designation || null,
-        is_active: input.is_active,
-        sort_order: parsed.data.sort_order,
-        patient_name_hi: parsed.data.patient_name_hi || null,
-        quote_hi: parsed.data.quote_hi || null,
-        designation_hi: parsed.data.designation_hi || null,
-        updated_at: new Date().toISOString(),
-      })
+      .update(testimonialCleaned)
       .eq('id', id);
 
     if (error) throw new Error(error.message);

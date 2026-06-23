@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
@@ -17,7 +16,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { getFeaturedDepartments } from '@/lib/db/departments';
 import { getFeaturedDoctors } from '@/lib/db/doctors';
 import { getFeaturedFacilities } from '@/lib/db/facilities';
-import { getHospitalInfo } from '@/lib/db/hospital-info';
 import { getActiveTestimonials } from '@/lib/db/testimonials';
 import { localize } from '@/lib/db/i18n';
 
@@ -51,15 +49,12 @@ export default async function HomePage({
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [departments, doctors, facilities, info, testimonials] = await Promise.all([
+  const [departments, doctors, facilities, testimonials] = await Promise.all([
     safeFetch(getFeaturedDepartments, []),
     safeFetch(getFeaturedDoctors, []),
     safeFetch(getFeaturedFacilities, []),
-    safeFetch(getHospitalInfo, null),
     safeFetch(getActiveTestimonials, []),
   ]);
-
-  const heroImageUrl = info?.hero_image_url ?? null;
 
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
@@ -68,21 +63,10 @@ export default async function HomePage({
   const tPmjay = await getTranslations('pmjay');
   const tTestimonials = await getTranslations('testimonials');
 
-  const heroSectionClass =
-    heroImageUrl && heroImageUrl.length > 0
-      ? 'relative py-16 md:py-24 px-4 overflow-hidden'
-      : 'bg-white py-16 md:py-24 px-4';
-
   return (
     <main>
       {/* Section 1 — Hero */}
-      <section className={heroSectionClass}>
-        {heroImageUrl && heroImageUrl.length > 0 && (
-          <>
-            <Image src={heroImageUrl} alt="" fill sizes="100vw" className="object-cover object-center -z-10" priority />
-            <div className="absolute inset-0 bg-white/70 -z-10" />
-          </>
-        )}
+      <section className="bg-white py-16 md:py-24 px-4">
         <div className="relative max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-slate-900">
             {t('hero.headline')}

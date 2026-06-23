@@ -256,6 +256,9 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
                           designation: testimonial.designation ?? undefined,
                           is_active: testimonial.is_active,
                           sort_order: testimonial.sort_order,
+                          patient_name_hi: testimonial.patient_name_hi ?? undefined,
+                          quote_hi: testimonial.quote_hi ?? undefined,
+                          designation_hi: testimonial.designation_hi ?? undefined,
                         });
                         if (!r.error) router.refresh();
                         return r;
