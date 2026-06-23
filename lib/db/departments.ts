@@ -7,7 +7,9 @@ import { createClient } from '@/lib/supabase/server';
 export interface Department {
   id: string;
   name: string;
+  name_hi: string | null;
   description: string;
+  description_hi: string | null;
   image_url: string | null;
   is_featured: boolean;
   featured_order: number;
@@ -17,7 +19,7 @@ export interface Department {
 
 // WR-004: explicit column list — excludes any future sensitive columns added to the table.
 const DEPARTMENT_COLUMNS =
-  'id, name, description, image_url, is_featured, featured_order, created_at, updated_at';
+  'id, name, name_hi, description, description_hi, image_url, is_featured, featured_order, created_at, updated_at';
 
 // WR-001: cap for the fallback path so the entire table is never sent to the homepage.
 const FEATURED_DEPARTMENTS_LIMIT = 8;

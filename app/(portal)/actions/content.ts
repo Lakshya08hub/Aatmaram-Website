@@ -21,6 +21,9 @@ const testimonialSchema = z.object({
   quote: z.string().min(10, 'Quote must be at least 10 characters').max(1000, 'Quote must be at most 1000 characters'),
   designation: z.string().max(100, 'Designation must be at most 100 characters').optional(),
   sort_order: z.coerce.number().int().min(0).max(999),
+  patient_name_hi: z.string().max(100).optional(),
+  quote_hi: z.string().max(1000).optional(),
+  designation_hi: z.string().max(100).optional(),
 });
 
 const CMS_ROLES: StaffRole[] = ['super_admin', 'admin'];
@@ -29,6 +32,8 @@ const departmentCreateSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(100, 'Name must be at most 100 characters'),
   description: z.string().max(500, 'Description must be at most 500 characters').optional(),
   image_url: z.string().max(500).optional(),
+  name_hi: z.string().max(100).optional(),
+  description_hi: z.string().max(500).optional(),
 });
 
 const doctorCreateSchema = z.object({
@@ -39,6 +44,10 @@ const doctorCreateSchema = z.object({
   bio:               z.string().max(1000, 'Bio must be at most 1000 characters').optional(),
   availability_days: z.array(z.string().max(20)).max(7).optional(),
   is_active:         z.boolean().optional(),
+  full_name_hi:      z.string().max(100).optional(),
+  specialization_hi: z.string().max(100).optional(),
+  qualification_hi:  z.string().max(200).optional(),
+  bio_hi:            z.string().max(1000).optional(),
 });
 
 
@@ -88,6 +97,8 @@ export async function createDepartmentAction(input: {
   name: string;
   description: string;
   image_url?: string;
+  name_hi?: string;
+  description_hi?: string;
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -101,6 +112,8 @@ export async function createDepartmentAction(input: {
       name: parsed.data.name,
       description: parsed.data.description || '',
       image_url: parsed.data.image_url || null,
+      name_hi: parsed.data.name_hi || null,
+      description_hi: parsed.data.description_hi || null,
     });
 
     if (error) throw new Error(error.message);
@@ -113,7 +126,7 @@ export async function createDepartmentAction(input: {
   }
 }
 
-const DEPARTMENT_ALLOWED_FIELDS = ['name', 'description', 'image_url'] as const;
+const DEPARTMENT_ALLOWED_FIELDS = ['name', 'description', 'image_url', 'name_hi', 'description_hi'] as const;
 
 // Required fields must not be empty strings; optional fields allow empty strings
 // so admins can intentionally clear them (WR-002).
@@ -121,7 +134,7 @@ const DEPARTMENT_REQUIRED_FIELDS: ReadonlyArray<string> = ['name'];
 
 export async function updateDepartmentAction(
   id: string,
-  input: Partial<{ name: string; description: string; image_url: string }>
+  input: Partial<{ name: string; description: string; image_url: string; name_hi: string; description_hi: string }>
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -196,6 +209,10 @@ export async function createDoctorAction(input: {
   bio?: string;
   availability_days?: string[];
   is_active?: boolean;
+  full_name_hi?: string;
+  specialization_hi?: string;
+  qualification_hi?: string;
+  bio_hi?: string;
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -213,6 +230,10 @@ export async function createDoctorAction(input: {
       bio:               parsed.data.bio ?? null,
       availability_days: parsed.data.availability_days ?? null,
       is_active:         parsed.data.is_active ?? true,
+      full_name_hi:      parsed.data.full_name_hi ?? null,
+      specialization_hi: parsed.data.specialization_hi ?? null,
+      qualification_hi:  parsed.data.qualification_hi ?? null,
+      bio_hi:            parsed.data.bio_hi ?? null,
     });
 
     if (error) throw new Error(error.message);
@@ -225,7 +246,7 @@ export async function createDoctorAction(input: {
   }
 }
 
-const DOCTOR_ALLOWED_FIELDS = ['full_name', 'specialization', 'qualification', 'photo_url', 'bio', 'availability_days', 'is_active'] as const;
+const DOCTOR_ALLOWED_FIELDS = ['full_name', 'specialization', 'qualification', 'photo_url', 'bio', 'availability_days', 'is_active', 'full_name_hi', 'specialization_hi', 'qualification_hi', 'bio_hi'] as const;
 
 // Required fields must not be empty strings; optional fields allow empty strings
 // so admins can intentionally clear them (WR-001).
@@ -241,6 +262,10 @@ export async function updateDoctorAction(
     bio: string;
     availability_days: string[];
     is_active: boolean;
+    full_name_hi: string;
+    specialization_hi: string;
+    qualification_hi: string;
+    bio_hi: string;
   }>
 ): Promise<{ error?: string }> {
   try {
@@ -304,6 +329,8 @@ const facilityCreateSchema = z.object({
   description: z.string().max(500, 'Description must be at most 500 characters'),
   category:    z.enum(['OPD', 'ICU', 'Diagnostics', 'Surgery', 'Other'], { errorMap: () => ({ message: 'Invalid category' }) }),
   image_url:   z.string().url('Image URL must be a valid URL').max(500).optional(),
+  name_hi:     z.string().max(100).optional(),
+  description_hi: z.string().max(500).optional(),
 });
 
 /**
@@ -320,6 +347,8 @@ export async function createFacilityAction(input: {
   description: string;
   category: FacilityCategory;
   image_url?: string;
+  name_hi?: string;
+  description_hi?: string;
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -334,6 +363,8 @@ export async function createFacilityAction(input: {
       description: parsed.data.description,
       category:    parsed.data.category,
       image_url:   parsed.data.image_url ?? null,
+      name_hi:     parsed.data.name_hi || null,
+      description_hi: parsed.data.description_hi || null,
     });
 
     if (error) throw new Error(error.message);
@@ -346,11 +377,11 @@ export async function createFacilityAction(input: {
   }
 }
 
-const FACILITY_ALLOWED_FIELDS = ['name', 'description', 'category', 'image_url'] as const;
+const FACILITY_ALLOWED_FIELDS = ['name', 'description', 'category', 'image_url', 'name_hi', 'description_hi'] as const;
 
 export async function updateFacilityAction(
   id: string,
-  input: Partial<{ name: string; description: string; category: FacilityCategory; image_url: string }>
+  input: Partial<{ name: string; description: string; category: FacilityCategory; image_url: string; name_hi: string; description_hi: string }>
 ): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -544,6 +575,9 @@ export async function createTestimonialAction(input: {
   designation?: string;
   is_active: boolean;
   sort_order: number;
+  patient_name_hi?: string;
+  quote_hi?: string;
+  designation_hi?: string;
 }): Promise<{ error?: string }> {
   try {
     await requireCmsRole();
@@ -560,6 +594,9 @@ export async function createTestimonialAction(input: {
       designation: parsed.data.designation || null,
       is_active: input.is_active,
       sort_order: parsed.data.sort_order,
+      patient_name_hi: parsed.data.patient_name_hi || null,
+      quote_hi: parsed.data.quote_hi || null,
+      designation_hi: parsed.data.designation_hi || null,
     });
 
     if (error) throw new Error(error.message);
@@ -580,6 +617,9 @@ export async function updateTestimonialAction(
     designation?: string;
     is_active: boolean;
     sort_order: number;
+    patient_name_hi?: string;
+    quote_hi?: string;
+    designation_hi?: string;
   }
 ): Promise<{ error?: string }> {
   try {
@@ -599,6 +639,9 @@ export async function updateTestimonialAction(
         designation: parsed.data.designation || null,
         is_active: input.is_active,
         sort_order: parsed.data.sort_order,
+        patient_name_hi: parsed.data.patient_name_hi || null,
+        quote_hi: parsed.data.quote_hi || null,
+        designation_hi: parsed.data.designation_hi || null,
         updated_at: new Date().toISOString(),
       })
       .eq('id', id);
@@ -660,7 +703,9 @@ export async function toggleTestimonialActiveAction(
 
 const HOSPITAL_INFO_ALLOWED_FIELDS = [
   'about_text',
+  'about_text_hi',
   'opd_timings',
+  'opd_timings_hi',
   'emergency_number',
   'address_line1',
   'address_line2',
@@ -670,7 +715,9 @@ const HOSPITAL_INFO_ALLOWED_FIELDS = [
 
 const hospitalInfoUpdateSchema = z.object({
   about_text:       z.string().max(1200, 'About text must be at most 1200 characters').optional(),
+  about_text_hi:    z.string().max(1200, 'About text (Hindi) must be at most 1200 characters').optional(),
   opd_timings:      z.string().max(200, 'OPD timings must be at most 200 characters').optional(),
+  opd_timings_hi:   z.string().max(200, 'OPD timings (Hindi) must be at most 200 characters').optional(),
   emergency_number: z.string().max(30, 'Emergency number must be at most 30 characters').optional(),
   address_line1:    z.string().max(200, 'Address line 1 must be at most 200 characters').optional(),
   address_line2:    z.string().max(200, 'Address line 2 must be at most 200 characters').optional(),
@@ -682,7 +729,9 @@ export async function updateHospitalInfoAction(
   id: string,
   input: Partial<{
     about_text: string;
+    about_text_hi: string;
     opd_timings: string;
+    opd_timings_hi: string;
     emergency_number: string;
     address_line1: string;
     address_line2: string;

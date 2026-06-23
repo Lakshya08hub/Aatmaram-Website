@@ -75,6 +75,8 @@ const facilitySchema = z.object({
     .max(300, 'Description must be 300 characters or fewer'),
   category: z.enum(['OPD', 'ICU', 'Diagnostics', 'Surgery', 'Other']),
   image_url: z.string().optional(),
+  name_hi: z.string().max(80).optional(),
+  description_hi: z.string().max(500).optional(),
 });
 
 type FacilityFormValues = z.infer<typeof facilitySchema>;
@@ -143,7 +145,7 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
 
   function openAddDialog() {
     setEditingFacility(null);
-    reset({ name: '', description: '', category: 'OPD', image_url: '' });
+    reset({ name: '', description: '', category: 'OPD', image_url: '', name_hi: '', description_hi: '' });
     setDialogOpen(true);
   }
 
@@ -154,6 +156,8 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
       description: facility.description,
       category: facility.category,
       image_url: facility.image_url ?? '',
+      name_hi: facility.name_hi ?? '',
+      description_hi: facility.description_hi ?? '',
     });
     setDialogOpen(true);
   }
@@ -173,12 +177,16 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
             description: values.description,
             category: values.category,
             image_url: values.image_url || undefined,
+            name_hi: values.name_hi || undefined,
+            description_hi: values.description_hi || undefined,
           })
         : await createFacilityAction({
             name: values.name,
             description: values.description,
             category: values.category,
             image_url: values.image_url || undefined,
+            name_hi: values.name_hi || undefined,
+            description_hi: values.description_hi || undefined,
           });
 
       if (result.error) {
@@ -411,6 +419,25 @@ export default function FacilitiesClient({ initialData, fetchError }: Props) {
               {errors.category && (
                 <p className="text-xs text-red-500">{errors.category.message}</p>
               )}
+            </div>
+
+            {/* Hindi Translation Section */}
+            <div className="border-t border-border pt-3">
+              <p className="text-xs font-medium text-muted-foreground mb-3">Hindi Translation / हिंदी अनुवाद <span className="font-normal">(optional)</span></p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label htmlFor="facility-name-hi" className="text-sm font-medium text-foreground">
+                    Name (हिंदी)
+                  </label>
+                  <Input id="facility-name-hi" placeholder="e.g. उन्नत आईसीयू" {...register('name_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="facility-description-hi" className="text-sm font-medium text-foreground">
+                    Description (हिंदी)
+                  </label>
+                  <Textarea id="facility-description-hi" placeholder="सुविधा का संक्षिप्त विवरण" rows={3} {...register('description_hi')} />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-1">

@@ -7,7 +7,9 @@ import { createClient } from '@/lib/supabase/server';
 export interface HospitalInfo {
   id: string;
   about_text: string;
+  about_text_hi: string | null;
   opd_timings: string;
+  opd_timings_hi: string | null;
   emergency_number: string;
   address_line1: string;
   address_line2: string | null;
@@ -28,7 +30,7 @@ export async function getHospitalInfo(): Promise<HospitalInfo | null> {
   const { data, error } = await supabase
     .from('hospital_info')
     .select(
-      'id, about_text, opd_timings, emergency_number, address_line1, address_line2, city, maps_embed_url, updated_at'
+      'id, about_text, about_text_hi, opd_timings, opd_timings_hi, emergency_number, address_line1, address_line2, city, maps_embed_url, updated_at'
     )
     .single();
 

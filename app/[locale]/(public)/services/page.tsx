@@ -6,6 +6,7 @@ import { PMJAYBadge } from '@/components/public/PMJAYBadge';
 import { SectionHeading } from '@/components/public/SectionHeading';
 import { getFacilities } from '@/lib/db/facilities';
 import type { Facility } from '@/lib/db/facilities';
+import { localize } from '@/lib/db/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -53,7 +54,7 @@ export default async function ServicesPage({ params }: PageProps) {
             {facilities.map((facility) => (
               <div key={facility.id} className="flex items-center gap-3">
                 <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-                <span className="text-base text-slate-700">{facility.name}</span>
+                <span className="text-base text-slate-700">{localize(facility.name, facility.name_hi, locale)}</span>
               </div>
             ))}
           </div>
@@ -85,9 +86,9 @@ export default async function ServicesPage({ params }: PageProps) {
             {facilities.map((facility) => (
               <Card key={facility.id}>
                 <CardContent className="p-4 flex flex-col items-center text-center gap-3">
-                  <p className="text-sm font-semibold text-slate-900">{facility.name}</p>
+                  <p className="text-sm font-semibold text-slate-900">{localize(facility.name, facility.name_hi, locale)}</p>
                   {facility.description && (
-                    <p className="text-xs text-slate-500">{facility.description}</p>
+                    <p className="text-xs text-slate-500">{localize(facility.description, facility.description_hi, locale)}</p>
                   )}
                 </CardContent>
               </Card>

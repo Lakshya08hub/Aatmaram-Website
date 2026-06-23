@@ -23,7 +23,9 @@ import { Textarea } from '@/components/ui/textarea';
 
 const hospitalInfoSchema = z.object({
   about_text: z.string().max(1200, 'About text must be 1200 characters or fewer'),
+  about_text_hi: z.string().max(1200, 'About text (Hindi) must be 1200 characters or fewer').optional(),
   opd_timings: z.string(),
+  opd_timings_hi: z.string().max(200).optional(),
   emergency_number: z.string(),
   address_line1: z.string(),
   address_line2: z.string().optional(),
@@ -56,7 +58,9 @@ export default function HospitalInfoClient({ initialData }: Props) {
     resolver: zodResolver(hospitalInfoSchema),
     defaultValues: {
       about_text: initialData?.about_text ?? '',
+      about_text_hi: initialData?.about_text_hi ?? '',
       opd_timings: initialData?.opd_timings ?? '',
+      opd_timings_hi: initialData?.opd_timings_hi ?? '',
       emergency_number: initialData?.emergency_number ?? '',
       address_line1: initialData?.address_line1 ?? '',
       address_line2: initialData?.address_line2 ?? '',
@@ -71,7 +75,9 @@ export default function HospitalInfoClient({ initialData }: Props) {
     try {
       const result = await updateHospitalInfoAction(initialData.id, {
         about_text: values.about_text,
+        about_text_hi: values.about_text_hi || undefined,
         opd_timings: values.opd_timings,
+        opd_timings_hi: values.opd_timings_hi || undefined,
         emergency_number: values.emergency_number,
         address_line1: values.address_line1,
         address_line2: values.address_line2 || undefined,
@@ -144,6 +150,40 @@ export default function HospitalInfoClient({ initialData }: Props) {
           {errors.opd_timings && (
             <p className="text-xs text-red-500">{errors.opd_timings.message}</p>
           )}
+        </div>
+
+        {/* Hindi Translation Section */}
+        <div className="border-t border-border pt-3">
+          <p className="text-xs font-medium text-muted-foreground mb-3">Hindi Translation / हिंदी अनुवाद <span className="font-normal">(optional)</span></p>
+          <div className="space-y-3">
+            <div className="space-y-1">
+              <label htmlFor="about-text-hi" className="text-sm font-medium text-slate-700">
+                About Text (हिंदी)
+              </label>
+              <Textarea
+                id="about-text-hi"
+                placeholder="अस्पताल का संक्षिप्त परिचय"
+                rows={6}
+                {...register('about_text_hi')}
+              />
+              {errors.about_text_hi && (
+                <p className="text-xs text-red-500">{errors.about_text_hi.message}</p>
+              )}
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="opd-timings-hi" className="text-sm font-medium text-slate-700">
+                OPD Timings (हिंदी)
+              </label>
+              <Input
+                id="opd-timings-hi"
+                placeholder="e.g. सोम–शनि, सुबह 9 बजे – दोपहर 1 बजे"
+                {...register('opd_timings_hi')}
+              />
+              {errors.opd_timings_hi && (
+                <p className="text-xs text-red-500">{errors.opd_timings_hi.message}</p>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Emergency Number */}

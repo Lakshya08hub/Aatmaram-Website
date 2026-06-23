@@ -67,6 +67,8 @@ const departmentSchema = z.object({
     .min(1, 'Description is required')
     .max(500, 'Description must be 500 characters or fewer'),
   image_url: z.string().optional(),
+  name_hi: z.string().max(80).optional(),
+  description_hi: z.string().max(500).optional(),
 });
 
 type DepartmentFormValues = z.infer<typeof departmentSchema>;
@@ -132,7 +134,7 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
 
   function openAddDialog() {
     setEditingDepartment(null);
-    reset({ name: '', description: '', image_url: '' });
+    reset({ name: '', description: '', image_url: '', name_hi: '', description_hi: '' });
     setDialogOpen(true);
   }
 
@@ -142,6 +144,8 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
       name: dept.name,
       description: dept.description,
       image_url: dept.image_url ?? '',
+      name_hi: dept.name_hi ?? '',
+      description_hi: dept.description_hi ?? '',
     });
     setDialogOpen(true);
   }
@@ -160,11 +164,15 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
             name: values.name,
             description: values.description,
             image_url: values.image_url || undefined,
+            name_hi: values.name_hi || undefined,
+            description_hi: values.description_hi || undefined,
           })
         : await createDepartmentAction({
             name: values.name,
             description: values.description,
             image_url: values.image_url || undefined,
+            name_hi: values.name_hi || undefined,
+            description_hi: values.description_hi || undefined,
           });
 
       if (result.error) {
@@ -377,6 +385,25 @@ export default function DepartmentsClient({ initialData, fetchError }: Props) {
               {errors.description && (
                 <p className="text-xs text-red-500">{errors.description.message}</p>
               )}
+            </div>
+
+            {/* Hindi Translation Section */}
+            <div className="border-t border-border pt-3">
+              <p className="text-xs font-medium text-muted-foreground mb-3">Hindi Translation / हिंदी अनुवाद <span className="font-normal">(optional)</span></p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label htmlFor="dept-name-hi" className="text-sm font-medium text-foreground">
+                    Name (हिंदी)
+                  </label>
+                  <Input id="dept-name-hi" placeholder="e.g. हृदय रोग विभाग" {...register('name_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="dept-description-hi" className="text-sm font-medium text-foreground">
+                    Description (हिंदी)
+                  </label>
+                  <Textarea id="dept-description-hi" placeholder="विभाग का संक्षिप्त विवरण" rows={3} {...register('description_hi')} />
+                </div>
+              </div>
             </div>
 
             <div className="space-y-1">

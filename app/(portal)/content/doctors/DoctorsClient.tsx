@@ -74,6 +74,10 @@ const doctorSchema = z.object({
   bio: z.string().max(600, 'Bio must be 600 characters or fewer').optional(),
   availability_days: z.array(z.string()).optional(),
   is_active: z.boolean(),
+  full_name_hi: z.string().max(100).optional(),
+  specialization_hi: z.string().max(100).optional(),
+  qualification_hi: z.string().max(200).optional(),
+  bio_hi: z.string().max(600).optional(),
 });
 
 type DoctorFormValues = z.infer<typeof doctorSchema>;
@@ -151,6 +155,10 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
       bio: '',
       availability_days: [],
       is_active: true,
+      full_name_hi: '',
+      specialization_hi: '',
+      qualification_hi: '',
+      bio_hi: '',
     });
     setSheetOpen(true);
   }
@@ -165,6 +173,10 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
       bio: doctor.bio ?? '',
       availability_days: doctor.availability_days ?? [],
       is_active: doctor.is_active,
+      full_name_hi: doctor.full_name_hi ?? '',
+      specialization_hi: doctor.specialization_hi ?? '',
+      qualification_hi: doctor.qualification_hi ?? '',
+      bio_hi: doctor.bio_hi ?? '',
     });
     setSheetOpen(true);
   }
@@ -196,6 +208,10 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
             bio: values.bio || undefined,
             availability_days: values.availability_days,
             is_active: values.is_active,
+            full_name_hi: values.full_name_hi || undefined,
+            specialization_hi: values.specialization_hi || undefined,
+            qualification_hi: values.qualification_hi || undefined,
+            bio_hi: values.bio_hi || undefined,
           })
         : await createDoctorAction({
             full_name: values.full_name,
@@ -205,6 +221,10 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
             bio: values.bio || undefined,
             availability_days: values.availability_days,
             is_active: values.is_active,
+            full_name_hi: values.full_name_hi || undefined,
+            specialization_hi: values.specialization_hi || undefined,
+            qualification_hi: values.qualification_hi || undefined,
+            bio_hi: values.bio_hi || undefined,
           });
 
       if (result.error) {
@@ -503,6 +523,37 @@ export default function DoctorsClient({ initialData, fetchError }: Props) {
               {errors.bio && (
                 <p className="text-xs text-red-500">{errors.bio.message}</p>
               )}
+            </div>
+
+            {/* Hindi Translation Section */}
+            <div className="border-t border-border pt-3">
+              <p className="text-xs font-medium text-muted-foreground mb-3">Hindi Translation / हिंदी अनुवाद <span className="font-normal">(optional)</span></p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label htmlFor="doc-full-name-hi" className="text-sm font-medium text-foreground">
+                    Full Name (हिंदी)
+                  </label>
+                  <Input id="doc-full-name-hi" placeholder="e.g. डॉ. अरुण शर्मा" {...register('full_name_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="doc-specialization-hi" className="text-sm font-medium text-foreground">
+                    Specialization (हिंदी)
+                  </label>
+                  <Input id="doc-specialization-hi" placeholder="e.g. बाल रोग विशेषज्ञ" {...register('specialization_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="doc-qualification-hi" className="text-sm font-medium text-foreground">
+                    Qualification (हिंदी)
+                  </label>
+                  <Input id="doc-qualification-hi" placeholder="e.g. एमबीबीएस, एमडी" {...register('qualification_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="doc-bio-hi" className="text-sm font-medium text-foreground">
+                    Bio (हिंदी)
+                  </label>
+                  <Textarea id="doc-bio-hi" placeholder="संक्षिप्त जीवनी" rows={3} {...register('bio_hi')} />
+                </div>
+              </div>
             </div>
 
             {/* Availability Days */}

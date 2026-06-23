@@ -69,6 +69,9 @@ const testimonialSchema = z.object({
   designation: z.string().max(100, 'Must be 100 characters or fewer').optional(),
   is_active: z.boolean(),
   sort_order: z.number().int().min(0).max(999),
+  patient_name_hi: z.string().max(100).optional(),
+  quote_hi: z.string().max(600).optional(),
+  designation_hi: z.string().max(100).optional(),
 });
 
 type TestimonialFormValues = z.infer<typeof testimonialSchema>;
@@ -120,7 +123,7 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
 
   function openAddDialog() {
     setEditingTestimonial(null);
-    reset({ patient_name: '', quote: '', designation: '', is_active: true, sort_order: 0 });
+    reset({ patient_name: '', quote: '', designation: '', is_active: true, sort_order: 0, patient_name_hi: '', quote_hi: '', designation_hi: '' });
     setDialogOpen(true);
   }
 
@@ -132,6 +135,9 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
       designation: testimonial.designation ?? '',
       is_active: testimonial.is_active,
       sort_order: testimonial.sort_order,
+      patient_name_hi: testimonial.patient_name_hi ?? '',
+      quote_hi: testimonial.quote_hi ?? '',
+      designation_hi: testimonial.designation_hi ?? '',
     });
     setDialogOpen(true);
   }
@@ -151,6 +157,9 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
         designation: values.designation || undefined,
         is_active: values.is_active,
         sort_order: values.sort_order,
+        patient_name_hi: values.patient_name_hi || undefined,
+        quote_hi: values.quote_hi || undefined,
+        designation_hi: values.designation_hi || undefined,
       };
 
       const result = editingTestimonial
@@ -361,6 +370,31 @@ export default function TestimonialsClient({ initialData, fetchError }: Props) {
               {errors.designation && (
                 <p className="text-xs text-red-500">{errors.designation.message}</p>
               )}
+            </div>
+
+            {/* Hindi Translation Section */}
+            <div className="border-t border-border pt-3">
+              <p className="text-xs font-medium text-muted-foreground mb-3">Hindi Translation / हिंदी अनुवाद <span className="font-normal">(optional)</span></p>
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <label htmlFor="patient-name-hi" className="text-sm font-medium text-foreground">
+                    Patient Name (हिंदी)
+                  </label>
+                  <Input id="patient-name-hi" placeholder="e.g. रमेश कुमार" {...register('patient_name_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="quote-hi" className="text-sm font-medium text-foreground">
+                    Quote (हिंदी)
+                  </label>
+                  <Textarea id="quote-hi" placeholder="मरीज का अनुभव हिंदी में" rows={4} {...register('quote_hi')} />
+                </div>
+                <div className="space-y-1">
+                  <label htmlFor="designation-hi" className="text-sm font-medium text-foreground">
+                    Designation (हिंदी)
+                  </label>
+                  <Input id="designation-hi" placeholder="e.g. मरीज के पिता, कानपुर" {...register('designation_hi')} />
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center gap-3">

@@ -7,10 +7,14 @@ import { createClient } from '@/lib/supabase/server';
 export interface Doctor {
   id: string;
   full_name: string;
+  full_name_hi: string | null;
   specialization: string;
+  specialization_hi: string | null;
   qualification: string;
+  qualification_hi: string | null;
   photo_url: string | null;
   bio: string | null;
+  bio_hi: string | null;
   availability_days: string[] | null;
   is_active: boolean;
   is_featured: boolean;
@@ -23,12 +27,12 @@ export interface Doctor {
 // WR-004: explicit column lists to avoid accidental exposure of sensitive columns.
 // Portal/admin CMS queries: all columns except staff_user_id (internal link, not needed in CMS UI).
 const DOCTOR_CMS_COLUMNS =
-  'id, full_name, specialization, qualification, photo_url, bio, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
+  'id, full_name, full_name_hi, specialization, specialization_hi, qualification, qualification_hi, photo_url, bio, bio_hi, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
 
 // Public site queries: same as CMS minus is_featured/featured_order (not display-relevant) and created_at.
 // staff_user_id is excluded from all public queries.
 const DOCTOR_PUBLIC_COLUMNS =
-  'id, full_name, specialization, qualification, photo_url, bio, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
+  'id, full_name, full_name_hi, specialization, specialization_hi, qualification, qualification_hi, photo_url, bio, bio_hi, availability_days, is_active, is_featured, featured_order, created_at, updated_at';
 
 // WR-001: cap for the fallback path so the entire table is never sent to the homepage.
 const FEATURED_DOCTORS_LIMIT = 6;

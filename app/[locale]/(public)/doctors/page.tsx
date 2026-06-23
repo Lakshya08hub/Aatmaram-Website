@@ -5,6 +5,7 @@ import { DoctorCard } from '@/components/public/DoctorCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
 import { getActiveDoctors } from '@/lib/db/doctors';
 import type { Doctor } from '@/lib/db/doctors';
+import { localize } from '@/lib/db/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,9 +58,9 @@ export default async function DoctorsPage({
             {doctors.map((doctor) => (
               <DoctorCard
                 key={doctor.id}
-                name={doctor.full_name}
+                name={localize(doctor.full_name, doctor.full_name_hi, locale)}
                 initials={getInitials(doctor.full_name)}
-                specialty={doctor.specialization}
+                specialty={localize(doctor.specialization, doctor.specialization_hi, locale)}
                 bookLabel={t('bookAppointment')}
               />
             ))}

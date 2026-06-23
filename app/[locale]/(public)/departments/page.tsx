@@ -4,6 +4,7 @@ import { DepartmentCard } from '@/components/public/DepartmentCard';
 import { SectionHeading } from '@/components/public/SectionHeading';
 import { getDepartments } from '@/lib/db/departments';
 import type { Department } from '@/lib/db/departments';
+import { localize } from '@/lib/db/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -51,8 +52,8 @@ export default async function DepartmentsPage({
             {departments.map((dept) => (
               <DepartmentCard
                 key={dept.id}
-                name={dept.name}
-                description={dept.description}
+                name={localize(dept.name, dept.name_hi, locale)}
+                description={localize(dept.description, dept.description_hi, locale)}
               />
             ))}
           </div>

@@ -9,7 +9,9 @@ export type FacilityCategory = 'OPD' | 'ICU' | 'Diagnostics' | 'Surgery' | 'Othe
 export interface Facility {
   id: string;
   name: string;
+  name_hi: string | null;
   description: string;
+  description_hi: string | null;
   category: FacilityCategory;
   image_url: string | null;
   is_featured: boolean;
@@ -21,7 +23,7 @@ export interface Facility {
 // WR-005: single explicit column list used for both portal admin and public homepage.
 // All columns are non-sensitive for the facilities table (no staff_user_id etc).
 const FACILITY_COLUMNS =
-  'id, name, description, category, image_url, is_featured, featured_order, created_at, updated_at';
+  'id, name, name_hi, description, description_hi, category, image_url, is_featured, featured_order, created_at, updated_at';
 
 // CR-002/WR-004: max facilities returned by any single query so the entire table
 // is never dumped to the public homepage.

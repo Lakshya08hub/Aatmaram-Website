@@ -19,6 +19,7 @@ import { getFeaturedDoctors } from '@/lib/db/doctors';
 import { getFeaturedFacilities } from '@/lib/db/facilities';
 import { getHospitalInfo } from '@/lib/db/hospital-info';
 import { getActiveTestimonials } from '@/lib/db/testimonials';
+import { localize } from '@/lib/db/i18n';
 
 export const dynamic = 'force-dynamic';
 
@@ -166,8 +167,8 @@ export default async function HomePage({
             {departments.map((dept) => (
               <DepartmentCard
                 key={dept.id}
-                name={dept.name}
-                description={dept.description}
+                name={localize(dept.name, dept.name_hi, locale)}
+                description={localize(dept.description, dept.description_hi, locale)}
                 imageUrl={dept.image_url}
               />
             ))}
@@ -186,9 +187,9 @@ export default async function HomePage({
             {doctors.map((doctor) => (
               <DoctorCard
                 key={doctor.id}
-                name={doctor.full_name}
+                name={localize(doctor.full_name, doctor.full_name_hi, locale)}
                 initials={(doctor.full_name ?? '').trim().split(/\s+/).filter(Boolean).map((n: string) => n[0]).join('').slice(0, 2).toUpperCase() || '?'}
-                specialty={doctor.specialization}
+                specialty={localize(doctor.specialization, doctor.specialization_hi, locale)}
                 bookLabel={tDoc('bookAppointment')}
                 photoUrl={doctor.photo_url}
               />
@@ -212,8 +213,8 @@ export default async function HomePage({
             {facilities.map((facility) => (
               <FacilityCard
                 key={facility.id}
-                name={facility.name}
-                description={facility.description}
+                name={localize(facility.name, facility.name_hi, locale)}
+                description={localize(facility.description, facility.description_hi, locale)}
                 imageUrl={facility.image_url}
               />
             ))}
@@ -236,15 +237,15 @@ export default async function HomePage({
                     <Card className="h-full">
                       <CardContent className="p-6">
                         <p className="text-slate-700 italic">
-                          &ldquo;{testimonial.quote}&rdquo;
+                          &ldquo;{localize(testimonial.quote, testimonial.quote_hi, locale)}&rdquo;
                         </p>
                         <div className="mt-4">
                           <p className="font-semibold text-slate-900 text-sm">
-                            {testimonial.patient_name}
+                            {localize(testimonial.patient_name, testimonial.patient_name_hi, locale)}
                           </p>
                           {testimonial.designation && (
                             <p className="text-slate-500 text-xs mt-0.5">
-                              {testimonial.designation}
+                              {localize(testimonial.designation, testimonial.designation_hi, locale)}
                             </p>
                           )}
                         </div>
