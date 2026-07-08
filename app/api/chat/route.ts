@@ -16,7 +16,10 @@ const ALLOWED_ORIGINS = [
 ].filter(Boolean) as string[]
 
 function isAllowedOrigin(origin: string | null): boolean {
-  if (!origin) return true  // same-origin server-to-server calls
+  // A missing Origin header is rejected — it is not a reliable signal of a
+  // same-origin server-to-server call and is trivially spoofable by
+  // scripted/non-browser clients bypassing CORS.
+  if (!origin) return false
   return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))
 }
 

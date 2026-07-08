@@ -12,6 +12,21 @@ import { StaffRole } from '@/lib/portal/roles';
 const ADMIN_ROLES: StaffRole[] = ['super_admin', 'admin'];
 
 /**
+ * Shared self-lockout guard: blocks an admin from deactivating their own
+ * account through any mutation path (would lock out the only active admin).
+ */
+function assertNotSelfDeactivation(
+  targetId: string,
+  callerProfileId: string,
+  isDeactivating: boolean
+): { error: string } | null {
+  if (isDeactivating && targetId === callerProfileId) {
+    return { error: 'Cannot deactivate your own account' };
+  }
+  return null;
+}
+
+/**
  * Verifies the current session has an admin-capable role before any write.
  * Returns the authenticated Supabase client for subsequent queries.
  * Redirects to /login if no valid session; throws Error('Forbidden') if role is insufficient.
@@ -123,7 +138,7 @@ export async function updateStaffAction(
   }>
 ): Promise<{ error?: string }> {
   try {
-    const { callerRole } = await requireAdminRole();
+    const { callerRole, callerProfileId } = await requireAdminRole();
     const adminClient = createAdminClient();
 
     // Prevent role escalation: fetch the target's current role before updating.
@@ -139,6 +154,9 @@ export async function updateStaffAction(
     if (input.role === 'super_admin' && callerRole !== 'super_admin') {
       return { error: 'Cannot promote to super_admin' };
     }
+
+    const selfErr = assertNotSelfDeactivation(id, callerProfileId, input.is_active === false);
+    if (selfErr) return selfErr;
 
     const { error } = await adminClient
       .from('profiles')
@@ -166,9 +184,8 @@ export async function toggleActiveAction(
     const adminClient = createAdminClient();
 
     // Prevent self-deactivation (would lock out the only active admin).
-    if (id === callerProfileId) {
-      return { error: 'Cannot deactivate your own account' };
-    }
+    const selfErr = assertNotSelfDeactivation(id, callerProfileId, is_active === false);
+    if (selfErr) return selfErr;
 
     // Only super_admin may deactivate another super_admin.
     const { data: target } = await adminClient
