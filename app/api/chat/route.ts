@@ -1,6 +1,7 @@
 import { GoogleGenAI } from '@google/genai';
 import { HOSPITAL_KNOWLEDGE } from '@/lib/chat/hospital-knowledge';
 import { NextRequest } from 'next/server';
+import { checkRateLimit as rateLimit } from '@/lib/rate-limit';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 
@@ -8,31 +9,8 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 // A hospital chat message has no legitimate need for more than 2000 characters.
 const MAX_MESSAGE_LENGTH = 2000;
 
-// --- Rate limiting (CR-001) ---
-// Simple in-memory rate limiter (resets on cold start — acceptable for this scale)
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_LIMIT = 20        // requests
-const WINDOW_MS  = 60_000    // per minute
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = rateLimitMap.get(ip)
-  if (!entry || now > entry.resetAt) {
-    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS })
-    return true
-  }
-  if (entry.count >= RATE_LIMIT) return false
-  entry.count++
-  return true
-}
-
-// Periodic cleanup to prevent unbounded memory growth
-setInterval(() => {
-  const now = Date.now()
-  for (const [key, val] of rateLimitMap.entries()) {
-    if (now > val.resetAt) rateLimitMap.delete(key)
-  }
-}, 5 * 60_000)
+// Bound total conversation size (post-slice) sent to Gemini, not just per-message length.
+const MAX_TOTAL_CONVERSATION_CHARS = 6000;
 
 // --- CORS allowlist (CR-003) ---
 const ALLOWED_ORIGINS = [
@@ -41,7 +19,10 @@ const ALLOWED_ORIGINS = [
 ].filter(Boolean) as string[]
 
 function isAllowedOrigin(origin: string | null): boolean {
-  if (!origin) return true  // same-origin server-to-server calls
+  // A missing Origin header is rejected — it is not a reliable signal of a
+  // same-origin server-to-server call and is trivially spoofable by
+  // scripted/non-browser clients bypassing CORS.
+  if (!origin) return false
   return ALLOWED_ORIGINS.some(allowed => origin.startsWith(allowed))
 }
 
@@ -68,10 +49,10 @@ export async function POST(request: NextRequest) {
 
   // CR-001: Rate limiting
   const ip =
-    request.headers.get('x-forwarded-for') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     '127.0.0.1'
-  if (!checkRateLimit(ip)) {
+  if (!(await rateLimit('chat:' + ip, { max: 20, windowMs: 60_000 }))) {
     return Response.json({ error: 'Too many requests' }, { status: 429 })
   }
 
@@ -119,6 +100,14 @@ export async function POST(request: NextRequest) {
     // Limit history depth to prevent cost amplification
     const safeMessages = messages.slice(-20);
 
+    // Bound total conversation size (computed after the slice, reflecting what
+    // is actually sent to Gemini) — per-message length and message count alone
+    // do not cap cumulative token cost.
+    const totalChars = safeMessages.reduce((sum, m) => sum + m.content.length, 0);
+    if (totalChars > MAX_TOTAL_CONVERSATION_CHARS) {
+      return Response.json({ error: 'Conversation too long. Please start a new chat.' }, { status: 400 });
+    }
+
     // Map to Gemini content format — 'assistant' must become 'model'
     const mappedContents = safeMessages.map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
@@ -128,7 +117,7 @@ export async function POST(request: NextRequest) {
     const stream = await ai.models.generateContentStream({
       model: 'gemini-2.5-flash',
       contents: mappedContents,
-      config: { systemInstruction: HOSPITAL_KNOWLEDGE },
+      config: { systemInstruction: HOSPITAL_KNOWLEDGE, maxOutputTokens: 500 },
     });
 
     const readable = new ReadableStream({
@@ -136,6 +125,11 @@ export async function POST(request: NextRequest) {
         const encoder = new TextEncoder();
         try {
           for await (const chunk of stream) {
+            // Stop pulling further chunks once the client is gone — avoids
+            // enqueueing to a dead controller and paying for tokens nobody will read.
+            if (request.signal.aborted) {
+              break;
+            }
             const text = chunk.text;
             if (text) {
               controller.enqueue(encoder.encode(text));
