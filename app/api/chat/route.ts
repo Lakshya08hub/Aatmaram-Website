@@ -9,6 +9,9 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 // A hospital chat message has no legitimate need for more than 2000 characters.
 const MAX_MESSAGE_LENGTH = 2000;
 
+// Bound total conversation size (post-slice) sent to Gemini, not just per-message length.
+const MAX_TOTAL_CONVERSATION_CHARS = 6000;
+
 // --- CORS allowlist (CR-003) ---
 const ALLOWED_ORIGINS = [
   process.env.NEXT_PUBLIC_APP_URL,
@@ -46,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   // CR-001: Rate limiting
   const ip =
-    request.headers.get('x-forwarded-for') ??
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     '127.0.0.1'
   if (!(await rateLimit('chat:' + ip, { max: 20, windowMs: 60_000 }))) {
@@ -97,6 +100,14 @@ export async function POST(request: NextRequest) {
     // Limit history depth to prevent cost amplification
     const safeMessages = messages.slice(-20);
 
+    // Bound total conversation size (computed after the slice, reflecting what
+    // is actually sent to Gemini) — per-message length and message count alone
+    // do not cap cumulative token cost.
+    const totalChars = safeMessages.reduce((sum, m) => sum + m.content.length, 0);
+    if (totalChars > MAX_TOTAL_CONVERSATION_CHARS) {
+      return Response.json({ error: 'Conversation too long. Please start a new chat.' }, { status: 400 });
+    }
+
     // Map to Gemini content format — 'assistant' must become 'model'
     const mappedContents = safeMessages.map((m) => ({
       role: m.role === 'assistant' ? 'model' : 'user',
@@ -106,7 +117,7 @@ export async function POST(request: NextRequest) {
     const stream = await ai.models.generateContentStream({
       model: 'gemini-2.5-flash',
       contents: mappedContents,
-      config: { systemInstruction: HOSPITAL_KNOWLEDGE },
+      config: { systemInstruction: HOSPITAL_KNOWLEDGE, maxOutputTokens: 500 },
     });
 
     const readable = new ReadableStream({
@@ -114,6 +125,11 @@ export async function POST(request: NextRequest) {
         const encoder = new TextEncoder();
         try {
           for await (const chunk of stream) {
+            // Stop pulling further chunks once the client is gone — avoids
+            // enqueueing to a dead controller and paying for tokens nobody will read.
+            if (request.signal.aborted) {
+              break;
+            }
             const text = chunk.text;
             if (text) {
               controller.enqueue(encoder.encode(text));
