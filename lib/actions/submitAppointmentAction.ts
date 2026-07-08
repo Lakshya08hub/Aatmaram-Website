@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 // ---------------------------------------------------------------------------
 // CR-01: Server-side input validation — runs before hCaptcha and DB insert
@@ -15,25 +16,6 @@ const appointmentSchema = z.object({
   reason:          z.string().min(10).max(1000),
   captchaToken:    z.string().min(1),
 })
-
-// ---------------------------------------------------------------------------
-// CR-02: In-memory per-IP rate limiter (5 requests / 60 s)
-// ---------------------------------------------------------------------------
-const ipRateMap = new Map<string, { count: number; resetAt: number }>()
-const RATE_WINDOW_MS = 60_000
-const MAX_PER_WINDOW = 5
-
-function checkRateLimit(ip: string): boolean {
-  const now = Date.now()
-  const entry = ipRateMap.get(ip)
-  if (!entry || now > entry.resetAt) {
-    ipRateMap.set(ip, { count: 1, resetAt: now + RATE_WINDOW_MS })
-    return true
-  }
-  if (entry.count >= MAX_PER_WINDOW) return false
-  entry.count++
-  return true
-}
 
 export async function submitAppointmentAction(rawInput: unknown): Promise<{ error?: string }> {
   // Step 0: Validate input shape and lengths
@@ -49,7 +31,7 @@ export async function submitAppointmentAction(rawInput: unknown): Promise<{ erro
       hdrs.get('x-forwarded-for')?.split(',')[0]?.trim() ??
       hdrs.get('x-real-ip') ??
       'unknown'
-    if (!checkRateLimit(ip)) {
+    if (!(await checkRateLimit('appt:' + ip, { max: 5, windowMs: 60_000 }))) {
       return { error: 'Too many requests. Please wait a moment and try again.' }
     }
 
