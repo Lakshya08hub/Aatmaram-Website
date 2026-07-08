@@ -32,12 +32,19 @@ Race-safe cross-instance rate limiting via a single Postgres `check_rate_limit()
 ## Status
 
 **Task 1: COMPLETE** — commit `7330930` (rebased from original `bc17db4`)
-**Task 2: STILL PENDING — human action required.** The Supabase migration SQL has NOT been applied yet. See "Task 2 — Pending Human Action" below.
+**Task 2: COMPLETE (human-confirmed 2026-07-08).** Migration applied via Supabase Dashboard SQL editor; `rate_limit_counters` table and `check_rate_limit` function confirmed present (visible in Supabase's own Security Advisor scan). See addendum below for two follow-up findings the Advisor surfaced.
 **Task 3: COMPLETE** — commit `738757c`
 **Task 4: COMPLETE** — commit `66b9603`
 **Task 5: COMPLETE** — commit `8aaedc0`
 
-**Important:** Rate-limiter runtime behavior (the actual 429/allow decisions at login, chat, and appointment endpoints) cannot be spot-checked until Task 2's SQL is applied in the Supabase Dashboard. All code changes in Tasks 3–5 compile correctly independent of the migration (confirmed via `npx tsc --noEmit`), per the plan's explicit design — `checkRateLimit()` fails OPEN on RPC error, so until the migration is applied, `rate_limit_counters`/`check_rate_limit` will not exist server-side and every call currently returns `true` (allowed) after logging a `console.warn`. This is expected fail-safe behavior, not a bug — but it also means rate limiting is effectively inactive at runtime until Task 2 is confirmed.
+**Status: all 5 tasks complete.** Rate limiting is now live end-to-end (login, chat, appointment endpoints all backed by the atomic Supabase RPC, no more per-instance Maps).
+
+### Addendum — Supabase Security Advisor findings post-migration
+
+Running the migration triggered Supabase's built-in linter, which surfaced two items directly tied to this task's new objects (the rest of the Advisor's output — `appointment_requests` RLS disabled, mutable search_path on pre-existing functions, leaked-password-protection, public media bucket — predates this task and is unrelated to it):
+
+1. **`check_rate_limit` has a mutable search_path (Warning).** The function wasn't declared with an explicit `search_path`, which is Postgres/Supabase best practice for any function to prevent search-path-hijacking (a user with schema-create rights could shadow objects the function references). Fix: `alter function check_rate_limit(text, int, int) set search_path = public;` (or add `SET search_path = public` to the function definition directly).
+2. **`rate_limit_counters` has RLS enabled with no policy (Info).** This project has an existing `rls_auto_enable()` automation that force-enables RLS on new tables. With RLS on and no policy, PostgREST defaults to deny-all for `anon`/`authenticated` — which is the secure default, and matches how `patient_records`/`payroll_payments` already behave in this repo. Since `rate_limit_counters` is only ever touched via `createAdminClient()` (service role, bypasses RLS), this is informational, not a gap — no fix needed unless a future feature reads this table with a non-admin client.
 
 ## What Was Built
 

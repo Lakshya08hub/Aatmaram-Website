@@ -82,7 +82,6 @@ None yet.
 
 - Client content not yet gathered (logo, photos, doctor headshots, OPD timings, founding story) — needed before Phase 2 content is finalized. See docs/PROJECT_SPEC.md Client Content Checklist.
 - Domain status unconfirmed — `atmaramchildcareandcriticalcare.com` has DNS errors; needs resolution before go-live.
-- Quick task 260707-uz0: Supabase migration `supabase/migrations/20260707_rate_limit_counters.sql` (rate_limit_counters table + check_rate_limit RPC) must be applied manually via the Supabase Dashboard SQL editor before shared rate limiting is actually enforced at runtime. Until applied, checkRateLimit() fails open (allows all requests) by design.
 - Pre-existing, unrelated build break: `isRedirectError` no longer exported from `next/dist/client/components/redirect` in 6 files (appointments.ts, content.ts, patients.ts, payroll.ts, staff.ts import line, plus a page.tsx). Discovered during quick task 260707-uz0; not caused by or fixed in that task. See `.planning/quick/260707-uz0-fix-3-code-review-issues-shared-supabase/260707-uz0-deferred-items.md`.
 
 ### Quick Tasks Completed
